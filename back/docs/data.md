@@ -1,0 +1,244 @@
+# 设计表结构
+
+## 引擎选择
+
+目前广泛使用的是MyISAM和InnoDB两种引擎,InnoDB在MySQL 5.5后成为默认索引。
+
+总体来讲，MyISAM适合`SELECT`密集型的表，而`InnoDB`适合INSERT和UPDATE密集型的表
+
+## 用户表（user）
+engine:MyISAM
+
+| 字段名      | 字段类型        | 备注                      | default        |
+| ---------- | ------------- | -------------------------- | ------------- |
+| u_id         | int           | AUTO_INCREMENT,PRIMARY KEY | not NULL            |
+| username   | varchar（20） |     unique                 | not NULL             |
+| email      | varchar(30)   |                            | not NULL             |
+| password   | char(128)     | hash                       | not NULL             |
+| create_time | TIMESTAMP     |                            | now() |
+
+- [x] 用户头像是否必要？
+
+不需要头像
+
+## 节点表(node)
+engine:InnoDB
+
+用于显示节点状态
+
+| 字段名 | 字段类型 | 备注                     | default  |
+| ------ | ---------- | -------------------------- | -------- |
+| n_id     | int        | AUTO_INCREMENT,PRIMARY KEY | not NUll |
+| ip_addr| INT        | UNSIGNED,index             | not NUll |
+| status | tinyint(1) |     0/1/2                      | 0        |
+| ipmiable | tinyint(1) |     0/1                      | 0        |
+| g_id | tinyint(1) |     UNSIGNED（0-255）,foreign key(g_id) references groupInfo(g_id) | 0        |
+
+- [IP地址在数据库里面的存储方式](https://www.cnblogs.com/gomysql/p/4595621.html)
+- [论IP地址在数据库中应该用何种形式存储](https://www.cnblogs.com/skynet/archive/2011/01/09/1931044.html)
+
+### 查询示例
+
+```sql
+SELECT name FROM user WHERE ipaddress = inet_aton('127.0.0.1');
+```
+    
+```python
+import socket, struct
+def ip2long(ip):  
+    return struct.unpack("!L",socket.inet_aton(ip))[0]  
+def long2ip(longip):  
+    return socket.inet_ntoa(struct.pack('!L', longip))  
+if __name__ == '__main__':  
+    print('local ip address to long is %s'% ip2long('8.8.8.8'))  
+    print('local ip address long to ip is %s'%long2ip(3756947712))  
+    print('local ip address long to ip is %s'%long2ip(3756947967))  
+   
+```
+
+[Which MySQL datatype use for store an IP address?](https://itsolutionstuff.com/post/which-mysql-datatype-use-for-store-an-ip-address)
+
+Insert Data :
+```sql
+INSERT INTO `ip_addresses` (`ip_address`) VALUES (INET_ATON("127.0.0.1"));
+```
+Select Data :
+```sql
+SELECT id, INET_NTOA(`ip_address`) as ip FROM `ip_addresses`;
+```
+参见[Most efficient way to store IP Address in MySQL](https://stackoverflow.com/questions/2542011/most-efficient-way-to-store-ip-address-in-mysql)
+
+如果存储的是 IPv6 和 IPv4 类型使用 `INET6_ATON()`方法(`MySQL5.6+`可用)；
+
+[MySQL doc-function_inet6-aton](https://dev.mysql.com/doc/refman/5.6/en/miscellaneous-functions.html#function_inet6-aton)
+
+```sql
+SELECT INET_ATON('127.0.0.1');
+
++------------------------+
+| INET_ATON('127.0.0.1') |
++------------------------+
+|             2130706433 | 
++------------------------+
+1 row in set (0.00 sec)
+
+
+SELECT INET_NTOA('2130706433');
+
++-------------------------+
+| INET_NTOA('2130706433') |
++-------------------------+
+| 127.0.0.1               | 
++-------------------------+
+1 row in set (0.02 sec)
+
+```
+## 分组表（groupInfo）
+
+| 字段名称 | 字段类型  | 备注                     | 默认值 |
+| -------- | ------------- | -------------------------- | ------ |
+| g_id     | int           | AUTO_INCREMENT,PRIMARY KEY |        |
+| g_name   | varchar（20） |                            |        |
+| p_id     | int           | 父组编号               | 0      |
+
+
+## 信息概览表（generalInfo）
+engine:MyISAM
+
+对机器的软硬件信息进行记录
+
+| 字段名 | 字段类型 | 备注                     | default  |
+| --------- | -------- | -------------------------- | -------- |
+| gi_id     | int      | AUTO_INCREMENT,PRIMARY KEY | not NULL |
+| info_id   | int(2)   |                            |          |
+| info_data | json     | MySQL 5.7+                 |          |
+
+**注意**：
+1. `MySQL 5.7+` 以上版本原生支持`json`数据存储。
+2. `info_data`需要在下方具体的*json数据*章节中设计及组装。
+
+[MySQL JSON数据类型操作](https://segmentfault.com/a/1190000011580030)
+
+## IPMI 信息表（ipmiInfo）
+engine:MyISAM
+
+| 字段名     | 字段类型  | 备注                                     | default       |
+| ------------- | ------------- | ------------------------------------------ | ------------- |
+| impi_id       | int           | foreign key(impi_id) references node(n_id) |               |
+| ipmi_ip       | INT           | UNSIGNED                                   |               |
+| ipmi_mask     | INT           | UNSIGNED                                   | 255.255.255.0 |
+| ipmi_username | varchar（20） |                                            | admin         |
+| ipmi_password | char(128)     | 是否需要加密保存？                | admin         |
+
+**注意**
+1. ipmi_id设置外键为node表中的n_id;
+
+
+## 磁盘表(disk)
+
+## 操作日志表(opLog)
+
+engine:InnoDB
+
+| 字段名 | 字段类型  | 备注                     | default  |
+| --------- | ------------- | -------------------------- | -------- |
+| ol_id     | int           | AUTO_INCREMENT,PRIMARY KEY  | not NULL |
+| user_id   | int           | foreign key(user_id) references user(u_id) |          |
+| op_type   | tinyint(1)    | 增删改查                    |          |
+| op_module | int           | 操作模块foreign key(user_id) references moduleInfo(m_id)                    |          |
+| op_time   | TIMESTAMP     |                            |          |
+| op_ip     | int(UNSIGNED) |                            |          |
+| op_result | int           | 0--ok/1                    |          |
+
+- [x] 是否不需要中英文分开记录两个表，只需要一个 字典 或 专门的表 记录操作的模块
+用专门的表保存模块
+
+## 模块信息表（moduleInfo）
+
+| 字段名称 | 字段类型  | 备注                     | 默认值 |
+| -------- | ------------- | -------------------------- | ------ |
+| m_id     | int           | AUTO_INCREMENT,PRIMARY KEY |        |
+| m_name   | varchar（20） | unique                     |        |
+
+# json 数据
+
+- [x] 是否有必要把这些数据存储到数据库中？应该是存到数据库比较好，但是什么时候更新数据库中的内容以确保数据可信度？
+
+保存到数据库中，这样中心节点获取的时候更加容易，体验更好。
+
+## 硬件信息
+
+### 主板信息
+UR-F-00101：主控板信息
+           厂商/BIOS版本/ BMC版本/CPLD版本  具备升级功能
+
+### cpu信息
+
+```bash
+{
+"id":1,
+"producer":"Intel",
+"version":"9.1.0.26745",
+"sign":"",
+"type":"",
+"series":"",
+"Computing speed":"",
+"core nums":"",
+"state":"",     # TODO
+}
+```
+
+### 内存信息
+
+```bash
+{"1":{
+"name":"xx",
+"producer":"Samsung",
+"size":4096,
+"speed":"9.1.0.26745",
+"type":"",
+"series":"",
+"frsize":""
+},
+"2":{
+"name":"xx",
+"producer":"Samsung",
+"size":4096,
+"speed":"9.1.0.26745",
+"type":"",
+"series":"",
+"frsize":""
+}
+...
+}
+```
+
+### SATA信息
+
+存储型号/容量
+
+### SAS信息
+SAS固件/Expender固件/RAID芯片  具备升级功能 
+
+### PCIE设备
+设备型号/速率 
+
+##电源状态显示
+
+（可热插拔检测）
+
+### 风扇状态显示
+
+### BMC状态显示
+
+### BMS电池状态显示
+
+## 软件信息
+
+### 当前存储系统版本
+
+……
+
+## 测试工具
+
+## 系统设置
