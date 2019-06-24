@@ -78,5 +78,100 @@ class User(db.Model):
             return None  # invalid token
         # 根据id查询，查到则认证通过，否则校验失败
         user = User.query.get(data['id'])
-        print('-----verify_auth_token------',user)
+        print('-----verify_auth_token------', user)
         return user
+
+
+class Article(db.Model):
+    """
+    文章表结构
+    """
+    __tablename__ = 'iy_article'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    title = db.Column(db.String(64), comment='文章标题')
+    author_id = db.Column(db.String(64), db.ForeignKey('iy_user.id'), comment='作者id')
+    body_id = db.Column(db.String(64), comment='文章结构体id')
+    view_counts = db.Column(db.Integer, comment='文章阅读数')
+    top_it = db.Column(db.Integer, comment='置顶功能')
+    category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
+    create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
+    update_date = db.TIMESTAMP, server_default = db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+                                                         comment='文章更新时间')
+
+    def __repr__(self):
+        return '<Article %r>' % self.title
+
+
+class ArticleBody(db.Model):
+    """
+    文章结构体 表结构
+    """
+    __tablename__ = 'iy_article_body'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    content_html = db.Column(db.Text, comment='文章的html')
+    content = db.Column(db.Text, comment='文章内容')
+
+    def __repr__(self):
+        return '<ArticleBody %r>' % self.id
+
+
+class Tag(db.Model):
+    """
+    标签 表结构
+    """
+    __tablename__ = 'iy_tag'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    tag_name = db.Column(db.String(64), comment='标签名称')
+    article_id = db.Column(db.Integer, db.ForeignKey('iy_article.id'), comment='文章编号')
+
+    def __repr__(self):
+        return '<Tag %r>' % self.tag_name
+
+
+class Category(db.Model):
+    """
+    分类 表结构
+    """
+    __tablename__ = 'iy_category'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    category_name = db.Column(db.String(64), comment='分类名称')
+    description = db.Column(db.String(255), comment='分类描述')
+
+    def __repr__(self):
+        return '<Category %r>' % self.tag_name
+
+
+class SysLog(db.Model):
+    """
+    操作日志 表结构
+    """
+    __tablename__ = 'iy_syslog'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    op_ip = db.Column(db.String(64), comment='好友名称')
+    operator = db.Column(db.String(64), comment='操作者')
+    op_module = db.Column(db.String(255), comment='操作模块')
+    operation = db.Column(db.String(64), comment='操作事件')
+    op_time = db.Column(db.DateTime(), default=datetime.utcnow, comment='操作时间')
+
+    def __repr__(self):
+        return '<ArticleBody %r>' % self.operation
+
+
+class Friend(db.Model):
+    """
+    操作日志 表结构
+    """
+    __tablename__ = 'iy_friend'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    friend_name = db.Column(db.String(64), comment='好友名称')
+    description = db.Column(db.String(255), comment='好友描述')
+    friend_link = db.Column(db.String(64), comment='友链')
+
+    def __repr__(self):
+        return '<Friend %r>' % self.friend_name
