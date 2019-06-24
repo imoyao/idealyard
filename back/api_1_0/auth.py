@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
+
 import re
-from flask import jsonify, g
+from flask import g, jsonify, request
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource
 
@@ -26,6 +28,18 @@ class Auth(Resource):
         if token:
             setting.LOGINUSER = g.user.name
             return jsonify({'code': 200, 'msg': "success", 'token': token.decode('ascii'), 'name': g.user.name})
+        else:
+            return jsonify({'code': 500, 'msg': "请检查输入"})
+
+
+class Setpwd(Resource):
+    def post(self):
+        data = json.loads(str(request.data, encoding="utf-8"))
+        user = User.query.filter_by(name=setting.LOGINUSER).first()
+        print(user)
+        if user and user.verify_password(data['oldpass']) and data['confirpass'] == data['newpass']:
+            user.hash_password(data['newpass'])
+            return jsonify({'code': 200, 'msg': "密码修改成功"})
         else:
             return jsonify({'code': 500, 'msg': "请检查输入"})
 

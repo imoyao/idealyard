@@ -88,7 +88,7 @@ class Article(db.Model):
     """
     __tablename__ = 'iy_article'
     __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    post_id = db.Column(db.Integer, primary_key=True, comment='主键')
     title = db.Column(db.String(64), comment='文章标题')
     author_id = db.Column(db.String(64), db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.String(64), comment='文章结构体id')

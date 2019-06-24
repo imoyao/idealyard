@@ -6,4 +6,4 @@ from flask import Blueprint
 
 api = Blueprint('api', __name__)
 
-from . import books, auth, setpwd
+from . import books, auth
