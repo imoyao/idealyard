@@ -8,7 +8,7 @@ from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource
 
 from back import setting
-from back.models.db_user import User
+from back.models import User
 
 auth = HTTPBasicAuth()
 

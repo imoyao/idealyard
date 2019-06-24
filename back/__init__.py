@@ -7,7 +7,7 @@ from flask_restful import Api
 from werkzeug.utils import import_string
 
 from .config import config
-from .api_1_0.api_auth import Auth
+from .api_1_0.auth import Auth
 # from .api_1_0.books import Books
 from .api_1_0.setpwd import Setpwd
 from .models import db
@@ -16,7 +16,7 @@ BLUEPRINTS = [
     'main:bp',  # add bp here
     # 'tools:bp',
     # 'settings:bp',
-    'api_1_0:api_v1',
+    'api_1_0:api',
 ]
 
 cors = CORS(resources=r'/*')

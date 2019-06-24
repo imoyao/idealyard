@@ -9,12 +9,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'WvCANWU9CiUTI6pm0wK6'  # TODO:set while production
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'MPk2WlUArcLeeU_iohzT'  # TODO:set while production
 
     '''
-    # py3.6+
+    # 旧版本
+    import random
+    import string
     ''.join(random.choices(string.ascii_letters + string.digits, k=15))
-    # or
+    # py3.6+
     import secrets
     secrets.token_urlsafe(nbytes=15)
     '''
@@ -35,7 +37,7 @@ class MySQLConfig:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    database = 'mysql_dev'
+    database = 'iyblog_dev'
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8'.format(MySQLConfig.MYSQL_USERNAME,
                                                                                 MySQLConfig.MYSQL_PASSWORD,
                                                                                 MySQLConfig.MYSQL_HOST, database)
@@ -43,14 +45,14 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    database = 'mysql_test'
+    database = 'iyblog_test'
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}'.format(MySQLConfig.MYSQL_USERNAME,
                                                                    MySQLConfig.MYSQL_PASSWORD,
                                                                    MySQLConfig.MYSQL_HOST, database)
 
 
 class ProductionConfig(Config):
-    database = 'mysql_product'
+    database = 'iyblog_product'
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}'.format(MySQLConfig.MYSQL_USERNAME,
                                                                    MySQLConfig.MYSQL_PASSWORD,
                                                                    MySQLConfig.MYSQL_HOST, database)
