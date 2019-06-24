@@ -21,18 +21,6 @@ engine:MyISAM
 
 不需要头像
 
-## 节点表(node)
-engine:InnoDB
-
-用于显示节点状态
-
-| 字段名 | 字段类型 | 备注                     | default  |
-| ------ | ---------- | -------------------------- | -------- |
-| n_id     | int        | AUTO_INCREMENT,PRIMARY KEY | not NUll |
-| ip_addr| INT        | UNSIGNED,index             | not NUll |
-| status | tinyint(1) |     0/1/2                      | 0        |
-| ipmiable | tinyint(1) |     0/1                      | 0        |
-| g_id | tinyint(1) |     UNSIGNED（0-255）,foreign key(g_id) references groupInfo(g_id) | 0        |
 
 - [IP地址在数据库里面的存储方式](https://www.cnblogs.com/gomysql/p/4595621.html)
 - [论IP地址在数据库中应该用何种形式存储](https://www.cnblogs.com/skynet/archive/2011/01/09/1931044.html)
@@ -93,25 +81,6 @@ SELECT INET_NTOA('2130706433');
 1 row in set (0.02 sec)
 
 ```
-## 分组表（groupInfo）
-
-| 字段名称 | 字段类型  | 备注                     | 默认值 |
-| -------- | ------------- | -------------------------- | ------ |
-| g_id     | int           | AUTO_INCREMENT,PRIMARY KEY |        |
-| g_name   | varchar（20） |                            |        |
-| p_id     | int           | 父组编号               | 0      |
-
-
-## 信息概览表（generalInfo）
-engine:MyISAM
-
-对机器的软硬件信息进行记录
-
-| 字段名 | 字段类型 | 备注                     | default  |
-| --------- | -------- | -------------------------- | -------- |
-| gi_id     | int      | AUTO_INCREMENT,PRIMARY KEY | not NULL |
-| info_id   | int(2)   |                            |          |
-| info_data | json     | MySQL 5.7+                 |          |
 
 **注意**：
 1. `MySQL 5.7+` 以上版本原生支持`json`数据存储。
@@ -119,22 +88,6 @@ engine:MyISAM
 
 [MySQL JSON数据类型操作](https://segmentfault.com/a/1190000011580030)
 
-## IPMI 信息表（ipmiInfo）
-engine:MyISAM
-
-| 字段名     | 字段类型  | 备注                                     | default       |
-| ------------- | ------------- | ------------------------------------------ | ------------- |
-| impi_id       | int           | foreign key(impi_id) references node(n_id) |               |
-| ipmi_ip       | INT           | UNSIGNED                                   |               |
-| ipmi_mask     | INT           | UNSIGNED                                   | 255.255.255.0 |
-| ipmi_username | varchar（20） |                                            | admin         |
-| ipmi_password | char(128)     | 是否需要加密保存？                | admin         |
-
-**注意**
-1. ipmi_id设置外键为node表中的n_id;
-
-
-## 磁盘表(disk)
 
 ## 操作日志表(opLog)
 
@@ -166,79 +119,12 @@ engine:InnoDB
 
 保存到数据库中，这样中心节点获取的时候更加容易，体验更好。
 
-## 硬件信息
+## 数据表
 
-### 主板信息
-UR-F-00101：主控板信息
-           厂商/BIOS版本/ BMC版本/CPLD版本  具备升级功能
+暂时手动，后期直接 source < xxx.sql
 
-### cpu信息
+```sql
+CREATE DATABASE iyblog_dev CHARSET=UTF8;
 
-```bash
-{
-"id":1,
-"producer":"Intel",
-"version":"9.1.0.26745",
-"sign":"",
-"type":"",
-"series":"",
-"Computing speed":"",
-"core nums":"",
-"state":"",     # TODO
-}
+INSERT INTO `iy_user` VALUES ('1', 'imoyao', '张牧志', '$6$rounds=656000$tIs6tFIsFTmqLpUi$rD2UcO0T7VXsVGeUee11oY6HcxbqluGzAXdUWHCDCpTK8fvsMC5rW8R1ZVhyY912MUK19xcnSqrYp88eKsuBH1', 'emailme8@163.com','中国·北京','凡人皆需侍奉！', '2018-01-22 17:14:49','2019-06-24 17:14:49', '1', null)
 ```
-
-### 内存信息
-
-```bash
-{"1":{
-"name":"xx",
-"producer":"Samsung",
-"size":4096,
-"speed":"9.1.0.26745",
-"type":"",
-"series":"",
-"frsize":""
-},
-"2":{
-"name":"xx",
-"producer":"Samsung",
-"size":4096,
-"speed":"9.1.0.26745",
-"type":"",
-"series":"",
-"frsize":""
-}
-...
-}
-```
-
-### SATA信息
-
-存储型号/容量
-
-### SAS信息
-SAS固件/Expender固件/RAID芯片  具备升级功能 
-
-### PCIE设备
-设备型号/速率 
-
-##电源状态显示
-
-（可热插拔检测）
-
-### 风扇状态显示
-
-### BMC状态显示
-
-### BMS电池状态显示
-
-## 软件信息
-
-### 当前存储系统版本
-
-……
-
-## 测试工具
-
-## 系统设置
