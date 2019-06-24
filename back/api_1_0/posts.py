@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/24 16:40
+import json
 
 from flask import g, jsonify, request
 from flask import url_for, current_app
 from flask_restful import Resource
 
 from back import setting
-from back.main.errors import forbidden
+from .errors import forbidden
 from back.models import Article
+
+
+def abort_if_not_exist(post_id):
+    """
+    操作之前需要保证操作的文章存在，否则返回 404
+    :param post_id:
+    :return:
+    """
+    desc = 'The post {} not exist.'.format(post_id)
+    post = Article.query.get_or_404(post_id, description=desc)
+    return post
 
 
 class Post(Resource):
@@ -64,6 +76,8 @@ class NewestPost(Resource):
             self.response_obj['code'] = 1
             self.response_obj['status'] = 'failure'
             return self.response_obj, 500
+
+
 '''
 1.5 避免多级 URL
 常见的情况是，资源需要多级分类，因此很容易写出多级的 URL，比如获取某个作者的某一类文章。
@@ -83,13 +97,27 @@ GET /articles?published=true
 '''
 
 
-class HottestPost(Resource):        # TODO: 最新和最热好像没有必要写专门的接口 详见上面的注释
+class HottestPost(Resource):  # TODO: 最新和最热好像没有必要写专门的接口 详见上面的注释
     """
     最热文章
     """
 
     def __init__(self):
         self.response_obj = {'status': 'success', 'code': 0}
+
+    # TODO:此处需要根据不同条件编写
+    '''
+    如果记录数量很多，服务器不可能都将它们返回给用户。API应该提供参数，过滤返回结果。
+
+    下面是一些常见的参数。
+    
+    ?limit=10：指定返回记录的数量
+    ?offset=10：指定返回记录的开始位置。
+    ?page=2&per_page=100：指定第几页，以及每页的记录数。
+    ?sortby=name&order=asc：指定返回结果按照哪个属性排序，以及排序顺序。
+    ?animal_type_id=1：指定筛选条件
+    参数的设计允许存在冗余，即允许API路径和URL参数偶尔有重复。比如，GET /zoo/ID/animals 与 GET /animals?zoo_id=ID 的含义是相同的。
+    '''
 
     def get(self):
         posts = Article.query.order_by(Article.view_counts.desc()).limit(setting.LIMIT_HOT_POST_COUNT)
@@ -113,8 +141,9 @@ class PostDetail(Resource):
         :param post_id: int,
         :return: json,
         """
-        post = Article.query.get_or_404(post_id)
-        return jsonify(post.to_json())
+        post = abort_if_not_exist(post_id)
+        self.response_obj['data'] = post
+        return jsonify(self.response_obj)
 
     def post(self, post_id):
         """
@@ -141,11 +170,14 @@ class PostDetail(Resource):
         :param post_id:
         :return:
         """
-        post = Article.query.get_or_404(post_id)
+        post = abort_if_not_exist(post_id)
         # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
         if g.current_user != post.author_id:  # TODO:此处必须保证唯一
             return forbidden('Insufficient permissions')
-        Article.update_post_by_id()
+        recvdata = json.loads(str(request.data, encoding="utf-8"))
+        if recvdata:
+            poster = recvdata['params']
+            Article.update_post_by_id(post_id, poster)
         return jsonify(post.to_json())
 
     def delete(self, post_id):
@@ -154,9 +186,9 @@ class PostDetail(Resource):
         :param post_id: int
         :return:
         """
-        post = Article.query.get_or_404(post_id)
+        post = abort_if_not_exist(post_id)
         # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
         if g.current_user != post.author_id:  # TODO:此处必须保证唯一，除了用户本人，管理员应该也可以删除
             return forbidden('Insufficient permissions')
-        Article.delete_post_by_id()
+        Article.delete_post(post)
         return jsonify(post.to_json())

@@ -13,5 +13,7 @@
 
 # RESTful
 - [用 Flask 来写个轻博客](https://blog.csdn.net/jmilk/article/category/6518106/1?)
+- [理解RESTful架构](http://www.ruanyifeng.com/blog/2011/09/restful.html)
 - [RESTful API 最佳实践](http://www.ruanyifeng.com/blog/2018/10/restful-api-best-practices.html)
+- [RESTful API 设计指南](http://www.ruanyifeng.com/blog/2014/05/restful_api.html)
 - [RESETful API 设计规范](https://godruoyi.com/posts/the-resetful-api-design-specification)

@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from werkzeug.utils import import_string
 
-from .api_1_0.auth import Auth, Setpwd
+from .api_1_0 import auth
 from .api_1_0 import posts
 from .config import config
 # from .api_1_0.books import Books
@@ -29,9 +29,9 @@ def add_api():
     :return:
     """
     # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
-    api.add_resource(Auth, '/api/login', )
+    api.add_resource(auth.Auth, '/api/login', )
     api.add_resource(posts.Post, '/api/posts')
-    api.add_resource(posts.PostDetail, '/api//posts/<int:id>')
+    api.add_resource(posts.PostDetail, '/api/posts/<int:id>')
     # api.add_resource(Setpwd, '/api/setpwd', )
 
 

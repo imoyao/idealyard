@@ -9,7 +9,7 @@ from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource
 
 from back import setting
-from back.main.errors import unauthorized, forbidden
+from .errors import unauthorized, forbidden
 from back.models import User
 from . import api
 

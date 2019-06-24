@@ -12,6 +12,8 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context
 
+from back.exception import ValidationError
+
 db = SQLAlchemy()
 
 
@@ -101,6 +103,40 @@ class Article(db.Model):
 
     def __repr__(self):
         return '<Article %r>' % self.title
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post dose not have a body.')
+        return Article(body=body)
+
+    @staticmethod
+    def update_post_by_id(post_id, post_info):
+        """
+        更新硬件信息
+        :return:
+        """
+        post_obj = Article.query.filter(Article.post_id == post_id).first()
+        post_obj.title = post_info['title']
+        post_obj.author_id = post_info['author_id']
+        post_obj.body_id = post_info['body_id']
+        post_obj.view_counts = post_info['view_counts']
+        post_obj.top_it = post_info['top_it']
+        post_obj.category_id = post_info['category_id']
+        post_obj.create_date = post_info['create_date']
+        db.session.add(post_obj)
+        db.session.commit()
+
+    @staticmethod
+    def delete_post(obj):
+        """
+        删除文章
+        :param obj:
+        :return:
+        """
+        db.session.delete(obj)
+        db.session.commit()
 
 
 class ArticleBody(db.Model):
