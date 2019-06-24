@@ -80,7 +80,8 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-
+  // TODO:限制登录
+  console.log('getToken()---------',getToken())
   if (getToken()) {
 
     if (to.path === '/login') {
@@ -101,7 +102,7 @@ router.beforeEach((to, from, next) => {
       Message({
         type: 'warning',
         showClose: true,
-        message: '请先登录哦'
+        message: '抱歉，登录后才能进行该项操作！'
       })
 
     }

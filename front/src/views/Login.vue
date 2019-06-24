@@ -39,8 +39,9 @@
     data() {
       return {
         userForm: {
-          account: '',
-          password: ''
+          // TODO: just for test
+          account: 'imoyao',
+          password: '111111'
         },
         rules: {
           account: [
@@ -57,10 +58,8 @@
     methods: {
       login(formName) {
         let that = this
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
-
             that.$store.dispatch('login', that.userForm).then(() => {
               that.$router.go(-1)
             }).catch((error) => {

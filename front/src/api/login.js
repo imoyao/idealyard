@@ -5,10 +5,12 @@ export function login(account, password) {
     account,
     password
   }
+  console.log('login-----------',data)
   return request({
     url: '/login',
     method: 'post',
-    data
+    auth: data
+    // data
   })
 }
 

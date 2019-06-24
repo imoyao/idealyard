@@ -32,10 +32,16 @@ export default new Vuex.Store({
   },
   actions: {
     login({commit}, user) {
+      // https://www.cnblogs.com/tylerdonet/p/9930731.html
       return new Promise((resolve, reject) => {
+        console.log('----------111--------',user)
         login(user.account, user.password).then(data => {
+          // console.log('--------data----------',data)
+          // console.log('--------data---token-------',data.token)
           commit('SET_TOKEN', data.data['Oauth-Token'])
+          // commit('SET_TOKEN', data.token)
           setToken(data.data['Oauth-Token'])
+          // setToken(data.data.token)
           resolve()
         }).catch(error => {
           reject(error)
@@ -44,6 +50,7 @@ export default new Vuex.Store({
     },
     // 获取用户信息
     getUserInfo({commit, state}) {
+      console.log('ccccccccccccccccc')
       let that = this
       return new Promise((resolve, reject) => {
         getUserInfo().then(data => {
