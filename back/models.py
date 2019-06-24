@@ -96,8 +96,8 @@ class Article(db.Model):
     top_it = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
-    update_date = db.TIMESTAMP, server_default = db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-                                                         comment='文章更新时间')
+    update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                            comment='文章更新时间')
 
     def __repr__(self):
         return '<Article %r>' % self.title
