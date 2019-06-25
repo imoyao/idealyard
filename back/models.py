@@ -92,11 +92,11 @@ class Article(db.Model):
     __table_args__ = {'extend_existing': True}
     post_id = db.Column(db.Integer, primary_key=True, comment='主键')
     title = db.Column(db.String(64), comment='文章标题')
-    author_id = db.Column(db.String(64), db.ForeignKey('iy_user.id'), comment='作者id')
-    body_id = db.Column(db.String(64), comment='文章结构体id')
+    author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
+    body_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='文章结构体id')
     view_counts = db.Column(db.Integer, comment='文章阅读数')
     top_it = db.Column(db.Integer, comment='置顶功能')
-    category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
+    category_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
     update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
                             comment='文章更新时间')
@@ -161,7 +161,7 @@ class Tag(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     tag_name = db.Column(db.String(64), comment='标签名称')
-    article_id = db.Column(db.Integer, db.ForeignKey('iy_article.id'), comment='文章编号')
+    article_id = db.Column(db.Integer, db.ForeignKey('iy_article.post_id'), comment='文章编号')
 
     def __repr__(self):
         return '<Tag %r>' % self.tag_name
