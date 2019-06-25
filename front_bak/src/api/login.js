@@ -1,14 +1,13 @@
 import request from '@/request'
 
-export function login(account, password) {
+export function requestLogin(account, password) {
   const data = {
     account,
     password
   }
-  console.log('login-----------',data)
   return request({
+    method: 'POST',
     url: '/login',
-    method: 'post',
     auth: data
     // data
   })

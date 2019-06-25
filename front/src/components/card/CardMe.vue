@@ -1,9 +1,10 @@
+<!--关于我-->
 <template>
   <el-card>
     <h1 class="me-author-name"> IMOYAO </h1>
     <div class="me-author-description">
       <span><i class="el-icon-location-outline"></i> 北京 </span>
-      <span><i class="me-icon-job"></i> &nbsp;Python 开发工程师</span>
+      <span><i class="me-icon-job"></i> &nbsp;Pythonista </span>
     </div>
     <div class="me-author-tool">
       <i @click="showTool(qq)" :title="qq.title" class="me-icon-QQ"></i>

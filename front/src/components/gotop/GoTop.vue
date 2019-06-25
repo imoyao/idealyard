@@ -1,5 +1,5 @@
+<!--去顶部-->
 <template>
-  <!--<transition name="el-zoom-in-center">-->
   <transition>
     <div @click="toTop" v-show="topShow" class="me-to-top"><i class="el-icon-caret-top"></i></div>
   </transition>
@@ -31,9 +31,7 @@
       }
     },
     mounted() {
-      /**
-       * 等到整个视图都渲染完毕
-       */
+      // 等到整个视图都渲染完毕
       this.$nextTick(function () {
         window.addEventListener('scroll', this.needToTop);
       });

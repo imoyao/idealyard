@@ -1,138 +1,93 @@
 <template>
-  <div id="login" v-title data-title="登录 - For Fun">
-    <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
-          <source src="../../static/vedio/sea.mp4" type="video/mp4">
-      </video>-->
-
-    <div class="me-login-box me-login-box-radius">
-      <h1>ForFun 登录</h1>
-
-      <el-form ref="userForm" :model="userForm" :rules="rules">
-        <el-form-item prop="account">
-          <el-input placeholder="用户名" v-model="userForm.account"></el-input>
-        </el-form-item>
-
-        <el-form-item prop="password">
-          <el-input placeholder="密码" type="password" v-model="userForm.password"></el-input>
-        </el-form-item>
-
-        <el-form-item size="small" class="me-login-button">
-          <el-button type="primary" @click.native.prevent="login('userForm')">登录</el-button>
-        </el-form-item>
-      </el-form>
-
-      <div class="me-login-design">
-        <p>Designed by
-          <strong>
-            <router-link to="/" class="me-login-design-color">ForFun</router-link>
-          </strong>
-        </p>
-      </div>
-
-    </div>
+  <div id="login">
+    <Row type="flex" justify="center">
+      <!--<img src="../assets/login.jpg" alt="" :style="bg">-->
+      <Col span="5">
+        <Card class="form">
+          <div slot="title">
+            登录页
+          </div>
+          <Form ref="formInline" :model="formInline" :rules="ruleInline">
+            <FormItem prop="username">
+              <Input type="text" v-model="formInline.username" placeholder="用户名" size="large"
+                     @on-enter="handleSubmit('formInline', formInline)">
+              <Icon slot="prepend" type="person"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem prop="password">
+              <Input type="password" v-model="formInline.password" placeholder="密码" size="large"
+                     @on-enter="handleSubmit('formInline', formInline)">
+              <Icon slot="prepend" type="locked"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem>
+              <Button type="info" @click="handleSubmit('formInline', formInline)" long>登录</Button>
+            </FormItem>
+          </Form>
+        </Card>
+      </Col>
+    </Row>
   </div>
 </template>
-
 <script>
   export default {
     name: 'Login',
     data() {
       return {
-        userForm: {
-          // TODO: just for test
-          account: 'imoyao',
-          password: '111111'
+        formInline: {
+          username: '',
+          password: ''
         },
-        rules: {
-          account: [
-            {required: true, message: '请输入用户名', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+        ruleInline: {
+          username: [
+            {required: true, message: '请填写用户名', trigger: 'blur'}
           ],
           password: [
-            {required: true, message: '请输入密码', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+            {required: true, message: '请填写密码', trigger: 'blur'},
+            {type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur'}
           ]
+        },
+        bg: {
+          width: `${window.innerWidth}px`,
+          height: `${window.innerHeight}px`,
+          position: "absolute",
         }
       }
     },
     methods: {
-      login(formName) {
-        let that = this
-        this.$refs[formName].validate((valid) => {
+      handleSubmit(name, form) {
+        this.$refs[name].validate((valid) => {
           if (valid) {
-            that.$store.dispatch('login', that.userForm).then(() => {
-              that.$router.go(-1)
-            }).catch((error) => {
-              if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
-              }
+            this.$axios.defaults.auth = {
+              username: form.username,
+              password: form.password,
+            }
+            this.$axios.get('/api/login').then(response => {
+              this.$Message.success("提交成功")
+              let data = response.data
+              this.$store.commit('setToken', data)
+              this.$router.push('/')
+            }).catch(error => {
+              this.$Message.error(error.status)
             })
           } else {
-            return false;
+            this.$Message.error('表单验证失败!');
           }
-        });
+        })
       }
     }
   }
 </script>
 
 <style scoped>
-  #login {
-    min-width: 100%;
-    min-height: 100%;
-  }
 
-  .me-video-player {
-    background-color: transparent;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-    display: block;
-    position: absolute;
-    left: 0;
-    z-index: 0;
-    top: 0;
-  }
-
-  .me-login-box {
-    position: absolute;
-    width: 300px;
-    height: 260px;
-    background-color: white;
+  .form {
+    text-align: center;
     margin-top: 150px;
-    margin-left: -180px;
-    left: 50%;
-    padding: 30px;
+
   }
 
-  .me-login-box-radius {
-    border-radius: 10px;
-    box-shadow: 0px 0px 1px 1px rgba(161, 159, 159, 0.1);
+  p {
+    font-size: 30px;
   }
-
-  .me-login-box h1 {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-    vertical-align: middle;
-  }
-
-  .me-login-design {
-    text-align: center;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 18px;
-  }
-
-  .me-login-design-color {
-    color: #5FB878 !important;
-  }
-
-  .me-login-button {
-    text-align: center;
-  }
-
-  .me-login-button button {
-    width: 100%;
-  }
-
 </style>

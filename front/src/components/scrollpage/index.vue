@@ -2,6 +2,7 @@
 
   <div ref="scroll" id="scroll-page" style="overflow: hidden">
     <slot></slot>
+    <!--TODO: 更好的实现-->
     <div
       style="height: 40px;margin-top: 10px;z-index: 1"
       v-loading="loading"
