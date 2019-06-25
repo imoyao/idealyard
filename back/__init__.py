@@ -8,6 +8,7 @@ from werkzeug.utils import import_string
 
 from .api_1_0 import auth
 from .api_1_0 import posts
+from .api_1_0 import users
 from .config import config
 # from .api_1_0.books import Books
 from .models import db
@@ -29,9 +30,12 @@ def add_api():
     :return:
     """
     # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
-    api.add_resource(auth.Auth, '/api/login', )
+    api.add_resource(auth.Auth, '/api/login', '/api/token')
+    api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.Post, '/api/posts')
     api.add_resource(posts.PostDetail, '/api/posts/<int:id>')
+    api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
+
     # api.add_resource(Setpwd, '/api/setpwd', )
 
 

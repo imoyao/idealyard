@@ -47,7 +47,7 @@ class User(db.Model):
         self.password = custom_app_context.encrypt(password)
         return self.password
 
-    def verify_password(self, password):
+    def verify_user_password(self, password):
         """
         验证密码
         :param password:str,原始密码
@@ -55,9 +55,9 @@ class User(db.Model):
         """
         return custom_app_context.verify(password, self.password)
 
-    def generate_auth_token(self, expiration=6000):
+    def generate_auth_token(self, expiration=600):
         """
-        获取token，有效时间10min
+        获取token，有效时间10min  >> 10*60
         :param expiration:
         :return:
         """

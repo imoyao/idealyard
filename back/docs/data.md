@@ -113,11 +113,6 @@ engine:InnoDB
 | m_id     | int           | AUTO_INCREMENT,PRIMARY KEY |        |
 | m_name   | varchar（20） | unique                     |        |
 
-# json 数据
-
-- [x] 是否有必要把这些数据存储到数据库中？应该是存到数据库比较好，但是什么时候更新数据库中的内容以确保数据可信度？
-
-保存到数据库中，这样中心节点获取的时候更加容易，体验更好。
 
 ## 数据表
 
