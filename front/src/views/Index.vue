@@ -1,9 +1,8 @@
 <template>
-  <div v-title data-title="别院牧志">
+  <div v-title data-title="ForFun Find Yourself">
     <el-container>
 
       <el-main class="me-articles">
-        <p>这里显示文章列表</p>
 
         <article-scroll-page></article-scroll-page>
 
@@ -33,15 +32,20 @@
   import CardTag from '@/components/card/CardTag'
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
 
-  import {reqArticles, reqHotArtices, reqNewArtices, reqArchives} from '@/api/article'
-  import {reqHotTags} from '@/api/tag'
-  // TODO,token认证方式
-  // https://segmentfault.com/a/1190000011277435
+  import {getArticles, getHotArtices, getNewArtices} from '@/api/article'
+  import {getHotTags} from '@/api/tag'
+  import {listArchives} from '@/api/article'
+
   export default {
     name: 'Index',
-    data: function () {
+    created() {
+      this.getHotArtices()
+      this.getNewArtices()
+      this.getHotTags()
+      this.listArchives()
+    },
+    data() {
       return {
-        msg: "",
         hotTags: [],
         hotArticles: [],
         newArticles: [],
@@ -49,10 +53,9 @@
       }
     },
     methods: {
-      // 最热文章
       getHotArtices() {
         let that = this
-        reqHotArtices().then(data => {
+        getHotArtices().then(data => {
           that.hotArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -64,7 +67,7 @@
       },
       getNewArtices() {
         let that = this
-        reqNewArtices().then(data => {
+        getNewArtices().then(data => {
           that.newArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -76,7 +79,7 @@
       },
       getHotTags() {
         let that = this
-        reqHotTags().then(data => {
+        getHotTags().then(data => {
           that.hotTags = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -86,33 +89,16 @@
         })
       },
       listArchives() {
-        reqArchives().then((data => {
+        listArchives().then((data => {
           this.archives = data.data
         })).catch(error => {
           if (error !== 'error') {
-            this.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
+            that.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
           }
         })
-      },
-      logout() {
-        this.$store.commit('delToken')
-        this.$router.push('/login')
       }
+
     },
-    created() {
-      // this.$axios.get("/").then(response => {
-      //   this.msg = response.data
-      // }).catch(error => {
-      //   console.log(error)
-      //   this.$Message.error(error)
-      // })
-      // 页面完成之前获取到这些信息
-      this.getHotArtices()
-      this.getNewArtices()
-      this.getHotTags()
-      this.listArchives()
-    },
-    // 组件
     components: {
       'card-me': CardMe,
       'card-article': CardArticle,

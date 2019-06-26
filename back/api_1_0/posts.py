@@ -31,7 +31,6 @@ class Post(Resource):
     1.5 避免多级 URL
     常见的情况是，资源需要多级分类，因此很容易写出多级的 URL，比如获取某个作者的某一类文章。
 
-
     GET /authors/12/categories/2
     这种 URL 不利于扩展，语义也不明确，往往要想一会，才能明白含义。
 

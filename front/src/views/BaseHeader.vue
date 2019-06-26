@@ -36,9 +36,9 @@
             <el-menu-item index="/login">
               <el-button type="text">登录</el-button>
             </el-menu-item>
-            <!--<el-menu-item index="/register">-->
-              <!--<el-button type="text">注册</el-button>-->
-            <!--</el-menu-item>-->
+            <el-menu-item index="/register">
+              <el-button type="text">注册</el-button>
+            </el-menu-item>
           </template>
 
           <template v-else>

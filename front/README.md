@@ -32,3 +32,13 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ---
 重写`Vue`前端，因为之前拿别人的，但是在用的时候感觉不是特别顺手，准备从头开始一点点写一遍。
 
+## 学习
+
+找到一本语法书
+[Vue 2.0 的建议学习顺序](https://zhuanlan.zhihu.com/p/23134551)
+[ECMAScript 6 入门](http://es6.ruanyifeng.com/)
+
+## TODO
+[x] 参考博客后端
+
+[基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)

@@ -1,15 +1,14 @@
 import request from '@/request'
 
-export function requestLogin(account, password) {
+export function login(account, password) {
   const data = {
     account,
     password
   }
   return request({
-    method: 'POST',
     url: '/login',
-    auth: data
-    // data
+    method: 'post',
+    data
   })
 }
 
