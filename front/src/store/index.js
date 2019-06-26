@@ -32,6 +32,7 @@ export default new Vuex.Store({
   },
   actions: {
     login({commit}, user) {
+      console.log('----------',user)
       return new Promise((resolve, reject) => {
         login(user.account, user.password).then(data => {
           commit('SET_TOKEN', data.data['Oauth-Token'])

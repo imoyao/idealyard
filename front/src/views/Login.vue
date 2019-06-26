@@ -39,8 +39,8 @@
     data() {
       return {
         userForm: {
-          account: '',
-          password: ''
+          account: 'imoyao',
+          password: '111111'
         },
         rules: {
           account: [
@@ -60,7 +60,6 @@
 
         this.$refs[formName].validate((valid) => {
           if (valid) {
-
             that.$store.dispatch('login', that.userForm).then(() => {
               that.$router.go(-1)
             }).catch((error) => {
