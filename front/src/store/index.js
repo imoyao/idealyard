@@ -1,7 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import {getToken, setToken, removeToken} from '@/request/token'
-import {login, getUserInfo, logout, register} from '@/api/login'
+import {requestLogin, getUserInfo, logout, register} from '@/api/login'
 
 Vue.use(Vuex);
 
@@ -34,7 +34,8 @@ export default new Vuex.Store({
     login({commit}, user) {
       console.log('----------',user)
       return new Promise((resolve, reject) => {
-        login(user.account, user.password).then(data => {
+        requestLogin(user.account, user.password).then(data => {
+          console.log('-------login in store-----', data)
           commit('SET_TOKEN', data.data['Oauth-Token'])
           setToken(data.data['Oauth-Token'])
           resolve()

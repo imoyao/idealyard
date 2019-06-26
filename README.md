@@ -24,6 +24,7 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 # 前端
 
 借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。
+[预览地址](http://shiminghui.top:8000/)
 
 # 后端
 ## TODO:

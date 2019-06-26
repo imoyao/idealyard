@@ -34,10 +34,13 @@
 </template>
 
 <script>
+  import {requestLogin} from '@/api/login'
+
   export default {
     name: 'Login',
     data() {
       return {
+        logining: false,
         userForm: {
           account: 'imoyao',
           password: '111111'
@@ -60,13 +63,37 @@
 
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            that.$store.dispatch('login', that.userForm).then(() => {
-              that.$router.go(-1)
-            }).catch((error) => {
-              if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
+            this.logining = true
+            var loginParams = {username: this.userForm.account, password: this.userForm.password}
+            requestLogin(loginParams).then(data => {
+              this.logining = false
+              console.log('--------------', data)
+              let {msg, code, token, name} = data
+              if (code !== 200) {
+                this.$message({
+                  message: msg,
+                  type: 'error'
+                })
+              } else {
+                this.$message({
+                  message: msg,
+                  type: 'success'
+                })
+
+                sessionStorage.setItem('token', JSON.stringify(token))
+                sessionStorage.setItem('name', JSON.stringify(name))
+                this.$router.push({path: '/'})
               }
             })
+            // let loginParams = {username: this.userForm.account, password: this.userForm.password}
+            // // that.$store.dispatch('login', that.userForm).then(() => {
+            // that.$store.dispatch('login', loginParams).then(() => {
+            //   that.$router.go(-1)
+            // }).catch((error) => {
+            //   if (error !== 'error') {
+            //     that.$message({message: error, type: 'error', showClose: true});
+            //   }
+            // })
           } else {
             return false;
           }

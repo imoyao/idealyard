@@ -1,22 +1,34 @@
 import request from '@/request'
+import base from '@/api'
+import axios from 'axios'
 
-export function login(account, password) {
-  console.log(account, password)
-  const data = {
-    account,
-    password
-  }
-  return request({
-    url: '/login',
-    method: 'post',
-    auth: data
-  })
+export const requestLogin = params => {
+  return axios({method: 'POST', url: `${base}/login`, auth: params}).then(res => res.data)
 }
 
+// TODO:useless
+// export function login(account, password) {
+//   console.log(account, password)
+//   const data = {
+//     account,
+//     password
+//   }
+//   return request({
+//     url: '/login',
+//     method: 'post',
+//     auth: data
+//   })
+// }
+
 export function logout() {
-  return request({
-    url: '/logout',
-    method: 'get'
+  var _this = this
+  this.$confirm('确认退出吗?', '提示', {
+    type: 'warning'
+  }).then(() => {
+    sessionStorage.removeItem('token')
+    _this.$router.push('/api/users')
+  }).catch(() => {
+
   })
 }
 
