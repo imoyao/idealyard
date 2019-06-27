@@ -30,7 +30,7 @@ def add_api():
     :return:
     """
     # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
-    api.add_resource(auth.Auth, '/api/login', '/api/token')
+    api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.Post, '/api/articles')
     api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')

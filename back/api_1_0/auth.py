@@ -10,6 +10,7 @@ from back import setting
 from back.models import User
 from . import api
 from .errors import unauthorized, forbidden
+from .utils import jsonify_with_status_code
 
 auth = HTTPBasicAuth()
 
@@ -23,10 +24,10 @@ class Auth(Resource):
     def post(self):
         token = g.user.generate_auth_token()
         if token:
-            setting.LOGINUSER = g.user.name
-            return jsonify({'code': 200, 'msg': "success", 'token': token.decode('ascii'), 'name': g.user.name})
+            username = g.user.username
+            return jsonify({'code': 0, 'msg': "success", 'token': token.decode('ascii'), 'username': username})
         else:
-            return jsonify({'code': 500, 'msg': "请检查输入"})
+            return jsonify({'code': 1, 'msg': "请检查输入"})
 
     @auth.login_required
     def get(self):
@@ -43,9 +44,10 @@ class ResetPassword(Resource):
     重置密码
     """
     def post(self):
-        data = json.loads(str(request.data, encoding="utf-8"))
+        # TODO: 状态码不应该在body中
+        data = request.json
+        # data = json.loads(str(request.data, encoding="utf-8"))
         user = User.query.filter_by(name=setting.LOGINUSER).first()
-        print(user)
         if user and user.verify_user_password(data['oldpass']) and data['confirpass'] == data['newpass']:
             user.hash_password(data['newpass'])
             return jsonify({'code': 200, 'msg': "密码修改成功"})
@@ -55,7 +57,7 @@ class ResetPassword(Resource):
     @auth.login_required
     def get(self):
         """
-        # 注册用户访问该页面
+        # 已注册用户访问该页面
         curl -u admin:123456 -i -X GET http://127.0.0.1:5000/api/password
 
         首先获取token:

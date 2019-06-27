@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/25 14:34
 
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, url_for
 from flask_restful import Resource
 
 from back.models import User
 from back.models import db
+from .utils import jsonify_with_status_code
 
 
 def abort_if_not_exist(user_id):
@@ -30,14 +31,15 @@ class CGUser(Resource):
         return jsonify(user)
 
     def post(self):
-        username = request.json.get('username')
-        password = request.json.get('password')
+        json_data = request.json
+        username = json_data.get('username')
+        password = json_data.get('password')
         if not all([username, password]):
             abort(400)  # missing arguments
         if User.query.filter_by(username=username).first() is not None:
-            abort(400)  # existing user
+            abort(409)  # existing user
         user = User(username=username)
         user.hash_password(password)
         db.session.add(user)
         db.session.commit()
-        return jsonify({'username': user.username})
+        return jsonify_with_status_code({'username': user.username}, 201)
