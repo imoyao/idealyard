@@ -1,4 +1,4 @@
-# idealyard
+# Idealyard
 
 使用 `Vue` 和 `Flask` 搭建个人博客
 ## 前置条件
