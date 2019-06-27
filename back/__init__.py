@@ -32,8 +32,8 @@ def add_api():
     # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
     api.add_resource(auth.Auth, '/api/login', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
-    api.add_resource(posts.Post, '/api/posts')
-    api.add_resource(posts.PostDetail, '/api/posts/<int:post_id>')
+    api.add_resource(posts.Post, '/api/articles')
+    api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')
     api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
 
     # api.add_resource(Setpwd, '/api/setpwd', )
