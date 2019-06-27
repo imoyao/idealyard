@@ -35,6 +35,7 @@
 
 <script>
   import {requestLogin} from '@/api/login'
+  import {setToken} from '@/request/token'
 
   export default {
     name: 'Login',
@@ -67,8 +68,9 @@
             var loginParams = {username: this.userForm.account, password: this.userForm.password}
             requestLogin(loginParams).then(data => {
               this.logining = false
+              console.log(data)
               let {msg, code, token, name} = data
-              if (code !== 200) {
+              if (code !== 0) {
                 this.$message({
                   message: msg,
                   type: 'error'
@@ -79,7 +81,8 @@
                   type: 'success'
                 })
                 // https://segmentfault.com/a/1190000012057010
-                sessionStorage.setItem('token', JSON.stringify(token))
+                setToken(JSON.stringify(token))
+                // sessionStorage.setItem('token', JSON.stringify(token))
                 sessionStorage.setItem('name', JSON.stringify(name))
                 this.$router.push({path: '/'})
               }

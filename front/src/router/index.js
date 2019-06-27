@@ -56,8 +56,8 @@ const router = new Router({
       ]
     },
     {
-      path: '/login',
-      component: r => require.ensure([], () => r(require('@/views/Login')), 'login')
+      path: '/signin',
+      component: r => require.ensure([], () => r(require('@/views/Login')), 'signin')
     },
     {
       path: '/register',
@@ -72,26 +72,43 @@ const router = new Router({
 
 // 注册全局钩子拦截导航
 router.beforeEach((to, from, next) =>{
-  const hasToken = sessionStorage.getItem('token')
-  if (!hasToken){
-    if (to.path !== '/login') {
-      return next({path: '/login'})
-    }else{
+  // const hasToken = sessionStorage.getItem('token')
+  console.log('-------',getToken())
+  if (getToken()) {
+    if (to.path === '/signin') {
+      next({path: '/'})
+    } else {
       next()
+      // if (store.state.account.length === 0) {
+      //   store.dispatch('getUserInfo').then(data => { //获取用户信息
+      //     next()
+      //   }).catch(() => {
+      //     next({path: '/'})
+      //   })
+      // } else {
+      //   next()
+      // }
     }
-
-  }else{
-    if (to.path === '/login'){
-      return next({path:'/'})
+  }else {
+    if (to.matched.some(r => r.meta.requireLogin)) {
+      Message({
+        type: 'warning',
+        showClose: true,
+        message: '登录后才可以进行该操作哦~'
+      })
+      next('/signin')
     }
-    next()
+    else {
+      next();
+    }
   }
 })
+
 // router.beforeEach((to, from, next) => {
 //
 //   if (getToken()) {
 //
-//     if (to.path === '/login') {
+//     if (to.path === '/signin') {
 //       next({path: '/'})
 //     } else {
 //       if (store.state.account.length === 0) {

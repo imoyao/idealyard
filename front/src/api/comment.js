@@ -1,7 +1,7 @@
 import request from '@/request'
 
 
-export function getCommentsByArticle(id) {
+export function reqCommentsByArticle(id) {
   return request({
     url: `/comments/article/${id}`,
     method: 'get'

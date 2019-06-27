@@ -48,14 +48,14 @@ export function viewArticle(id) {
   })
 }
 
-export function getArticlesByCategory(id) {
+export function reqArticlesByCategory(id) {
   return request({
     url: `/articles/category/${id}`,
     method: 'get'
   })
 }
 
-export function getArticlesByTag(id) {
+export function reqArticlesByTag(id) {
   return request({
     url: `/articles/tag/${id}`,
     method: 'get'
@@ -78,7 +78,7 @@ export function listArchives() {
   })
 }
 
-export function getArticleById(id) {
+export function reqArticleById(id) {
   return request({
     url: `/articles/${id}`,
     method: 'get'

@@ -33,7 +33,7 @@
         <el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878">
 
           <template v-if="!user.login">
-            <el-menu-item index="/login">
+            <el-menu-item index="/signin">
               <el-button type="text">登录</el-button>
             </el-menu-item>
             <el-menu-item index="/register">
@@ -57,6 +57,7 @@
 </template>
 
 <script>
+  import {getToken,removeToken} from '@/request/token'
   export default {
     name: 'BaseHeader',
     props: {
@@ -72,7 +73,7 @@
     computed: {
       user() {
         // let login = this.$store.state.account.length != 0
-        let login = sessionStorage.getItem('token')
+        let login = getToken()
         // let avatar = this.$store.state.avatar
         // TODO: 暂时写死，应该是动态获取的
         let avatar = '../../static/user/admin.png'
@@ -98,8 +99,8 @@
           type: 'warning'
         }).then(() => {
           // TODO: 清除工作
-          sessionStorage.removeItem('token')
-          _this.$router.push('/login')
+          removeToken()
+          _this.$router.push('/signin')
         }).catch(() => {
 
         })

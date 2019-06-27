@@ -44,8 +44,8 @@
 
 <script>
   import defaultAvatar from '@/assets/img/logo.png'
-  import {getAllCategorysDetail} from '@/api/category'
-  import {getAllTagsDetail} from '@/api/tag'
+  import {reqAllCategorysDetail} from '@/api/category'
+  import {reqAllTagsDetail} from '@/api/tag'
 
   export default {
     name: 'BlogAllCategoryTag',
@@ -84,7 +84,7 @@
       },
       getCategorys() {
         let that = this
-        getAllCategorysDetail().then(data => {
+        reqAllCategorysDetail().then(data => {
           that.categorys = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -94,7 +94,7 @@
       },
       getTags() {
         let that = this
-        getAllTagsDetail().then(data => {
+        reqAllTagsDetail().then(data => {
           that.tags = data.data
         }).catch(error => {
           if (error !== 'error') {

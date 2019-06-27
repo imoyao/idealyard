@@ -3,7 +3,7 @@ import base from '@/api'
 import axios from 'axios'
 
 export const requestLogin = params => {
-  return axios({method: 'POST', url: `${base}/login`, auth: params}).then(res => res.data)
+  return axios({method: 'POST', url: `${base}/signin`, auth: params}).then(res => res.data)
 }
 
 // TODO:how to?
@@ -13,7 +13,7 @@ export const requestLogin = params => {
 //     password
 //   }
 //   return request({
-//     url: '/login',
+//     url: '/signin',
 //     method: 'post',
 //     auth: data
 //     // data
@@ -25,14 +25,14 @@ export function logout() {
   this.$confirm('确认退出吗?', '提示', {
     type: 'warning'
   }).then(() => {
-    sessionStorage.removeItem('token')
-    _this.$router.push('/api/users')
+    localStorage.removeItem('token')
+    _this.$router.push('/')
   }).catch(() => {
 
   })
 }
 
-export function getUserInfo() {
+export function reqUserInfo() {
   return request({
     url: '/users/currentUser',
     method: 'get'

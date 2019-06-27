@@ -24,7 +24,7 @@ Object.defineProperty(Vue.prototype, '$_', {value: lodash})
 Vue.directive('title', function (el, binding) {
   document.title = el.dataset.title
 })
-// 格式话时间
+// 格式化时间
 Vue.filter('format', formatTime)
 
 new Vue({

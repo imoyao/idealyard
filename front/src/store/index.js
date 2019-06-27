@@ -1,7 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import {getToken, setToken, removeToken} from '@/request/token'
-import {requestLogin, getUserInfo, logout, register} from '@/api/login'
+import {requestLogin, reqUserInfo, logout, register} from '@/api/login'
 
 Vue.use(Vuex);
 
@@ -46,7 +46,7 @@ export default new Vuex.Store({
     getUserInfo({commit, state}) {
       let that = this
       return new Promise((resolve, reject) => {
-        getUserInfo().then(data => {
+        reqUserInfo().then(data => {
           if (data.data) {
             commit('SET_ACCOUNT', data.data.account)
             commit('SET_NAME', data.data.nickname)

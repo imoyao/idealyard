@@ -112,7 +112,7 @@
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import CommmentItem from '@/components/comment/CommentItem'
   import {viewArticle} from '@/api/article'
-  import {getCommentsByArticle, publishComment} from '@/api/comment'
+  import {reqCommentsByArticle, publishComment} from '@/api/comment'
 
   import default_avatar from '@/assets/img/default_avatar.png'
 
@@ -203,7 +203,7 @@
       },
       getCommentsByArticle() {
         let that = this
-        getCommentsByArticle(that.article.id).then(data => {
+        reqCommentsByArticle(that.article.id).then(data => {
           that.comments = data.data
         }).catch(error => {
           if (error !== 'error') {

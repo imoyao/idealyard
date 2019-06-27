@@ -28,9 +28,9 @@
 
 <script>
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
-  import {getArticlesByCategory, getArticlesByTag} from '@/api/article'
-  import {getTagDetail} from '@/api/tag'
-  import {getCategoryDetail} from '@/api/category'
+  import {reqArticlesByCategory, reqArticlesByTag} from '@/api/article'
+  import {reqTagDetail} from '@/api/tag'
+  import {reqCategoryDetail} from '@/api/category'
   import defaultAvatar from '@/assets/img/logo.png'
 
 
@@ -77,7 +77,7 @@
       },
       getCategoryDetail(id) {
         let that = this
-        getCategoryDetail(id).then(data => {
+        reqCategoryDetail(id).then(data => {
           that.ct = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -87,7 +87,7 @@
       },
       getTagDetail(id) {
         let that = this
-        getTagDetail(id).then(data => {
+        reqTagDetail(id).then(data => {
           that.ct = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -97,7 +97,7 @@
       },
       getArticlesByCategory(id) {
         let that = this
-        getArticlesByCategory(id).then(data => {
+        reqArticlesByCategory(id).then(data => {
           that.articles = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -107,7 +107,7 @@
       },
       getArticlesByTag(id) {
         let that = this
-        getArticlesByTag(id).then(data => {
+        reqArticlesByTag(id).then(data => {
           that.articles = data.data
         }).catch(error => {
           if (error !== 'error') {
