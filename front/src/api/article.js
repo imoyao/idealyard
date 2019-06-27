@@ -1,13 +1,14 @@
 import request from '@/request'
 
+// TODO: 里面很多api都是可以精简的
 
-export function getArticles(query, page) {
+export function reqArticles(query, page) {
   return request({
     url: '/articles',
     method: 'get',
     params: {
-      pageNumber: page.pageNumber,
-      pageSize: page.pageSize,
+      page: page.pageNumber,
+      per_page: page.pageSize,
       name: page.name,
       sort: page.sort,
       year: query.year,
@@ -18,17 +19,25 @@ export function getArticles(query, page) {
   })
 }
 
-export function getHotArtices() {
+export function reqHotArtices() {
   return request({
-    url: '/articles/hot',
-    method: 'get'
+    url: '/articles',
+    method: 'get',
+    params: {
+      hot: true,
+      limit: 5,
+    }
   })
 }
 
-export function getNewArtices() {
+export function reqNewArtices() {
   return request({
-    url: '/articles/new',
-    method: 'get'
+    url: '/articles',
+    method: 'get',
+    params: {
+      new: true,
+      limit: 5,
+    }
   })
 }
 

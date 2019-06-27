@@ -1,27 +1,27 @@
 import request from '@/request'
 
-export function getAllCategorys() {
+export function reqAllCategorys() {
   return request({
     url: '/categorys',
     method: 'get',
   })
 }
 
-export function getAllCategorysDetail() {
+export function reqAllCategorysDetail() {
   return request({
     url: '/categorys/detail',
     method: 'get',
   })
 }
 
-export function getCategory(id) {
+export function reqCategory(id) {
   return request({
     url: `/categorys/${id}`,
     method: 'get',
   })
 }
 
-export function getCategoryDetail(id) {
+export function reqCategoryDetail(id) {
   return request({
     url: `/categorys/detail/${id}`,
     method: 'get',

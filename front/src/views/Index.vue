@@ -32,8 +32,8 @@
   import CardTag from '@/components/card/CardTag'
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
 
-  import {getArticles, getHotArtices, getNewArtices} from '@/api/article'
-  import {getHotTags} from '@/api/tag'
+  import {reqArticles, reqHotArtices, reqNewArtices} from '@/api/article'
+  import {reqHotTags} from '@/api/tag'
   import {listArchives} from '@/api/article'
 
   export default {
@@ -55,7 +55,7 @@
     methods: {
       getHotArtices() {
         let that = this
-        getHotArtices().then(data => {
+        reqHotArtices().then(data => {
           that.hotArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -67,7 +67,7 @@
       },
       getNewArtices() {
         let that = this
-        getNewArtices().then(data => {
+        reqNewArtices().then(data => {
           that.newArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -79,7 +79,7 @@
       },
       getHotTags() {
         let that = this
-        getHotTags().then(data => {
+        reqHotTags().then(data => {
           that.hotTags = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -93,7 +93,7 @@
           this.archives = data.data
         })).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
+            this.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
           }
         })
       }

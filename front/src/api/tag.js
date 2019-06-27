@@ -1,34 +1,34 @@
 import request from '@/request'
 
-export function getAllTags() {
+export function reqAllTags() {
   return request({
     url: '/tags',
     method: 'get',
   })
 }
 
-export function getAllTagsDetail() {
+export function reqAllTagsDetail() {
   return request({
     url: '/tags/detail',
     method: 'get',
   })
 }
 
-export function getHotTags() {
+export function reqHotTags() {
   return request({
     url: '/tags/hot',
     method: 'get',
   })
 }
 
-export function getTag(id) {
+export function reqTag(id) {
   return request({
     url: `/tags/${id}`,
     method: 'get',
   })
 }
 
-export function getTagDetail(id) {
+export function reqTagDetail(id) {
   return request({
     url: `/tags/detail/${id}`,
     method: 'get',

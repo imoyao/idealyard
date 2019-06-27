@@ -67,9 +67,9 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, getArticleById} from '@/api/article'
-  import {getAllCategorys} from '@/api/category'
-  import {getAllTags} from '@/api/tag'
+  import {publishArticle, reqArticleById} from '@/api/article'
+  import {reqAllCategorys} from '@/api/category'
+  import {reqAllTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
@@ -150,7 +150,7 @@
     methods: {
       getArticleById(id) {
         let that = this
-        getArticleById(id).then(data => {
+        reqArticleById(id).then(data => {
 
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
@@ -245,7 +245,7 @@
       },
       getCategorysAndTags() {
         let that = this
-        getAllCategorys().then(data => {
+        reqAllCategorys().then(data => {
           that.categorys = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -253,7 +253,7 @@
           }
         })
 
-        getAllTags().then(data => {
+        reqAllTags().then(data => {
           that.tags = data.data
         }).catch(error => {
           if (error !== 'error') {
