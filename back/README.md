@@ -25,6 +25,6 @@ flask run --host=0.0.0.0        # 外部访问
 FLASK_APP = runserver.py           # default script path,if module name: FLASK_APP = runserver
 FLASK_ENV = development
 FLASK_DEBUG = 1
-In folder D:/Gerrit/PMMT
+In folder XXX/idealyard/back
 ssh://root@192.168.*.*:22/home/*/envs/*/bin/python -u -m flask run --host=0.0.0.0
 ```
