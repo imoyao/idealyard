@@ -71,22 +71,37 @@
     },
     computed: {
       user() {
-        let login = this.$store.state.account.length != 0
-        let avatar = this.$store.state.avatar
+        // let login = this.$store.state.account.length != 0
+        let login = sessionStorage.getItem('token')
+        // let avatar = this.$store.state.avatar
+        // TODO: 暂时写死，应该是动态获取的
+        let avatar = '../../static/user/admin.png'
         return {
           login, avatar
         }
       }
     },
     methods: {
-      logout() {
-        let that = this
-        this.$store.dispatch('logout').then(() => {
-          this.$router.push({path: '/'})
-        }).catch((error) => {
-          if (error !== 'error') {
-            that.$message({message: error, type: 'error', showClose: true});
-          }
+      // logout() {
+      //   let that = this
+      //   this.$store.dispatch('logout').then(() => {
+      //     this.$router.push({path: '/'})
+      //   }).catch((error) => {
+      //     if (error !== 'error') {
+      //       that.$message({message: error, type: 'error', showClose: true});
+      //     }
+      //   })
+      // }
+      logout: function () {
+        var _this = this
+        this.$confirm('确认退出吗?', '提示', {
+          type: 'warning'
+        }).then(() => {
+          // TODO: 清除工作
+          sessionStorage.removeItem('token')
+          _this.$router.push('/login')
+        }).catch(() => {
+
         })
       }
     }

@@ -67,7 +67,6 @@
             var loginParams = {username: this.userForm.account, password: this.userForm.password}
             requestLogin(loginParams).then(data => {
               this.logining = false
-              console.log('--------------', data)
               let {msg, code, token, name} = data
               if (code !== 200) {
                 this.$message({
@@ -79,7 +78,7 @@
                   message: msg,
                   type: 'success'
                 })
-
+                // https://segmentfault.com/a/1190000012057010
                 sessionStorage.setItem('token', JSON.stringify(token))
                 sessionStorage.setItem('name', JSON.stringify(name))
                 this.$router.push({path: '/'})
@@ -87,11 +86,15 @@
             })
             // let loginParams = {username: this.userForm.account, password: this.userForm.password}
             // // that.$store.dispatch('login', that.userForm).then(() => {
+            // // 触发vuex中的login
             // that.$store.dispatch('login', loginParams).then(() => {
+            //   this.logining = false
+            //   // 从哪来到哪去：TODO:https://blog.csdn.net/Nalaluky/article/details/84201445
             //   that.$router.go(-1)
             // }).catch((error) => {
             //   if (error !== 'error') {
             //     that.$message({message: error, type: 'error', showClose: true});
+            //     this.logining = false
             //   }
             // })
           } else {

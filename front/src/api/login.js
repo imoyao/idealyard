@@ -6,9 +6,8 @@ export const requestLogin = params => {
   return axios({method: 'POST', url: `${base}/login`, auth: params}).then(res => res.data)
 }
 
-// TODO:useless
-// export function login(account, password) {
-//   console.log(account, password)
+// TODO:how to?
+// export function requestLogin(account, password) {
 //   const data = {
 //     account,
 //     password
@@ -17,6 +16,7 @@ export const requestLogin = params => {
 //     url: '/login',
 //     method: 'post',
 //     auth: data
+//     // data
 //   })
 // }
 

@@ -32,10 +32,8 @@ export default new Vuex.Store({
   },
   actions: {
     login({commit}, user) {
-      console.log('----------',user)
       return new Promise((resolve, reject) => {
         requestLogin(user.account, user.password).then(data => {
-          console.log('-------login in store-----', data)
           commit('SET_TOKEN', data.data['Oauth-Token'])
           setToken(data.data['Oauth-Token'])
           resolve()
@@ -71,7 +69,6 @@ export default new Vuex.Store({
     logout({commit, state}) {
       return new Promise((resolve, reject) => {
         logout().then(data => {
-
           commit('SET_TOKEN', '')
           commit('SET_ACCOUNT', '')
           commit('SET_NAME', '')

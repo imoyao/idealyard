@@ -70,8 +70,23 @@ const router = new Router({
   }
 })
 
-// TODO:限制登录
+// 注册全局钩子拦截导航
+router.beforeEach((to, from, next) =>{
+  const hasToken = sessionStorage.getItem('token')
+  if (!hasToken){
+    if (to.path !== '/login') {
+      return next({path: '/login'})
+    }else{
+      next()
+    }
 
+  }else{
+    if (to.path === '/login'){
+      return next({path:'/'})
+    }
+    next()
+  }
+})
 // router.beforeEach((to, from, next) => {
 //
 //   if (getToken()) {
