@@ -126,6 +126,8 @@ class PostDetail(Resource):
         创建指定id文章
         :return:
         """
+        # 获取post请求参数
+        # https: // blog.csdn.net / longting_ / article / details / 80637002
         post = Article.query.get(post_id)
         if post:
             self.response_obj['error'] = 'Invalid post id.'
