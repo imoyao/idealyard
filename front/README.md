@@ -39,6 +39,13 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 [ECMAScript 6 入门](http://es6.ruanyifeng.com/)
 
 ## TODO
-[x] 参考博客后端
+
+### 登录
+https://segmentfault.com/a/1190000015201803
+https://www.cnblogs.com/herozhou/p/7469667.html
+https://www.cnblogs.com/FarmanKKK/p/8136483.html
+https://www.jianshu.com/p/1210a281b40f
+
+[x] 参考博客后端管理系统
 
 [基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)
