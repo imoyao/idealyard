@@ -3,6 +3,8 @@
     <el-container>
 
       <el-aside class="me-area">
+        <!--TODO:此处获取数据失败时表现怪异-->
+        <p>test  dfdr</p>
         <ul class="me-month-list">
           <li v-for="a in archives" :key="a.year + a.month" class="me-month-item">
             <el-badge :value="a.count">
@@ -60,6 +62,7 @@
     computed: {
       title (){
         return this.currentArchive + ' - 文章归档 - For Fun'
+        // # TODO 组装成的！！！
       },
       currentArchive (){
         if(this.article.query.year && this.article.query.month){
