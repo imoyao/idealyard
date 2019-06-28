@@ -1,8 +1,3 @@
-可参考的一些项目
-
-- [vue-admin](https://github.com/taylorchen709/vue-admin)
-- [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
-
 ## 安装环境依赖
 
 ### 后端

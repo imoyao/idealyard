@@ -35,10 +35,16 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ## 学习
 
 找到一本语法书
+
 [Vue 2.0 的建议学习顺序](https://zhuanlan.zhihu.com/p/23134551)
 [ECMAScript 6 入门](http://es6.ruanyifeng.com/)
 
 ## TODO
+
+- 移动端适配
+  - footer只有半个
+  - 写文章按钮位置奇怪
+- 时间线无法正常显示
 
 ### 登录
 https://segmentfault.com/a/1190000015201803
@@ -46,6 +52,8 @@ https://www.cnblogs.com/herozhou/p/7469667.html
 https://www.cnblogs.com/FarmanKKK/p/8136483.html
 https://www.jianshu.com/p/1210a281b40f
 
-[x] 参考博客后端管理系统
+[ x ] 参考博客后端管理系统
 
-[基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)
+- [基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)
+- [vue-admin](https://github.com/taylorchen709/vue-admin)
+- [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
