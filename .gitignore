@@ -106,5 +106,3 @@ venv.bak/
 node_modules/
 
 .idea/
-# 暂时不添加sql
-*.sql
