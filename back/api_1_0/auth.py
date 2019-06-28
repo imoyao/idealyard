@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import json
 
 from flask import g, jsonify, request
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource
+from sqlalchemy import or_
 
 from back import setting
 from back.models import User
 from . import api
 from .errors import unauthorized, forbidden
-from .utils import jsonify_with_status_code
 
 auth = HTTPBasicAuth()
 
@@ -43,6 +42,7 @@ class ResetPassword(Resource):
     """
     重置密码
     """
+
     def post(self):
         # TODO: 状态码不应该在body中
         data = request.json
@@ -69,21 +69,21 @@ class ResetPassword(Resource):
 
 
 @auth.verify_password
-def verify_password(name_or_token, password):
+def verify_password(account_or_token, password):
     """
     回调函数，验证用户名和密码，if -> True，else False
-    :param name_or_token:用户名或者token
+    :param account_or_token:账号（用户名|邮箱）或者token
     :param password:密码
     :return:
     """
-    print('------00--------', name_or_token)
+    print('------00--------', account_or_token)
     print('------11--------', password)
-    if not name_or_token:
+    if not account_or_token:
         return False
-    # name_or_token = re.sub(r'^"|"$', '', name_or_token)
-    user = User.verify_auth_token(name_or_token)
+    # account_or_token = re.sub(r'^"|"$', '', account_or_token)
+    user = User.verify_auth_token(account_or_token)
     if not user:
-        user = User.query.filter_by(username=name_or_token).first()
+        user = User.query.filter(or_(User.username == account_or_token, User.email == account_or_token)).first()
         if not user or not user.verify_user_password(password):
             return False
     # user对像会被存储到Flask的g对象中

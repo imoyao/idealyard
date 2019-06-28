@@ -122,7 +122,7 @@ engine:InnoDB
 CREATE DATABASE iyblog_dev CHARSET=UTF8;
 
 # 用户初始化
-INSERT INTO `iy_user` VALUES ('1', 'imoyao', '张牧志', '$6$rounds=656000$tIs6tFIsFTmqLpUi$rD2UcO0T7VXsVGeUee11oY6HcxbqluGzAXdUWHCDCpTK8fvsMC5rW8R1ZVhyY912MUK19xcnSqrYp88eKsuBH1', 'emailme8@163.com','中国·北京','凡人皆需侍奉！', '2018-01-22 17:14:49','2019-06-24 17:14:49', '1', null)
+INSERT INTO `iy_user` VALUES ('1', 'imoyao', '张牧志', '$6$rounds=656000$tIs6tFIsFTmqLpUi$rD2UcO0T7VXsVGeUee11oY6HcxbqluGzAXdUWHCDCpTK8fvsMC5rW8R1ZVhyY912MUK19xcnSqrYp88eKsuBH1', 'emailme8@163.com','中国·北京','凡人皆需侍奉！', '2018-01-22 17:14:49','2019-06-24 17:14:49', '1', null);
 
 # 文章初始化
 

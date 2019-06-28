@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import VueRouter from 'vue-router'
 import Home from '@/Home'
 
 import {Message} from 'element-ui';
@@ -9,9 +9,11 @@ import store from '@/store'
 
 import {getToken} from '@/request/token'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-const router = new Router({
+const router = new VueRouter({
+  // https://router.vuejs.org/zh/guide/essentials/history-mode.html#html5-history-%E6%A8%A1%E5%BC%8F
+  mode: 'history',
   routes: [
     {
       path: '/write/:id?',
@@ -72,8 +74,6 @@ const router = new Router({
 
 // 注册全局钩子拦截导航
 router.beforeEach((to, from, next) =>{
-  // const hasToken = sessionStorage.getItem('token')
-  console.log('-------',getToken())
   if (getToken()) {
     if (to.path === '/signin') {
       next({path: '/'})
