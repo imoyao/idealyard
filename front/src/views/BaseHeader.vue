@@ -42,12 +42,17 @@
           </template>
 
           <template v-else>
-            <el-submenu index>
-              <template slot="title">
-                <img class="me-header-picture" :src="user.avatar"/>
-              </template>
-              <el-menu-item index @click="logout"><i class="el-icon-back"></i>退出</el-menu-item>
-            </el-submenu>
+            <el-col :span="4" class="userinfo">
+              <el-dropdown trigger="click">
+                <img class="me-header-picture" :src="user.avatar" />
+                <!--<span class="el-dropdown-link userinfo-inner"><img class="me-header-picture" :src="user.avatar" /></span>-->
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item><i class="iconfont icon-bell-ring"></i>我的消息</el-dropdown-item>
+                  <el-dropdown-item><i class="iconfont icon-icon-test"></i>设置</el-dropdown-item>
+                  <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout"></i>退出</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </el-col>
           </template>
         </el-menu>
       </el-col>
@@ -115,7 +120,12 @@
     position: fixed;
     z-index: 1024;
     min-width: 100%;
-    box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
+    /*box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);*/
+  }
+  userinfo {
+    text-align: right;
+    padding-right: 35px;
+    float: right;
   }
 
   .me-title {
@@ -139,5 +149,7 @@
     border-radius: 50%;
     vertical-align: middle;
     background-color: #5fb878;
+    cursor: pointer;
+    margin: 11px;
   }
 </style>

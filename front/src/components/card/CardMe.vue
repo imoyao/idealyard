@@ -1,38 +1,79 @@
 <template>
   <el-card>
-    <h1 class="me-author-name">shimh</h1>
-    <div class="me-author-description">
-      <span><i class="el-icon-location-outline"></i> &nbsp;山东&济南</span>
-      <span><i class="me-icon-job"></i> &nbsp;java开发工程师</span>
+    <div class="me-author-name">
+      <h1 >{{ profile.username }}</h1>
+      <p class="slogan-declare" align="center">
+        <span style="font-size:16px"><i class="iconfont icon-heart"></i>Valar Dohaeris.</span>
+      </p>
     </div>
-    <div class="me-author-tool">
-      <i @click="showTool(qq)" :title="qq.title" class="me-icon-QQ"></i>
-      <i @click="showTool(github)" :title="github.title" class="me-icon-github"></i>
+    <el-divider></el-divider>
+    <div class="profile-detail">
+      <span><i class="iconfont icon-location"></i>{{ profile.location }}</span>
+      &nbsp;
+      <span><i class="iconfont icon-company"></i>{{profile.company }}</span>
+      &nbsp;
+      <span><i class="iconfont icon-gongwenbao-copy"></i>{{profile.occupation }}</span>
+    </div>
+
+    <div class="profile-detail">
+      <i @click="showTool(qq)" :title="qq.title" class="iconfont icon-qq"></i>
+      <i @click="showTool(github)" :title="github.title" class="iconfont icon-github"></i>
+      <i @click="showTool(douban)" :title="douban.title" class="iconfont icon-movie"></i>
+      <i @click="showTool(zhihu)" :title="zhihu.title" class="iconfont icon-zhihu"></i>
+      <i @click="showTool(email)" :title="email.title" class="iconfont icon-email"></i>
     </div>
   </el-card>
 
 </template>
 
 <script>
+  import {isUrl} from '@/utils/regexr'
   export default {
     name: 'CardMe',
     data() {
       return {
-        qq: {title: 'QQ', message: '919431514'},
+        profile: {
+          'username': '张牧志',
+          'location': '鹅城',
+          'company': '讲武堂',
+          'occupation': '麻匪',
+        },
+        qq: {title: 'QQ', message: 'NDQ1NTY3ODg5'},
         github: {
-          title: 'github',
-          message: '<a target="_blank" href="https://github.com/shimh-develop">https://github.com/shimh-develop</a>'
+          title: 'Github',
+          message: 'https://github.com/imoyao'
+        },
+        douban: {
+          title: 'Movie',
+          message: 'https://movie.douban.com/people/imoyao'
+        },
+        zhihu: {
+          title: 'Zhihu',
+          message: 'https://www.zhihu.com/people/imoyao'
+        },
+        email: {
+          title: 'Email',
+          message: 'mailto:immoyao@gmail.com'
         }
       }
     },
     methods: {
-      showTool(tool) {
-        this.$message({
-          duration: 0,
-          showClose: true,
+      showTool(testData) {
+        // 如果是链接则跳转，如果是string则显示
+        const testStr = testData.message
+        if (isUrl(testStr)) {
+          window.open(testStr)
+        }
+        else{
+          const _title = testData.title
+          this.$notify.info({
+          title: _title,
           dangerouslyUseHTMLString: true,
-          message: '<strong>' + tool.message + '</strong>'
+          message: '<strong>' + testStr + '</strong>',
+          duration: 2000,
+          offset: 150
         });
+        }
       }
     }
   }
@@ -45,22 +86,15 @@
     border-bottom: 1px solid #5FB878;
   }
 
-  .me-author-description {
-    padding: 8px 0;
-  }
-
-  .me-icon-job {
-    padding-left: 16px;
-  }
-
-  .me-author-tool {
+  .profile-detail {
     text-align: center;
     padding-top: 10px;
+    font-size: 15px;
   }
 
-  .me-author-tool i {
+  .profile-detail>i {
     cursor: pointer;
     padding: 4px 10px;
-    font-size: 30px;
+    font-size: 20px;
   }
 </style>

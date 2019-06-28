@@ -19,7 +19,7 @@
         <!--<i class="el-icon-caret-top"></i> 20-->
         <!--</a>-->
         <a class="me-view-comment-tool" @click="showComment(-1)">
-          <i class="me-icon-comment"></i>&nbsp; 评论
+          <i class="iconfont icon-comment"></i>&nbsp; 评论
         </a>
       </div>
 
@@ -35,7 +35,7 @@
           <div class="me-view-meta">
             <span style="padding-right: 10px">{{c.createDate | format}}</span>
             <a class="me-view-comment-tool" @click="showComment(c.id, c.author)">
-              <i class="me-icon-comment"></i>&nbsp;回复
+              <i class="iconfont icon-comment"></i>&nbsp;回复
             </a>
           </div>
 

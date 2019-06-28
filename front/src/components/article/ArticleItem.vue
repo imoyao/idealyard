@@ -5,7 +5,7 @@
       <a @click="view(id)" class="me-article-title">{{title}}</a>
       <el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>
       <span class="me-pull-right me-article-count">
-	    	<i class="me-icon-comment"></i>&nbsp;{{commentCounts}}
+	    	<i class="iconfont icon-comment"></i>&nbsp;{{commentCounts}}
 	    </span>
       <span class="me-pull-right me-article-count">
 	    	<i class="el-icon-view"></i>&nbsp;{{viewCounts}}
@@ -17,7 +17,7 @@
     </div>
     <div class="me-article-footer">
 	  	<span class="me-article-author">
-	    	<i class="me-icon-author"></i>&nbsp;{{author.nickname}}
+	    	<i class="iconfont icon-user"></i>&nbsp;{{author.nickname}}
 	    </span>
 
       <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success">{{t.tagname}}</el-tag>
