@@ -54,6 +54,70 @@ def post_detail(post_info):
     return json_post
 
 
+def makeup_post_item_for_index(posts):
+    """
+    组装首页展示需要的数据
+    :return:
+    """
+    '''
+    [{
+    "author":{
+        "nickname":"imoyao"
+    },
+    "commentCounts":0,
+    "createDate":"2019.02.28 15:37",
+    "id":28,
+    "summary":"sample summary",
+    "tags":[
+        {
+            "tagname":"Python"
+        }
+    ],
+    "title":"tt",
+    "viewCounts":188,
+    "weight":0
+    },
+    ……
+    {……}
+    ]
+    '''
+    post_list = []
+    shown_user_info = dict()
+
+    for post_item in posts:
+        user_id = post_item.author_id
+        str_user_id = str(user_id) if isinstance(user_id, int) else user_id
+        already_got = shown_user_info.get(str_user_id)
+        if already_got:
+            user_info = shown_user_info[str_user_id]
+        else:
+            user_info = user_info_for_post(user_id)
+            shown_user_info[str_user_id] = user_info
+        username = user_info['nickname']
+        post_id = post_item.post_id
+        tag_infos = tags_for_post(post_id)
+        tags = []
+        if tag_infos:
+            tags = [{'tagname': tag.get('tagname') or ''} for tag in tag_infos]
+        post_info = {
+            "author": {
+                "nickname": username
+            },
+            # TODO: 继续开发
+            "commentCounts": 0,
+            "createDate": post_item.create_date,
+            "id": post_item.post_id,
+            # TODO: 继续开发
+            "summary": "sample summary",
+            "tags": tags,
+            "title": post_item.title,
+            "viewCounts": post_item.view_counts,
+            "weight": post_item.top_it
+        }
+        post_list.append(post_info)
+    return post_list
+
+
 def user_info_for_post(user_id):
     """
     文章作者信息

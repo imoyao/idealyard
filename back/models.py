@@ -107,6 +107,7 @@ class Article(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
     view_counts = db.Column(db.Integer, comment='文章阅读数')
+    # TODO:rename 2 >>> weight
     top_it = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')

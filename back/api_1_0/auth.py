@@ -8,7 +8,7 @@ from sqlalchemy import or_
 
 from back import setting
 from back.models import User
-from . import api
+from . import api_bp
 from .errors import unauthorized, forbidden
 
 auth = HTTPBasicAuth()
@@ -96,7 +96,7 @@ def auth_error():
     return unauthorized('Invalid credentials')
 
 
-@api.before_request
+@api_bp.before_request
 @auth.login_required
 def before_request():
     """

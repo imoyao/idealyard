@@ -7,7 +7,7 @@ from flask_restful import Resource
 
 from back.models import User
 from back.models import db
-from .utils import jsonify_with_status_code
+from .utils import jsonify_with_args
 
 
 def abort_if_not_exist(user_id):
@@ -42,4 +42,4 @@ class CGUser(Resource):
         user.hash_password(password)
         db.session.add(user)
         db.session.commit()
-        return jsonify_with_status_code({'username': user.username}, 201)
+        return jsonify_with_args({'username': user.username}, 201)

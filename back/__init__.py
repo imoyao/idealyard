@@ -3,7 +3,6 @@
 
 from flask import Flask
 from flask_cors import CORS
-from flask_restful import Api
 from werkzeug.utils import import_string
 
 from .api_1_0 import auth
@@ -12,16 +11,16 @@ from .api_1_0 import users
 from .config import config
 # from .api_1_0.books import Books
 from .models import db
+from .api_1_0 import api
 
 BLUEPRINTS = [
     'mains:bp',  # add bp here
     # 'tools:bp',
     # 'settings:bp',
-    'api_1_0:api',
+    'api_1_0:api_bp',
 ]
 
 cors = CORS(resources=r'/*')
-api = Api()
 
 
 def add_api():

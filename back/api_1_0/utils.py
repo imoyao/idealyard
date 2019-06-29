@@ -4,12 +4,13 @@
 from flask import make_response, jsonify
 
 
-def jsonify_with_status_code(data, code=200):
+def jsonify_with_args(data, code=200, *args):
     """
-    返回json数据同时修改返回状态码
+    返回json数据同时修改返回状态码,etc
     :param data:
     :param code:
+    :param args:
     :return:
     """
     assert isinstance(data, dict)
-    return make_response(jsonify(data), code)
+    return make_response(jsonify(data), code, *args)
