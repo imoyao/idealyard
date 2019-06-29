@@ -3,7 +3,10 @@
     <div class="me-article-header">
 
       <a @click="view(id)" class="me-article-title">{{title}}</a>
-      <el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>
+      <!--<el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>-->
+      <span class="me-article-icon" type="text">
+        <i class="iconfont icon-pushpin"></i>
+      </span>
       <span class="me-pull-right me-article-count">
 	    	<i class="iconfont icon-comment"></i>&nbsp;{{commentCounts}}
 	    </span>
@@ -69,7 +72,8 @@
   }
 
   .me-article-icon {
-    padding: 3px 8px;
+    padding: 3px 3px;
+    color:red;
   }
 
   .me-article-count {
