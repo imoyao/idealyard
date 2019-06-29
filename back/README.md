@@ -23,3 +23,8 @@ FLASK_DEBUG = 1
 In folder XXX/idealyard/back
 ssh://root@192.168.*.*:22/home/*/envs/*/bin/python -u -m flask run --host=0.0.0.0
 ```
+## TODO
+每次清空数据库后再次重启服务，报错：
+```bash
+AssertionError: View function mapping is overwriting an existing endpoint function: auth
+```
