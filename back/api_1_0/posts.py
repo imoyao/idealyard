@@ -9,6 +9,7 @@ from flask_restful import Resource
 
 from back import setting
 from .errors import forbidden
+from .controllers import post_info_json, post_detail
 from back.models import Article
 
 
@@ -55,7 +56,7 @@ class Post(Resource):
     '''
 
     def __init__(self):
-        self.response_obj = {'status': 'success', 'code': 0}
+        self.response_obj = {'success': True, 'code': 0}
 
     def get(self):
         # 请求数据
@@ -72,12 +73,13 @@ class Post(Resource):
             if new:
                 print('find newest post.')
                 posts = Article.query.order_by(Article.create_date.desc()).limit(limit_count).all()
-                print('----------', posts)
-                self.response_obj['data'] = posts
+                ret_data = post_info_json(posts)
+                self.response_obj['data'] = ret_data
             # GET ?hot=true&limit=5
             elif hot:
                 posts = Article.query.order_by(Article.view_counts.desc()).limit(limit_count).all()
-                self.response_obj['data'] = posts
+                ret_data = post_info_json(posts)
+                self.response_obj['data'] = ret_data
             else:
                 # ?page=1&per_page=10
                 page = args.get('page', 1, type=int)
@@ -103,13 +105,13 @@ class Post(Resource):
             return jsonify(self.response_obj)
         else:
             self.response_obj['code'] = 1
-            self.response_obj['status'] = 'failure'
+            self.response_obj['success'] = False
             return self.response_obj, 500
 
 
 class PostDetail(Resource):
     def __init__(self):
-        self.response_obj = {'status': 'success', 'code': 0}
+        self.response_obj = {'success': True, 'code': 0}
 
     def get(self, post_id):
         """
@@ -118,7 +120,9 @@ class PostDetail(Resource):
         :return: json,
         """
         post = abort_if_not_exist(post_id)
-        self.response_obj['data'] = post
+        post_info = post_detail(post)
+        print('-----post', post_info)
+        self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
     def post(self, post_id):
@@ -133,6 +137,7 @@ class PostDetail(Resource):
             self.response_obj['error'] = 'Invalid post id.'
             self.response_obj['data'] = ''
             self.response_obj['msg'] = 'Create an exist post is impossible.'
+            self.response_obj['success'] = False
             return jsonify(self.response_obj, 500)
         else:
             json_data = request.get_json()

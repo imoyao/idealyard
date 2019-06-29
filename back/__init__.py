@@ -14,7 +14,7 @@ from .config import config
 from .models import db
 
 BLUEPRINTS = [
-    'main:bp',  # add bp here
+    'mains:bp',  # add bp here
     # 'tools:bp',
     # 'settings:bp',
     'api_1_0:api',

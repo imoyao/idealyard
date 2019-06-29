@@ -5,9 +5,11 @@
 定义所有需要用到的表结构
 """
 from datetime import datetime
+import random
 
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context
@@ -24,6 +26,7 @@ class User(db.Model):
     __tablename__ = 'iy_user'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
+    # 因为有用户名登录选项，所以此处必须唯一
     username = db.Column(db.String(64), index=True, unique=True, comment='用户名')
     name = db.Column(db.String(64), comment='真实姓名')
     password = db.Column(db.String(128), comment='密码，加密保存')
@@ -84,6 +87,14 @@ class User(db.Model):
         return user
 
 
+# Create M2M table
+# 标签和文章为多对多关系，创建中间表
+posts_tags_table = db.Table('post_tags', db.Model.metadata,
+                            db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
+                            db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
+                            )
+
+
 class Article(db.Model):
     """
     文章表结构
@@ -92,14 +103,16 @@ class Article(db.Model):
     __table_args__ = {'extend_existing': True}
     post_id = db.Column(db.Integer, primary_key=True, comment='主键')
     title = db.Column(db.String(64), comment='文章标题')
+    identifier = db.Column(db.Integer, unique=True, comment='文章标识码')
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
-    body_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='文章结构体id')
+    body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
     view_counts = db.Column(db.Integer, comment='文章阅读数')
     top_it = db.Column(db.Integer, comment='置顶功能')
-    category_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), comment='分类')
+    category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
     update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
                             comment='文章更新时间')
+    tags = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'))
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -110,6 +123,17 @@ class Article(db.Model):
         if body is None or body == '':
             raise ValidationError('post dose not have a body.')
         return Article(body=body)
+
+    def post_identifier(self):
+        """
+        生成新的文章标识码
+        规则：找到现有最大值，然后加随机数
+        :return: int
+        """
+        max_num = db.session.query(func.max(self.identifier)).one().identifier
+        print('max_num', max_num)
+        increase_int = random.randrange(1, 5)
+        return max_num + increase_int
 
     @staticmethod
     def update_post_by_id(post_id, post_info):
@@ -161,7 +185,9 @@ class Tag(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     tag_name = db.Column(db.String(64), comment='标签名称')
-    article_id = db.Column(db.Integer, db.ForeignKey('iy_article.post_id'), comment='文章编号')
+
+    # useless
+    # article_id = db.Column(db.Integer, db.ForeignKey('iy_article.post_id'), comment='文章编号')
 
     def __repr__(self):
         return '<Tag %r>' % self.tag_name
@@ -188,7 +214,7 @@ class SysLog(db.Model):
     __tablename__ = 'iy_syslog'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
-    op_ip = db.Column(db.String(64), comment='好友名称')
+    op_ip = db.Column(db.String(64), comment='操作者名称')
     operator = db.Column(db.String(64), comment='操作者')
     op_module = db.Column(db.String(255), comment='操作模块')
     operation = db.Column(db.String(64), comment='操作事件')
@@ -200,7 +226,7 @@ class SysLog(db.Model):
 
 class Friend(db.Model):
     """
-    操作日志 表结构
+    友链 表结构
     """
     __tablename__ = 'iy_friend'
     __table_args__ = {'extend_existing': True}

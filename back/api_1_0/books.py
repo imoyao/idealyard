@@ -44,7 +44,7 @@ class Books(Resource):
     ]
 
     def __init__(self):
-        self.response_obj = {'status': 'success'}
+        self.response_obj = {'success': True, 'code': 0}
 
     def get(self, book_id=None):
         if book_id:
