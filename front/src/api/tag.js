@@ -16,8 +16,11 @@ export function reqAllTagsDetail() {
 
 export function reqHotTags() {
   return request({
-    url: '/tags/hot',
+    url: '/tags',
     method: 'get',
+    params: {
+      hot: true,
+    }
   })
 }
 
