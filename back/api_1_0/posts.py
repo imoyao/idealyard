@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/24 16:40
+"""
+定义所有跟文章相关的api接口
+"""
 import json
 
 from flask import g, jsonify, request
@@ -9,7 +12,7 @@ from flask_restful import Resource
 
 from back import setting
 from .errors import forbidden
-from .controllers import post_info_json, post_detail, makeup_post_item_for_index
+from back.controller.posts import post_info_json, post_detail, makeup_post_item_for_index
 from back.models import Article
 from . import api
 from .utils import jsonify_with_args

@@ -89,6 +89,7 @@ class User(db.Model):
 
 # Create M2M table
 # 标签和文章为多对多关系，创建中间表
+# TODO:rename >> iy_post_tags
 posts_tags_table = db.Table('post_tags', db.Model.metadata,
                             db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
                             db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
@@ -107,8 +108,7 @@ class Article(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
     view_counts = db.Column(db.Integer, comment='文章阅读数')
-    # TODO:rename 2 >>> weight
-    top_it = db.Column(db.Integer, comment='置顶功能')
+    weight = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
     update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
@@ -147,7 +147,7 @@ class Article(db.Model):
         post_obj.author_id = post_info['author_id']
         post_obj.body_id = post_info['body_id']
         post_obj.view_counts = post_info['view_counts']
-        post_obj.top_it = post_info['top_it']
+        post_obj.weight = post_info['weight']
         post_obj.category_id = post_info['category_id']
         post_obj.create_date = post_info['create_date']
         db.session.add(post_obj)

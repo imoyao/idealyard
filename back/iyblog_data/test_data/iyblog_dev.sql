@@ -30,7 +30,7 @@ CREATE TABLE `iy_article` (
   `author_id` int(11) DEFAULT NULL COMMENT '作者id',
   `body_id` int(11) DEFAULT NULL COMMENT '文章结构体id',
   `view_counts` int(11) DEFAULT NULL COMMENT '文章阅读数',
-  `top_it` int(11) DEFAULT NULL COMMENT '置顶功能',
+  `weight` int(11) DEFAULT NULL COMMENT '置顶功能',
   `category_id` int(11) DEFAULT NULL COMMENT '分类',
   `create_date` datetime DEFAULT NULL COMMENT '文章创建时间',
   `update_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '文章更新时间',
@@ -167,10 +167,7 @@ DROP TABLE IF EXISTS `iy_tag`;
 CREATE TABLE `iy_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tag_name` varchar(64) DEFAULT NULL COMMENT '标签名称',
-  `article_id` int(11) DEFAULT NULL COMMENT '文章编号',
-  PRIMARY KEY (`id`),
-  KEY `article_id` (`article_id`),
-  CONSTRAINT `iy_tag_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `iy_article` (`post_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -219,29 +216,29 @@ INSERT INTO `iy_user` VALUES (1,'imoyao','张牧志','$6$rounds=656000$tIs6tFIsF
 UNLOCK TABLES;
 
 --
--- Table structure for table `post_tags`
+-- Table structure for table `iy_post_tags`
 --
 
-DROP TABLE IF EXISTS `post_tags`;
+DROP TABLE IF EXISTS `iy_post_tags`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `post_tags` (
+CREATE TABLE `iy_post_tags` (
   `post_id` int(11) DEFAULT NULL,
   `tag_id` int(11) DEFAULT NULL,
   KEY `post_id` (`post_id`),
   KEY `tag_id` (`tag_id`),
-  CONSTRAINT `post_tags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `iy_article` (`post_id`),
-  CONSTRAINT `post_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `iy_tag` (`id`)
+  CONSTRAINT `iy_post_tags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `iy_article` (`post_id`),
+  CONSTRAINT `iy_post_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `iy_tag` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `post_tags`
+-- Dumping data for table `iy_post_tags`
 --
 
-LOCK TABLES `post_tags` WRITE;
-/*!40000 ALTER TABLE `post_tags` DISABLE KEYS */;
-/*!40000 ALTER TABLE `post_tags` ENABLE KEYS */;
+LOCK TABLES `iy_post_tags` WRITE;
+/*!40000 ALTER TABLE `iy_post_tags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `iy_post_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

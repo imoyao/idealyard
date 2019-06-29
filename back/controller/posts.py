@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Created by Administrator at 2019/6/29 6:12
-from flask import jsonify
+# Created by Administrator at 2019/6/29 15:18
 from back.models import User, ArticleBody, Article, Category
 
 
@@ -49,7 +48,7 @@ def post_detail(post_info):
         "tags": tag_infos,
         "title": post_info.title,
         "viewCounts": post_info.view_counts,
-        "weight": post_info.top_it,
+        "weight": post_info.weight,
     }
     return json_post
 
@@ -98,7 +97,7 @@ def makeup_post_item_for_index(posts):
         tag_infos = tags_for_post(post_id)
         tags = []
         if tag_infos:
-            tags = [{'tagname': tag.get('tagname') or ''} for tag in tag_infos]
+            tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]
         post_info = {
             "author": {
                 "nickname": username
@@ -112,7 +111,7 @@ def makeup_post_item_for_index(posts):
             "tags": tags,
             "title": post_item.title,
             "viewCounts": post_item.view_counts,
-            "weight": post_item.top_it
+            "weight": post_item.weight
         }
         post_list.append(post_info)
     return post_list
@@ -172,10 +171,4 @@ def tags_for_post(post_id):
     """
     article_obj = Article.query.filter(Article.post_id == post_id).first()
     tags = article_obj.tags
-    tag_infos = []
-    for tag_item in tags:
-        tag = dict()
-        tag['id'] = tag_item.id
-        tag['tagname'] = tag_item.tag_name
-        tag_infos.append(tag)
-    return tag_infos
+    return [{'id': tag_item.id, 'tag_name': tag_item.tag_name} for tag_item in tags]
