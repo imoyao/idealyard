@@ -23,11 +23,15 @@ def post_info_json(posts):
 
 
 def post_detail(post_info):
+    """
+    用户点击文章链接跳详情页的数据接口，返回在这里找
+    :param post_info:
+    :return:
+    """
     user_id = post_info.author_id
     user_info = user_info_for_post(user_id)
     body_id = post_info.body_id
     body_info = content_for_post(body_id)
-
     category_id = post_info.category_id
     category_info = category_for_post(category_id)
     post_id = post_info.post_id
@@ -40,7 +44,7 @@ def post_detail(post_info):
         "commentCounts": 0,
         "createDate": post_info.create_date,
         "id": post_id,
-        # TODO:摘要，暂无；感觉这个api不需要这个参数？？？
+        # TODO:摘要，暂无；感觉这个api不需要该参数？？？
         # "summary": "本节将介绍如何在项目中使用 Element。",
         "tags": tag_infos,
         "title": post_info.title,
@@ -51,8 +55,12 @@ def post_detail(post_info):
 
 
 def user_info_for_post(user_id):
+    """
+    文章作者信息
+    :param user_id: str(number),author_id
+    :return: dict,
+    """
     user = User.query.get(user_id)
-
     if user:
         return {'avatar': user.avatar_hash,
                 'id': user_id,
@@ -61,7 +69,12 @@ def user_info_for_post(user_id):
 
 
 def content_for_post(body_id):
-    # TODO: 因为此处返回表所有的数据，所以是否可以直接返回，不需要手动组装（只是修改前端获取的字段键）
+    """
+    获取文章正文内容
+    TODO: 因为此处返回表所有的数据，所以是否可以直接返回，不需要手动组装（只是修改前端获取的字段键）
+    :param body_id: str(number)
+    :return: dict
+    """
     body = ArticleBody.query.get(body_id)
     # https://stackoverflow.com/questions/5022066/how-to-serialize-sqlalchemy-result-to-json
     print('see what get--------------', body)
@@ -73,6 +86,11 @@ def content_for_post(body_id):
 
 
 def category_for_post(category_id):
+    """
+    文章归档信息
+    :param category_id: str(number)
+    :return: dict
+    """
     data = Category.query.get(category_id)
     if data:
         return {'categoryname': data.category_name,
