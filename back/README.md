@@ -28,3 +28,4 @@ ssh://root@192.168.*.*:22/home/*/envs/*/bin/python -u -m flask run --host=0.0.0.
 ```bash
 AssertionError: View function mapping is overwriting an existing endpoint function: auth
 ```
+- 后端存的日期格式不对，显示的是英文格式的。
