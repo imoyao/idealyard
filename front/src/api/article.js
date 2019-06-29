@@ -42,8 +42,9 @@ export function reqNewArtices() {
 }
 
 export function viewArticle(id) {
+  console.log('viewArticle------------',id)
   return request({
-    url: `/articles/view/${id}`,
+    url: `/articles/${id}`,
     method: 'get'
   })
 }
