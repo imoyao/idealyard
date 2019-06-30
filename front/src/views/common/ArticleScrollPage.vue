@@ -76,8 +76,8 @@
         this.$notify({
           iconClass: 'iconfont icon-sound',
           customClass: 'no-enough',
-          title: '我是有底线的',
-          message: '这谁顶得住哇？！',
+          title: '我是有底线的🤣',
+          message: '🤦‍♂ 这谁顶得住哇？！',
           position: 'bottom-right',
           offset: 50
         });
