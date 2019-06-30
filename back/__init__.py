@@ -5,12 +5,9 @@ from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
 
-from .api_1_0 import api
-from .api_1_0 import auth
-from .api_1_0 import posts
-from .api_1_0 import users
-from .api_1_0 import tags
-from .config import config
+from back.api_1_0 import api, auth, posts, users, tags, archives
+
+from back.config import config
 # from .api_1_0.books import Books
 from .models import db
 
@@ -32,10 +29,12 @@ def add_api():
     # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
-    api.add_resource(posts.Post, '/api/articles')
+    api.add_resource(posts.PostApi, '/api/articles')
     api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')
-    api.add_resource(tags.TagApi, '/api/tags')
-    api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
+    api.add_resource(tags.TagApi, '/api/tags','/api/tags/<int:tag_id>')
+    # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
+    api.add_resource(archives.Archives, '/api/archives')
+    # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
 
     # api.add_resource(Setpwd, '/api/setpwd', )
@@ -63,4 +62,5 @@ def init_db(app):
     初始化db
     :return:
     """
+    # db.drop_all()
     db.create_all(app=app)
