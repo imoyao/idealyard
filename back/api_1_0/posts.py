@@ -12,7 +12,7 @@ from flask_restful import Resource
 
 from back import setting
 from .errors import forbidden
-from back.controller.posts import post_info_json, post_detail, makeup_post_item_for_index
+from back.controller import posts
 from back.models import Article
 from . import api
 from .utils import jsonify_with_args
@@ -29,7 +29,7 @@ def abort_if_not_exist(post_id):
     return post
 
 
-class Post(Resource):
+class PostApi(Resource):
     """
     获取文章列表（分页展示及条件查询）
     """
@@ -55,69 +55,86 @@ class Post(Resource):
     ?limit=10：指定返回记录的数量
     ?offset=10：指定返回记录的开始位置。
     ?page=2&per_page=100：指定第几页，以及每页的记录数。
-    ?sortby=name&order=asc：指定返回结果按照哪个属性排序，以及排序顺序。
+    ?order_by=name&order=asc：指定返回结果按照哪个属性排序，以及排序顺序。
     ?animal_type_id=1：指定筛选条件
     参数的设计允许存在冗余，即允许API路径和URL参数偶尔有重复。比如，GET /zoo/ID/animals 与 GET /animals?zoo_id=ID 的含义是相同的。
     '''
 
     def __init__(self):
-        self.response_obj = {'success': True, 'code': 0}
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self):
         # 请求数据
         args = request.args
-
+        print([_ for _ in args])
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
+            # ?new=true
             new = args.get('new', False, type=bool)
+            # ?hot=true
             hot = args.get('hot', False, type=bool)
-            order = args.get('order')  # TODO:暂时默认是降序
+            # ?order = asc
+            order = args.get('order')  # 默认降序
+            order_by_desc = order and order == 'asc' or True  # 暂时默认是降序
+            # ?limit=5
             limit_count = int(args.get('limit')) if args.get('limit') else setting.LIMIT_NEW_POST_COUNT
-            # ?new=true&limit=5
-            if new:
-                posts = Article.query.order_by(Article.create_date.desc()).limit(limit_count).all()
-                ret_data = post_info_json(posts)
-                self.response_obj['data'] = ret_data
-            # ?hot=true&limit=5
-            elif hot:
-                posts = Article.query.order_by(Article.view_counts.desc()).limit(limit_count).all()
-                ret_data = post_info_json(posts)
-                self.response_obj['data'] = ret_data
-            else:
-                # ?page=1&per_page=10?sortby=name&order=asc
+            # 最新最热走limit逻辑，截取而不是分页
+            page, per_page = (None,) * 2
+            order_by = ''
+            # 如果是最新或者最热，表示order_by已经传值，不能重新赋值！
+            if not (new or hot):
+                # ?page=1&per_page=10
                 page = args.get('page', 1, type=int)
                 # TODO:变量来自于setting还是config应该统一！！！
                 per_page = args.get('per_page', type=int) or current_app.config['FLASKY_POSTS_PER_PAGE']
-                sortby = args.get('sortby', 'create_date', type=str)
-                # TODO:目前没有传值（此处需要把置顶的文章先放进去）
-                pagination = Article.query.order_by(Article.create_date.desc()).paginate(
-                    page, per_page=per_page, error_out=False
-                )
-                if pagination:
-                    posts = pagination.items
-                    prev_page = None
-                    # https://stackoverflow.com/questions/24223628/how-do-i-use-flask-url-for-with-flask-restful
-                    if pagination.has_prev:
-                        prev_page = api.url_for(Post, page=page - 1, per_page=per_page, _external=True)
-                    next_page = None
-                    if pagination.has_next:
-                        next_page = api.url_for(Post, page=page + 1, per_page=per_page, _external=True)
-
-                    ret_data = makeup_post_item_for_index(posts)
-                    self.response_obj['data'] = ret_data
+                # ?order_by=create_date
+                order_by = args.get('order_by', 'create_date', type=str)
+            print('order-by', order_by)
+            # ?new=true&limit=5
+            query_data = None
+            if new or order_by == 'create_date':
+                query_data = posts.posts_order_by_date(desc=order_by_desc)
+            # ?hot=true&limit=5
+            elif hot or order_by == 'view_counts':
+                query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
+            # print(query_data_sql)
+            if query_data:
+                # ?page=1&per_page=10?order_by=name&order=asc
+                if all([page, per_page]):
+                    pagination = posts.make_paginate(query_data, page=page, per_page=per_page)
+                    prev_page, next_page, data = self.parse_pagination(pagination, page=page, per_page=per_page)
+                    self.response_obj['data'] = data
                     self.response_obj['prev'] = prev_page
                     self.response_obj['next'] = next_page
                     self.response_obj['total'] = pagination.total
+                else:
+                    data = posts.make_limit(query_data, limit_count)
+                    self.response_obj['data'] = data
             return jsonify(self.response_obj)
         else:
             self.response_obj['code'] = 1
             self.response_obj['success'] = False
+            self.response_obj['msg'] = 'No args.'
             return jsonify_with_args(self.response_obj, 400)
+
+    @staticmethod
+    def parse_pagination(pagination, page=None, per_page=None):
+        _posts_list = pagination.items
+        prev_page = None
+        # https://stackoverflow.com/questions/24223628/how-do-i-use-flask-url-for-with-flask-restful
+        if pagination.has_prev:
+            prev_page = api.url_for(PostApi, page=page - 1, per_page=per_page, _external=True)
+        next_page = None
+        if pagination.has_next:
+            next_page = api.url_for(PostApi, page=page + 1, per_page=per_page, _external=True)
+
+        data = posts.makeup_post_item_for_index(_posts_list)
+        return prev_page, next_page, data
 
 
 class PostDetail(Resource):
     def __init__(self):
-        self.response_obj = {'success': True, 'code': 0}
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self, post_id):
         """
@@ -126,7 +143,7 @@ class PostDetail(Resource):
         :return: json,
         """
         post = abort_if_not_exist(post_id)
-        post_info = post_detail(post)
+        post_info = posts.post_detail(post)
         self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
