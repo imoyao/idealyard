@@ -67,8 +67,9 @@
         }
         else{
           const _title = testData.title
-          this.$notify.info({
+          this.$message({
           title: _title,
+          position:'top-right',
           dangerouslyUseHTMLString: true,
           message: '<strong>' + testStr + '</strong>',
           duration: 2000,

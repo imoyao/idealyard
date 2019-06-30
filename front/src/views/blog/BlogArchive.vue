@@ -1,24 +1,24 @@
 <template>
   <div v-title :data-title="title">
-    <el-container>
+    <el-container >
+        <el-aside class="me-area" v-if="archives">
+          <!--TODO:此处获取数据失败时表现怪异-->
+          <p></p>
+          <ul class="me-month-list">
+            <li v-for="( a, index ) in archives" :key="index" class="me-month-item">
+              <el-badge :value="a.count">
+                <el-button @click="changeArchive(a.year, a.month)" size="small">{{a.year +'年' + a.month + '月'}}
+                </el-button>
+              </el-badge>
+            </li>
+          </ul>
 
-      <el-aside class="me-area">
-        <!--TODO:此处获取数据失败时表现怪异-->
-        <p>test  dfdr</p>
-        <ul class="me-month-list">
-          <li v-for="a in archives" :key="a.year + a.month" class="me-month-item">
-            <el-badge :value="a.count">
-              <el-button @click="changeArchive(a.year, a.month)" size="small">{{a.year +'年' + a.month + '月'}}
-              </el-button>
-            </el-badge>
-          </li>
-        </ul>
-
-      </el-aside>
-
+        </el-aside>
 
       <el-main class="me-articles">
         <div class="me-month-title">{{currentArchive}}</div>
+        <!--TODO:如果去掉注释me-area，此处表现怪异-->
+        <!--没有的时候，应该在此处显示内容-->
 
         <article-scroll-page v-bind="article"></article-scroll-page>
 
@@ -65,15 +65,21 @@
         // # TODO 组装成的！！！
       },
       currentArchive (){
-        if(this.article.query.year && this.article.query.month){
+        // 获取为空
+        if (this.archives.length===0){
+          return 'Oh no 😢'
+        } else if (this.article){
+          if(this.article.query.year && this.article.query.month){
           return `${this.article.query.year}年${this.article.query.month}月`
         }
         return '全部'
+        }
       }
     },
     methods: {
 
       changeArchive(year, month) {
+        console.log('---------','changeArchive')
         // this.currentArchive = `${year}年${month}月`
         // this.article.query.year = year
         // this.article.query.month = month
@@ -86,7 +92,7 @@
           this.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
         })
       }
-    }
+    },
   }
 </script>
 
@@ -128,6 +134,7 @@
 
   .me-month-title {
     margin-left: 4px;
+    margin-top: 10px;
     margin-bottom: 12px;
   }
 </style>

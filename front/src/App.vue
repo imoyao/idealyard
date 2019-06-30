@@ -40,6 +40,7 @@
   .me-area {
     background-color: #fff;
   }
+
   /*重要声明或slogan*/
   .slogan-declare {
     color: #e11111;

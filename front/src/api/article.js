@@ -74,7 +74,7 @@ export function publishArticle(article) {
 
 export function listArchives() {
   return request({
-    url: '/articles/listArchives',
+    url: '/archives',
     method: 'get'
   })
 }

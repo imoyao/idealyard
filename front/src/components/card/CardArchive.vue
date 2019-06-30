@@ -6,7 +6,8 @@
     </div>
 
     <ul class="me-category-list">
-      <li v-for="a in archives" @click="view(a.year, a.month)" :key="a.year + a.month" class="me-category-item"><a>{{`${a.year}年${a.month}月`}}</a>
+      <li v-for="(a,index) in archives" @click="view(a.year, a.month)" :key="index" class="me-category-item"><a>{{`${a.year}年${a.month}月`}}</a>
+      <!--<li v-for="(a,index) in archives" @click="view(a.year, a.month)" :key="a.year+a.month" class="me-category-item"><a>{{`${a.year}年${a.month}月`}}</a>-->
       </li>
     </ul>
   </el-card>

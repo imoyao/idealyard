@@ -9,7 +9,7 @@ export function reqAllTags() {
 
 export function reqAllTagsDetail() {
   return request({
-    url: '/tags/detail',
+    url: '/tags',
     method: 'get',
   })
 }
@@ -33,7 +33,7 @@ export function reqTag(id) {
 
 export function reqTagDetail(id) {
   return request({
-    url: `/tags/detail/${id}`,
+    url: `/tags/${id}`,
     method: 'get',
   })
 }
