@@ -65,3 +65,23 @@ def makeup_tag_item_for_index(tags):
     :return:
     """
     return [{'tagname': info[0], 'count': info[1]['count'], 'id': info[1]['id']} for info in tags]
+
+
+def show_all_tags():
+    data = []
+    tags = Tag.query.order_by(Tag.id).all()
+    for data_obj in tags:
+        tag = dict()
+        tag['id'] = data_obj.id
+        tag['tagname'] = data_obj.tag_name
+        data.append(tag)
+    return data
+
+
+def posts_for_tag(tag_id):
+    tag_obj = Tag.query.filter(Tag.id == tag_id).first()
+    articles = tag_obj.articles
+    print('-------', articles)
+    tag_id = tag_obj.id
+    tag_name = tag_obj.id
+    return [{'id': tag_id, 'tagname': tag_name, 'articles': art.post_id} for art in articles]

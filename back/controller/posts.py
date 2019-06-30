@@ -2,6 +2,55 @@
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:18
 from back.models import User, ArticleBody, Article, Category
+from back.utils import DateTime
+
+date_maker = DateTime()
+
+
+def posts_order_by_date(desc=True):
+    if desc:
+        posts_query = Article.query.order_by(Article.create_date.desc())
+    else:
+        posts_query = Article.query.order_by(Article.create_date)
+    return posts_query
+
+
+def posts_order_by_view_counts(desc=True):
+    if desc:
+        posts_query = Article.query.order_by(Article.view_counts.desc())
+    else:
+        posts_query = Article.query.order_by(Article.view_counts)
+    return posts_query
+
+
+def make_limit(query_data, limit_count):
+    """
+    是否对数量限制
+    :param query_data:
+    :param limit_count:
+    :return:
+    """
+    if limit_count >= 1:
+        posts = query_data.limit(limit_count).all()
+    else:
+        posts = query_data.all()
+    data = post_info_json(posts)
+    return data
+
+
+def make_paginate(query_data, page=None, per_page=None):
+    """
+    返回分页对象
+    :param query_data:
+    :param page:
+    :param per_page:
+    :return:
+    """
+    assert all([page, per_page])
+    pagination = query_data.paginate(
+        page, per_page=per_page, error_out=False
+    )
+    return pagination
 
 
 def post_info_json(posts):
@@ -10,7 +59,6 @@ def post_info_json(posts):
     :param posts:list,
     :return: list,
     """
-    print(type(posts))
     ret_data = []
     for post in posts:
         post_info = dict()
@@ -35,13 +83,15 @@ def post_detail(post_info):
     category_info = category_for_post(category_id)
     post_id = post_info.post_id
     tag_infos = tags_for_post(post_id)
+    print('post_info.create_date----------------',type(post_info.create_date))
+    str_date = date_maker.make_strftime(post_info.create_date)
     json_post = {
         "author": user_info,
         "body": body_info,
         "category": category_info,
         # TODO:后期添加
         "commentCounts": 0,
-        "createDate": post_info.create_date,
+        "createDate": str_date,
         "id": post_id,
         # TODO:摘要，暂无；感觉这个api不需要该参数？？？
         # "summary": "本节将介绍如何在项目中使用 Element。",
@@ -85,6 +135,7 @@ def makeup_post_item_for_index(posts):
 
     for post_item in posts:
         user_id = post_item.author_id
+        str_date = date_maker.make_strftime(post_item.create_date)
         str_user_id = str(user_id) if isinstance(user_id, int) else user_id
         already_got = shown_user_info.get(str_user_id)
         if already_got:
@@ -104,7 +155,7 @@ def makeup_post_item_for_index(posts):
             },
             # TODO: 继续开发
             "commentCounts": 0,
-            "createDate": post_item.create_date,
+            "createDate": str_date,
             "id": post_item.post_id,
             # TODO: 继续开发
             "summary": "sample summary",
