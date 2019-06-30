@@ -8,7 +8,7 @@
     </div>
     <el-divider></el-divider>
     <div class="profile-detail">
-      <span><i class="iconfont icon-location"></i>{{ profile.location }}</span>
+      <span style="margin-left: 6px"><i class="iconfont icon-location"></i>{{ profile.location }}</span>
       &nbsp;
       <span><i class="iconfont icon-company"></i>{{profile.company }}</span>
       &nbsp;
@@ -92,6 +92,10 @@
     text-align: center;
     padding-top: 10px;
     font-size: 15px;
+  }
+
+  .profile-detail>span>i{
+    margin-right: 6px;
   }
 
   .profile-detail>i {

@@ -13,8 +13,6 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /*重要：左偏移*/
-  margin-right: 6px;
 }
 
 .icon-company-new:before {

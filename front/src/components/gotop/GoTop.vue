@@ -1,7 +1,7 @@
 <template>
   <!--<transition name="el-zoom-in-center">-->
   <transition>
-    <div @click="toTop" v-show="topShow" class="me-to-top"><i class="el-icon-caret-top"></i></div>
+    <div @click="toTop" v-show="topShow" class="me-to-top"><i class="iconfont icon-arrowup"></i></div>
   </transition>
 </template>
 
@@ -61,7 +61,7 @@
     display: block;
     line-height: 40px;
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
   }
 
 </style>
