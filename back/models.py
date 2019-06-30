@@ -37,6 +37,7 @@ class User(db.Model):
     last_login = db.Column(db.DateTime(), default=datetime.utcnow, comment='最近登录时间')
     confirmed = db.Column(db.Boolean, default=False, comment='注册确认')
     avatar_hash = db.Column(db.String(32), comment='头像')
+    articles = db.relationship('Article')
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -90,7 +91,7 @@ class User(db.Model):
 # Create M2M table
 # 标签和文章为多对多关系，创建中间表
 # TODO:rename >> iy_post_tags
-posts_tags_table = db.Table('post_tags', db.Model.metadata,
+posts_tags_table = db.Table('iy_post_tags', db.Model.metadata,
                             db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
                             db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
                             )
@@ -113,7 +114,13 @@ class Article(db.Model):
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
     update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
                             comment='文章更新时间')
-    tags = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'))
+    tags = db.relationship('Tag', secondary=posts_tags_table,
+                           back_populates='articles')
+    authors = db.relationship('User',
+                              back_populates='articles')
+
+    # tags = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'),
+    #                        back_populates='articles')
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -132,7 +139,6 @@ class Article(db.Model):
         :return: int
         """
         max_num = db.session.query(func.max(self.identifier)).one().identifier
-        print('max_num', max_num)
         increase_int = random.randrange(1, 5)
         return max_num + increase_int
 
@@ -164,6 +170,29 @@ class Article(db.Model):
         db.session.commit()
 
 
+class Tag(db.Model):
+    """
+    标签 表结构
+    """
+    __tablename__ = 'iy_tag'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True, comment='主键')
+    tag_name = db.Column(db.String(64), comment='标签名称')
+    # articles = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'),
+    #                            back_populates='tags')
+    articles = db.relationship('Article', secondary=posts_tags_table,
+                               back_populates='tags')
+
+    def __repr__(self):
+        return '<Tag %r>' % self.tag_name
+
+    def to_json(self):
+        data = {'id': self.id,
+                'tag_name': self.tag_name
+                }
+        return data
+
+
 class ArticleBody(db.Model):
     """
     文章结构体 表结构
@@ -176,22 +205,6 @@ class ArticleBody(db.Model):
 
     def __repr__(self):
         return '<ArticleBody %r>' % self.id
-
-
-class Tag(db.Model):
-    """
-    标签 表结构
-    """
-    __tablename__ = 'iy_tag'
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True, comment='主键')
-    tag_name = db.Column(db.String(64), comment='标签名称')
-
-    # useless
-    # article_id = db.Column(db.Integer, db.ForeignKey('iy_article.post_id'), comment='文章编号')
-
-    def __repr__(self):
-        return '<Tag %r>' % self.tag_name
 
 
 class Category(db.Model):
