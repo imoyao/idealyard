@@ -72,20 +72,28 @@
       view(id) {
         this.$router.push({path: `/view/${id}`})
       },
+      reachEndLine() {
+        this.$notify({
+          iconClass: 'iconfont icon-sound',
+          customClass: 'no-enough',
+          title: '我是有底线的',
+          message: '这谁顶得住哇？！',
+          position: 'bottom-right',
+          offset: 50
+        });
+      },
       getArticles() {
         let that = this
         that.loading = true
-
         reqArticles(that.query, that.innerPage).then(data => {
-
           let newArticles = data.data
           if (newArticles && newArticles.length > 0) {
             that.innerPage.pageNumber += 1
             that.articles = that.articles.concat(newArticles)
           } else {
             that.noData = true
+            this.reachEndLine()
           }
-
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '文章加载失败!', showClose: true})
@@ -111,6 +119,5 @@
 
   .el-card:not(:first-child) {
     margin-top: 10px;
-
   }
 </style>

@@ -47,6 +47,10 @@
     display: block;
   }
 
+  .no-enough {
+    color: #e11111;
+  }
+
   html {
     height: 100%;
   }

@@ -47,7 +47,7 @@
                 <img class="me-header-picture" :src="user.avatar" />
                 <!--<span class="el-dropdown-link userinfo-inner"><img class="me-header-picture" :src="user.avatar" /></span>-->
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item><i class="iconfont icon-bell-ring"></i>我的消息</el-dropdown-item>
+                  <el-dropdown-item><i class="iconfont icon-bell"></i>我的消息</el-dropdown-item>
                   <el-dropdown-item><i class="iconfont icon-icon-test"></i>设置</el-dropdown-item>
                   <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout"></i>退出</el-dropdown-item>
                 </el-dropdown-menu>

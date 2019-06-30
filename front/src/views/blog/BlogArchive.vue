@@ -39,6 +39,7 @@
     },
     created() {
       this.listArchives()
+      this.currentArchive()
     },
     watch: {
       '$route'() {
@@ -66,7 +67,7 @@
       },
       currentArchive (){
         // 获取为空
-        if (this.archives.length===0){
+        if (this.archives.length === 0){
           // TODO: 打开太快，它出来了
           return 'Oh no 😢'
         } else if (this.article){
