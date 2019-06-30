@@ -44,13 +44,13 @@ class Books(Resource):
     ]
 
     def __init__(self):
-        self.response_obj = {'success': True, 'code': 0}
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self, book_id=None):
         if book_id:
-            self.response_obj['books'] = self.BOOKS[0]  # TODO: just for test
+            self.response_obj['data'] = self.BOOKS[0]  # TODO: just for test
         else:
-            self.response_obj['books'] = self.BOOKS
+            self.response_obj['data'] = self.BOOKS
         return jsonify(self.response_obj)
 
     def post(self):
@@ -61,8 +61,7 @@ class Books(Resource):
             'author': post_data.get('author'),
             'read': post_data.get('read'),
         })
-        self.response_obj['message'] = 'Books added!'
-        # return jsonify(self.response_obj)
+        self.response_obj['msg'] = 'Books added!'
         return self.response_obj, 201
 
     def put(self, book_id):

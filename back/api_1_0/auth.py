@@ -10,6 +10,7 @@ from back import setting
 from back.models import User
 from . import api_bp
 from .errors import unauthorized, forbidden
+from .utils import jsonify_with_args
 
 auth = HTTPBasicAuth()
 
@@ -43,16 +44,21 @@ class ResetPassword(Resource):
     重置密码
     """
 
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
     def post(self):
-        # TODO: 状态码不应该在body中
+        # TODO: 状态码不应该在body中  这个是更新，不应该用POST方法！！！
         data = request.json
         # data = json.loads(str(request.data, encoding="utf-8"))
         user = User.query.filter_by(name=setting.LOGINUSER).first()
         if user and user.verify_user_password(data['oldpass']) and data['confirpass'] == data['newpass']:
             user.hash_password(data['newpass'])
-            return jsonify({'code': 200, 'msg': "密码修改成功"})
+            return jsonify({'code': 0, 'msg': "密码修改成功"})
         else:
-            return jsonify({'code': 500, 'msg': "请检查输入"})
+            self.response_obj['code'] = 1
+            self.response_obj['msg'] = 'Please check args.'
+            return jsonify_with_args(jsonify(self.response_obj), 400)
 
     @auth.login_required
     def get(self):
@@ -65,7 +71,9 @@ class ResetPassword(Resource):
         然后根据token访问页面：
         curl -u [token]:findpwd -i -X GET http://127.0.0.1:5000/api/password
         """
-        return jsonify({'data': 'Hello, %s! You have the right to reset password.' % g.user.username})
+        username = g.user.username
+        return jsonify({'msg': f'Hello, {username}! You have the right to reset password.',
+                        'data': username})
 
 
 @auth.verify_password
