@@ -1,29 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:23
-import json
 
-from flask import g, jsonify, request
-from flask import url_for, current_app
-from flask_restful import Resource
-
-from back import setting
-
-from back.models import Tag
 from back.controller import posts
-
-from back.models import db, Article, posts_tags_table
-
-
-def tag_info_json():
-    pass
+from back.models import Article
+from back.models import Tag
 
 
-def tag_detail():
-    pass
-
-
-def query_tag_item(limit_count):
+def query_tag_item(limit_count):  # DEPRECATED
     """
     首先根据文章查询到各自的标签；
     然后对数据组装，放到一个字典中，没有则count=1,存在则count+=1；
@@ -33,29 +17,32 @@ def query_tag_item(limit_count):
     '''
     {'Python': {'count': 1, 'id': 1}, '原创': {'count': 5, 'id': 8}, '后端': {'count': 1, 'id': 9}, '杂文': {'count': 3, 'id': 5}, 'MySQL': {'count': 1, 'id': 4}}
     '''
-    article_obj = Article.query.limit(limit_count).all()
+    if limit_count:
+        article_obj = Article.query.limit(limit_count).all()
+    else:
+        article_obj = Article.query.all()
     tag_info = {}
     for post in article_obj:
         post_id = post.post_id
-        tags = posts.tags_for_post(post_id)
+        tags = posts.tags_for_post(post_id)['tags_info']
         for tag in tags:
             if tag['tag_name'] not in tag_info:
                 tag_info[tag['tag_name']] = {}
-                tag_info[tag['tag_name']]['count'] = 1
+                tag_info[tag['tag_name']]['posts_count'] = 1
             else:
-                tag_info[tag['tag_name']]['count'] += 1
+                tag_info[tag['tag_name']]['posts_count'] += 1
             tag_info[tag['tag_name']]['id'] = tag['id']
     return tag_info
 
 
 def sort_tags(unsorted_dict, reverse=True):
     """
-    排序
+    按照标签下的文章 count 排序
     :param unsorted_dict:
     :param reverse:
     :return:
     """
-    return sorted(unsorted_dict.items(), key=lambda item: item[1]['count'], reverse=reverse)
+    return sorted(unsorted_dict.items(), key=lambda item: item[1]['posts_count'], reverse=reverse)
 
 
 def makeup_tag_item_for_index(tags):
@@ -64,24 +51,119 @@ def makeup_tag_item_for_index(tags):
     :param tags:
     :return:
     """
-    return [{'tagname': info[0], 'count': info[1]['count'], 'id': info[1]['id']} for info in tags]
+    return [{'tagname': info[0], 'count': info[1]['posts_count'], 'id': info[1]['id']} for info in tags]
+
+
+def order_tags_by_tag_id(desc=True):
+    """
+    按照tag id 排序
+    :return:
+    """
+    if desc:
+        tags_query = Article.query.order_by(Tag.id.desc())
+    else:
+        tags_query = Article.query.order_by(Tag.id)
+    return tags_query
 
 
 def show_all_tags():
+    """
+    查询所有的tag 信息 （一次全查）
+    :return:
+    """
     data = []
     tags = Tag.query.order_by(Tag.id).all()
     for data_obj in tags:
         tag = dict()
+        # 文章id
+        # TODO：hint:注意此处，遍历之后可以反查文章信息
+        articles = [data.post_id for data in data_obj.articles]
         tag['id'] = data_obj.id
         tag['tagname'] = data_obj.tag_name
+        tag['articles'] = articles
+        tag['article_counts'] = len(data_obj.articles)
         data.append(tag)
     return data
 
 
-def posts_for_tag(tag_id):
+def query_all_data():
+    return Tag.query.all()
+
+
+def posts_by_tag_id(tag_id):
+    """
+    根据 tag id 查找对应的文章信息（查指定的）
+    :param tag_id: int,
+    :return:dict,
+    """
     tag_obj = Tag.query.filter(Tag.id == tag_id).first()
-    articles = tag_obj.articles
-    print('-------', articles)
+    posts_data = tag_obj.articles
+    articles = []
+    if posts_data:
+        # 文章id列表
+        articles = [data.post_id for data in posts_data]
     tag_id = tag_obj.id
-    tag_name = tag_obj.id
-    return [{'id': tag_id, 'tagname': tag_name, 'articles': art.post_id} for art in articles]
+    tag_name = tag_obj.tag_name
+    data = {
+        'id': tag_id,
+        'tagname': tag_name,
+        'articles': articles,
+        'article_counts': len(articles),
+    }
+    return data
+
+
+def make_tag_limit(query_data, limit_count):
+    """
+    是否对数量限制
+    :param query_data:
+    :param limit_count:
+    :return:
+    """
+    if limit_count >= 1:
+        data = query_data.limit(limit_count).all()
+    else:
+        data = query_data.all()
+    return data
+
+
+def tags_of_post_counts(query_data, limit_count):  # TODO:与 show_all_tags()合并
+    """
+    获取各标签下文章个数
+    :return:dict,like {TAG_NAME: {POSTS_COUNT: int, ID: int,TAG_NAME:str}, ……}
+    """
+    article_obj = make_tag_limit(query_data, limit_count)
+    '''
+    below equal this:
+    return [{posts_by_tag_id(post.post_id)['tag_name']: posts_by_tag_id(post.post_id)['article_counts']} for post in article_obj]
+    '''
+    # 组装
+    all_tags = {}
+    if article_obj:
+        for data_obj in article_obj:
+            tag = dict()
+            # 文章id
+            # TODO：hint:注意此处，遍历之后可以反查文章信息
+            articles = [data.post_id for data in data_obj.articles]
+            tag_name = data_obj.tag_name
+            tag['id'] = data_obj.id
+            tag['tagname'] = data_obj.tag_name
+            tag['articles'] = articles
+            tag['posts_count'] = len(data_obj.articles)
+            all_tags[tag_name] = tag
+    return all_tags
+
+
+def order_tags_by_include_post_counts(query_data, limit_count, desc=True):
+    """
+    按照标签热度排就是按照各标签下文章的个数排
+    :param query_data:
+    :param limit_count:
+    :param desc:
+    :return:
+    """
+    tags_info = tags_of_post_counts(query_data, limit_count)
+    # 把列表展开放到字典中，因为标签是唯一的
+    tags_sorted = sort_tags(tags_info, reverse=desc)
+    data = makeup_tag_item_for_index(tags_sorted)
+    return data

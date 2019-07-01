@@ -16,12 +16,20 @@ date_maker = DateTime()
 
 
 def last_create_time():
+    """
+    最晚创建时间
+    :return:
+    """
     last_time = db.session.query(func.max(Article.create_date).label('max_time')).one().max_time
     year = date_maker.year(last_time)
     return year
 
 
 def first_create_time():
+    """
+    最早创建时间
+    :return:
+    """
     first_time = db.session.query(func.min(Article.create_date).label('min_time')).one().min_time
     first_year = date_maker.year(first_time)
     return first_year
@@ -35,11 +43,9 @@ def extract_post_with_year_and_month():
     first = first_create_time()
     last = last_create_time()
     post_info_by_ct = []
-    print('-----------', first, last)
     for year in range(first, last + 1):
         year_data = extract_post_with_month(year)
         post_info_by_ct.extend(year_data)
-    print('------1111-----', post_info_by_ct)
     return post_info_by_ct
 
 

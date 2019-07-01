@@ -82,8 +82,8 @@ def post_detail(post_info):
     category_id = post_info.category_id
     category_info = category_for_post(category_id)
     post_id = post_info.post_id
-    tag_infos = tags_for_post(post_id)
-    print('post_info.create_date----------------',type(post_info.create_date))
+    tags_info = tags_for_post(post_id)['tags_info']
+    print('post_info.create_date----------------', type(post_info.create_date))
     str_date = date_maker.make_strftime(post_info.create_date)
     json_post = {
         "author": user_info,
@@ -95,7 +95,7 @@ def post_detail(post_info):
         "id": post_id,
         # TODO:摘要，暂无；感觉这个api不需要该参数？？？
         # "summary": "本节将介绍如何在项目中使用 Element。",
-        "tags": tag_infos,
+        "tags": tags_info,
         "title": post_info.title,
         "viewCounts": post_info.view_counts,
         "weight": post_info.weight,
@@ -145,7 +145,7 @@ def makeup_post_item_for_index(posts):
             shown_user_info[str_user_id] = user_info
         username = user_info['nickname']
         post_id = post_item.post_id
-        tag_infos = tags_for_post(post_id)
+        tag_infos = tags_for_post(post_id)['tags_info']
         tags = []
         if tag_infos:
             tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]
@@ -209,17 +209,30 @@ def category_for_post(category_id):
     if data:
         return {'categoryname': data.category_name,
                 'id': category_id,
+                'description': data.description,
                 }
 
 
 def tags_for_post(post_id):
     """
+    根据文章 id 查找对应的 tags 信息
     ref:https://github.com/mrjoes/flask-admin/blob/402b56ea844dc5b215f6293e7dc63f39a6723692/examples/sqla/app.py
     https://www.jianshu.com/p/cd5b1728832c
     通过文章获取标签信息，重点在`posts_tags_table`的创建
     :param post_id: int,
-    :return: list,
+    :return: dict,
     """
     article_obj = Article.query.filter(Article.post_id == post_id).first()
-    tags = article_obj.tags
-    return [{'id': tag_item.id, 'tag_name': tag_item.tag_name} for tag_item in tags]
+    tags_data = article_obj.tags
+    tags_info = []
+    if tags_data:
+        # 标签信息列表
+        tags_info = [{'id': tag.id, 'tag_name': tag.tag_name} for tag in tags_data]
+    tag_count = len(tags_info)
+
+    data = {
+        'id': post_id,
+        'tags_info': tags_info,
+        'tag_count': tag_count
+    }
+    return data
