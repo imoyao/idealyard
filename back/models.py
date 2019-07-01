@@ -28,11 +28,11 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     # 因为有用户名登录选项，所以此处必须唯一
     username = db.Column(db.String(64), index=True, unique=True, comment='用户名')
-    name = db.Column(db.String(64), comment='真实姓名')
+    name = db.Column(db.String(32), comment='真实姓名')
     password = db.Column(db.String(128), comment='密码，加密保存')
     email = db.Column(db.String(120), index=True, unique=True, comment='注册邮箱')
     location = db.Column(db.String(64), comment='居住地')
-    about_me = db.Column(db.Text(), comment='关于')
+    slogan = db.Column(db.String(64), server_default='唯有文字能担当此任，宣告生命曾经在场。', comment='Slogan')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='用户创建时间')
     last_login = db.Column(db.DateTime(), default=datetime.utcnow, comment='最近登录时间')
     confirmed = db.Column(db.Boolean, default=False, comment='注册确认')
@@ -84,13 +84,11 @@ class User(db.Model):
             return None  # invalid token
         # 根据id查询，查到则认证通过，否则校验失败
         user = User.query.get(data['id'])
-        print('-----verify_auth_token------', user)
         return user
 
 
 # Create M2M table
 # 标签和文章为多对多关系，创建中间表
-# TODO:rename >> iy_post_tags
 posts_tags_table = db.Table('iy_post_tags', db.Model.metadata,
                             db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
                             db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
@@ -118,9 +116,6 @@ class Article(db.Model):
                            back_populates='articles')
     authors = db.relationship('User',
                               back_populates='articles')
-
-    # tags = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'),
-    #                        back_populates='articles')
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -177,9 +172,7 @@ class Tag(db.Model):
     __tablename__ = 'iy_tag'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
-    tag_name = db.Column(db.String(64), comment='标签名称')
-    # articles = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('iy_article'),
-    #                            back_populates='tags')
+    tag_name = db.Column(db.String(24), comment='标签名称')
     articles = db.relationship('Article', secondary=posts_tags_table,
                                back_populates='tags')
 
@@ -202,6 +195,7 @@ class ArticleBody(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     content_html = db.Column(db.Text, comment='文章的html')
     content = db.Column(db.Text, comment='文章内容')
+    summary = db.Column(db.String(1000),server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。', comment='文章摘要')
 
     def __repr__(self):
         return '<ArticleBody %r>' % self.id
@@ -214,11 +208,11 @@ class Category(db.Model):
     __tablename__ = 'iy_category'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
-    category_name = db.Column(db.String(64), comment='分类名称')
+    category_name = db.Column(db.String(32), comment='分类名称')
     description = db.Column(db.String(255), comment='分类描述')
 
     def __repr__(self):
-        return '<Category %r>' % self.tag_name
+        return '<Category %r>' % self.category_name
 
 
 class SysLog(db.Model):
@@ -228,7 +222,7 @@ class SysLog(db.Model):
     __tablename__ = 'iy_syslog'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
-    op_ip = db.Column(db.String(64), comment='操作者名称')
+    op_ip = db.Column(db.String(64), comment='操作者ip')
     operator = db.Column(db.String(64), comment='操作者')
     op_module = db.Column(db.String(255), comment='操作模块')
     operation = db.Column(db.String(64), comment='操作事件')
