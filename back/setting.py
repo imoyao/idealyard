@@ -2,9 +2,8 @@
 """
 该文件设置所有全局变量
 """
-import re
 
 LOGINUSER = ''
 LIMIT_NEW_POST_COUNT = 5
 LIMIT_HOT_POST_COUNT = 5
-LIMIT_HOT_TAG_COUNT = 15
+LIMIT_HOT_TAG_COUNT = 10

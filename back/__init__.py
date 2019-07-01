@@ -5,16 +5,13 @@ from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
 
-from back.api_1_0 import api, auth, posts, users, tags, archives
-
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories
 from back.config import config
 # from .api_1_0.books import Books
 from .models import db
 
 BLUEPRINTS = [
     'mains:bp',  # add bp here
-    # 'tools:bp',
-    # 'settings:bp',
     'api_1_0:api_bp',
 ]
 
@@ -31,7 +28,8 @@ def add_api():
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.PostApi, '/api/articles')
     api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')
-    api.add_resource(tags.TagApi, '/api/tags','/api/tags/<int:tag_id>')
+    api.add_resource(tags.TagApi, '/api/tags', '/api/tags/<int:tag_id>')
+    api.add_resource(categories.CategoryApi, '/api/categories', '/api/categories/<int:category_id>')
     # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
     api.add_resource(archives.Archives, '/api/archives')
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
