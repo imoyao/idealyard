@@ -54,9 +54,6 @@ class TagApi(Resource):
             if hot:
                 query_data = tags.query_all_data()
                 data = tags.order_tags_by_include_post_counts(query_data, limit_count, desc=order_by_desc)
-            elif order_by == 'id':
-                query_data = tags.order_tags_by_tag_id(desc=order_by_desc)
-                data = tags.make_tag_limit(query_data, limit_count)
             elif order_by == 'name':
                 pass
             if data:

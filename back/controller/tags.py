@@ -54,15 +54,15 @@ def makeup_tag_item_for_index(tags):
     return [{'tagname': info[0], 'count': info[1]['posts_count'], 'id': info[1]['id']} for info in tags]
 
 
-def order_tags_by_tag_id(desc=True):
+def order_tags_by_post_id(desc=True):
     """
     按照tag id 排序
     :return:
     """
     if desc:
-        tags_query = Article.query.order_by(Tag.id.desc())
+        tags_query = Article.query.order_by(Article.post_id.desc())
     else:
-        tags_query = Article.query.order_by(Tag.id)
+        tags_query = Article.query.order_by(Article.post_id)
     return tags_query
 
 
@@ -121,9 +121,10 @@ def make_tag_limit(query_data, limit_count):
     :return:
     """
     if limit_count >= 1:
-        data = query_data.limit(limit_count).all()
+        # AttributeError: 'list' object has no attribute 'limit'
+        data = query_data[:limit_count]
     else:
-        data = query_data.all()
+        data = query_data
     return data
 
 
