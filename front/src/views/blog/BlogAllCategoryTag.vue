@@ -5,7 +5,7 @@
         <el-tabs v-model="activeName">
           <el-tab-pane label="文章分类" name="category">
             <ul class="me-allct-items">
-              <li v-for="c in categorys" @click="view(c.id)" :key="c.id" class="me-allct-item">
+              <li v-for="c in categories" @click="view(c.id)" :key="c.id" class="me-allct-item">
                 <div class="me-allct-content">
                   <a class="me-allct-info">
                     <img class="me-allct-img" :src="c.avatar?c.avatar:defaultAvatar"/>
@@ -14,7 +14,7 @@
                   </a>
 
                   <div class="me-allct-meta">
-                    <span>{{c.articles}} 文章</span>
+                    <span>{{c.article_counts}} 文章</span>
                   </div>
                 </div>
               </li>
@@ -30,7 +30,7 @@
                   </a>
 
                   <div class="me-allct-meta">
-                    <span>{{t.articles}}  文章</span>
+                    <span>{{t.article_counts}}  ssss文章</span>
                   </div>
                 </div>
               </li>
@@ -44,8 +44,8 @@
 
 <script>
   import defaultAvatar from '@/assets/img/logo.png'
-  import {reqAllCategorysDetail} from '@/api/category'
-  import {reqAllTagsDetail} from '@/api/tag'
+  import {reqAllCategories} from '@/api/category'
+  import {reqAllTags} from '@/api/tag'
 
   export default {
     name: 'BlogAllCategoryTag',
@@ -56,7 +56,7 @@
     data() {
       return {
         defaultAvatar:defaultAvatar,
-        categorys: [],
+        categories: [],
         tags: [],
         currentActiveName: 'category'
       }
@@ -84,8 +84,8 @@
       },
       getCategorys() {
         let that = this
-        reqAllCategorysDetail().then(data => {
-          that.categorys = data.data
+        reqAllCategories().then(data => {
+          that.categories = data.data
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
@@ -94,7 +94,7 @@
       },
       getTags() {
         let that = this
-        reqAllTagsDetail().then(data => {
+        reqAllTags().then(data => {
           that.tags = data.data
         }).catch(error => {
           if (error !== 'error') {
@@ -160,7 +160,7 @@
 
   .me-allct-name {
     font-size: 21px;
-    font-weight: 150;
+    font-weight: 200;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

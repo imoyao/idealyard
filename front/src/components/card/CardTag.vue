@@ -26,7 +26,7 @@
     },
     methods: {
       moreTags() {
-        this.$router.push('/tag/all')
+        this.$router.push('/tags')
       },
       tag(id) {
         this.$router.push({path: `/tag/${id}`})

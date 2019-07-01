@@ -45,7 +45,7 @@
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
             <el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">
-              <el-option v-for="c in categorys" :key="c.id" :label="c.categoryname" :value="c"></el-option>
+              <el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>
             </el-select>
           </el-form-item>
 
@@ -68,7 +68,7 @@
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, reqArticleById} from '@/api/article'
-  import {reqAllCategorys} from '@/api/category'
+  import {reqAllCategories} from '@/api/category'
   import {reqAllTags} from '@/api/tag'
 
   export default {
@@ -90,7 +90,7 @@
     data() {
       return {
         publishVisible: false,
-        categorys: [],
+        categories: [],
         tags: [],
         articleForm: {
           id: '',
@@ -245,8 +245,8 @@
       },
       getCategorysAndTags() {
         let that = this
-        reqAllCategorys().then(data => {
-          that.categorys = data.data
+        reqAllCategories().then(data => {
+          that.categories = data.data
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})

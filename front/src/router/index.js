@@ -24,7 +24,7 @@ const router = new VueRouter({
     },
     {
       path: '',
-      name: 'Home',
+      // name: 'Home',
       component: Home,
       children: [
         {
@@ -48,7 +48,7 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {
-          path: '/:type/all',
+          path: '/:type',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogAllCategoryTag')), 'blogallcategorytag')
         },
         {

@@ -14,7 +14,7 @@
             <p>{{ct.description}}</p>
           </template>
 
-          <span class="me-ct-meta">{{ct.articles}} 文章</span>
+          <span class="me-ct-meta">{{ct.article_counts}} 文章</span>
         </div>
 
         <div class="me-ct-articles">

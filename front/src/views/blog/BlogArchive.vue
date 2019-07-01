@@ -39,7 +39,6 @@
     },
     created() {
       this.listArchives()
-      this.currentArchive()
     },
     watch: {
       '$route'() {

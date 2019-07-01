@@ -1,29 +1,18 @@
 import request from '@/request'
 
-export function reqAllCategorys() {
+//
+export function reqAllCategories() {
   return request({
-    url: '/categorys',
+    url: '/categories',
     method: 'get',
   })
 }
 
-export function reqAllCategorysDetail() {
-  return request({
-    url: '/categorys/detail',
-    method: 'get',
-  })
-}
-
-export function reqCategory(id) {
-  return request({
-    url: `/categorys/${id}`,
-    method: 'get',
-  })
-}
-
+// 带文章
+// TODO:应该是查找文章该分类下的文章
 export function reqCategoryDetail(id) {
   return request({
-    url: `/categorys/detail/${id}`,
+    url: `/categories/${id}`,
     method: 'get',
   })
 }

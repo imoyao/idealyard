@@ -7,13 +7,6 @@ export function reqAllTags() {
   })
 }
 
-export function reqAllTagsDetail() {
-  return request({
-    url: '/tags',
-    method: 'get',
-  })
-}
-
 export function reqHotTags() {
   return request({
     url: '/tags',
@@ -21,13 +14,6 @@ export function reqHotTags() {
     params: {
       hot: true,
     }
-  })
-}
-
-export function reqTag(id) {
-  return request({
-    url: `/tags/${id}`,
-    method: 'get',
   })
 }
 
