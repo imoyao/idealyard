@@ -44,15 +44,35 @@
             </el-input>
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
+            <!--https://element.eleme.cn/#/zh-CN/component/select#chuang-jian-tiao-mu-->
             <el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">
               <el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="文章标签" prop="tags">
-            <el-checkbox-group v-model="articleForm.tags">
-              <el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>
-            </el-checkbox-group>
+            <el-tag
+              :key="tag"
+              v-for="tag in dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)">
+              {{tag}}
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible"
+              v-model="inputValue"
+              ref="saveTagInput"
+              size="small"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            <!--<el-checkbox-group v-model="articleForm.tags">-->
+              <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
+            <!--</el-checkbox-group>-->
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -89,6 +109,9 @@
     },
     data() {
       return {
+        dynamicTags: ['标签一', '标签二', '标签三'],
+        inputVisible: true,
+        inputValue: '',
         publishVisible: false,
         categories: [],
         tags: [],
@@ -147,7 +170,37 @@
         return '写文章 - For Fun'
       }
     },
+
     methods: {
+      handleClose(tag) {
+        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+      },
+
+      showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+      // TODO:https://www.jianshu.com/p/24f3320d3d40
+      handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          let values = inputValue.split(/[,， \n]/).filter(item=>{
+            return item!='' && item!=undefined
+          })
+          values.forEach(element => {
+            let index = this.dynamicTags.findIndex(i=>{
+            return i === element
+          })
+          if(index<0){
+           this.dynamicTags.push(element);
+          }
+        });
+      }
+      this.inputVisible = true;
+      this.inputValue = '';
+      },
       getArticleById(id) {
         let that = this
         reqArticleById(id).then(data => {
@@ -353,5 +406,24 @@
 
   .auto-textarea-input, .auto-textarea-block {
     font-size: 18px !important;
+  }
+  .el-tag{
+    margin-right: 10px;
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    /*width: 90px;*/
+    width: 60%;
+    display:block;
+    vertical-align: bottom;
   }
 </style>

@@ -72,7 +72,7 @@ service.interceptors.response.use(
     Message({
       type: 'warning',
       showClose: true,
-      message: '连接超时'
+      message: '要么你挂了，要么我挂了。😕'
     })
     return Promise.reject('error')
   })
