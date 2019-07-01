@@ -11,10 +11,10 @@ from flask import url_for, current_app
 from flask_restful import Resource
 
 from back import setting
-from .errors import forbidden
 from back.controller import posts
 from back.models import Article
 from . import api
+from .errors import forbidden
 from .utils import jsonify_with_args
 
 
@@ -47,7 +47,6 @@ class PostApi(Resource):
     GET /articles/published
     查询字符串的写法明显更好。
     GET /articles?published=true
-
 
     如果记录数量很多，服务器不可能都将它们返回给用户。API应该提供参数，过滤返回结果。
     下面是一些常见的参数。
@@ -168,7 +167,7 @@ class PostDetail(Resource):
             Article.insert_new_post(post)  # TODO:need func()
             # 服务器为新资源指派URL，并在响应的Location首部中返回
             return jsonify_with_args(post.to_json()), 201, {
-                'Location': url_for('api.artical', id=post.id, _external=True)}
+                'Location': url_for('api.articles', id=post.id, _external=True)}
 
     def put(self, post_id):
         """

@@ -4,19 +4,14 @@
 """
 定义所有跟标签相关的api接口
 """
-import json
 
-from flask import g, jsonify, request
-from flask import url_for, current_app
+from flask import jsonify, request
 from flask_restful import Resource
 
 from back import setting
-from .errors import forbidden
-from back.controller.tags import sort_tags, tag_detail, query_tag_item, makeup_tag_item_for_index
+from back.controller import tags
 from back.models import Tag
-from back.controller import posts,tags
 from .utils import jsonify_with_args
-from back.models import db, Article, posts_tags_table
 
 
 class TagApi(Resource):
@@ -27,38 +22,50 @@ class TagApi(Resource):
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
-    def get(self,tag_id=None):
+    def get(self, tag_id=None):
         # 请求数据
         args = request.args
-        print(args)
         if tag_id:
-            data = tags.posts_for_tag(tag_id)
+            # /api/tags/id
+            data = tags.posts_by_tag_id(tag_id)
             self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj)
-
 
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             hot = args.get('hot', False, type=bool)
             order = args.get('order')  # 默认降序
             order_by_desc = order and order == 'asc' or True
-            print(order_by_desc)
             limit_count = None
+            if args.get('limit') and args['limit']:
+                limit_count = int(args.get('limit'))
+            if not limit_count:
+                # 没有请求参数时，总数少于设定值则全返回，否则返回设定值
+                limit_count = Tag.query.count() if Tag.query.count() < setting.LIMIT_HOT_TAG_COUNT else \
+                    setting.LIMIT_HOT_TAG_COUNT
+            # 最新最热走limit逻辑，截取而不是分页 TODO: 标签暂时应该没有这个必要
+            page, per_page = (None,) * 2
+            order_by = ''
+            if not hot:
+                # TODO:默认按照id排，后续可以添加按照名字排（index name）
+                order_by = args.get('order_by', 'id', type=str)
+            data = None
             # ?hot=true&limit=5
             if hot:
-                if args.get('limit') and args['limit']:
-                    limit_count = int(args.get('limit'))
-                if not limit_count:
-                    # 没有请求参数时，总数少于设定值则全返回，否则返回设定值
-                    limit_count = Tag.query.count() if Tag.query.count() < setting.LIMIT_HOT_TAG_COUNT else setting.LIMIT_HOT_TAG_COUNT
-                # TODO:此处实现十分不优雅，感觉绕了好大一个圈，需要优化优化优化！！！
-                info = query_tag_item(limit_count)
-                tags_sorted = sort_tags(info, reverse=order_by_desc)
-                self.response_obj['data'] = makeup_tag_item_for_index(tags_sorted)
+                query_data = tags.query_all_data()
+                data = tags.order_tags_by_include_post_counts(query_data, limit_count, desc=order_by_desc)
+            elif order_by == 'id':
+                query_data = tags.order_tags_by_tag_id(desc=order_by_desc)
+                data = tags.make_tag_limit(query_data, limit_count)
+            elif order_by == 'name':
+                pass
+            if data:
+                self.response_obj['data'] = data
                 return jsonify(self.response_obj)
-            self.response_obj['code'] = 1
-            self.response_obj['success'] = False
-            return jsonify_with_args(self.response_obj, 400)
+            else:
+                self.response_obj['code'] = 1
+                self.response_obj['success'] = False
+                return jsonify_with_args(self.response_obj, 400)
         else:
             self.response_obj['data'] = tags.show_all_tags()
             return jsonify_with_args(self.response_obj)
