@@ -83,7 +83,6 @@ def post_detail(post_info):
     category_info = category_for_post(category_id)
     post_id = post_info.post_id
     tags_info = tags_for_post(post_id)['tags_info']
-    print('post_info.create_date----------------', type(post_info.create_date))
     str_date = date_maker.make_strftime(post_info.create_date)
     json_post = {
         "author": user_info,
@@ -137,6 +136,7 @@ def makeup_post_item_for_index(posts):
         user_id = post_item.author_id
         str_date = date_maker.make_strftime(post_item.create_date)
         str_user_id = str(user_id) if isinstance(user_id, int) else user_id
+        # 一般来说：post数量大于user数量，所以我们这里在获取用户信息时先判断一下是否已经获取到了，没有回去到的话再去数据库中查询
         already_got = shown_user_info.get(str_user_id)
         if already_got:
             user_info = shown_user_info[str_user_id]
@@ -146,6 +146,9 @@ def makeup_post_item_for_index(posts):
         username = user_info['nickname']
         post_id = post_item.post_id
         tag_infos = tags_for_post(post_id)['tags_info']
+        post_content = content_for_post(post_id)
+        print('----post_content------', post_content)
+        summary = post_content.get('summary') or ''
         tags = []
         if tag_infos:
             tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]
@@ -157,8 +160,7 @@ def makeup_post_item_for_index(posts):
             "commentCounts": 0,
             "createDate": str_date,
             "id": post_item.post_id,
-            # TODO: 继续开发
-            "summary": "sample summary",
+            "summary": summary,
             "tags": tags,
             "title": post_item.title,
             "viewCounts": post_item.view_counts,
@@ -191,11 +193,11 @@ def content_for_post(body_id):
     """
     body = ArticleBody.query.get(body_id)
     # https://stackoverflow.com/questions/5022066/how-to-serialize-sqlalchemy-result-to-json
-    print('see what get--------------', body)
     if body:
-        return {'content': body.content,
+        return {'id': body_id,
+                'content': body.content,
                 'contentHtml': body.content_html,
-                'id': body_id,
+                'summary': body.summary,
                 }
 
 

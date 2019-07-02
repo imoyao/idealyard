@@ -195,7 +195,7 @@ class ArticleBody(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     content_html = db.Column(db.Text, comment='文章的html')
     content = db.Column(db.Text, comment='文章内容')
-    summary = db.Column(db.String(1000),server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。', comment='文章摘要')
+    summary = db.Column(db.String(1000), server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。', comment='文章摘要')
 
     def __repr__(self):
         return '<ArticleBody %r>' % self.id
