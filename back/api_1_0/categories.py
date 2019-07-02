@@ -4,17 +4,12 @@
 """
 
 """
-import json
 
-from flask import g, jsonify, request
-from flask import url_for, current_app
+from flask import request
 from flask_restful import Resource
 
-from back import setting
-from .errors import forbidden
-from back.controller import posts,categories
+from back.controller import categories
 from .utils import jsonify_with_args
-from back.models import db, Article
 
 
 class CategoryApi(Resource):

@@ -5,6 +5,8 @@
 from flask import jsonify, request
 from flask_restful import Resource
 
+from back.controller import posts
+
 BOOKS = [
     {
         'title': 'On the Road',
@@ -74,4 +76,17 @@ class Books(Resource):
     def delete(self, book_id):
         if book_id:
             self.BOOKS.pop(0)
+        return jsonify(self.response_obj)
+
+
+class Test(Resource):
+    """
+    用于快速测试的一个借口
+    """
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        p = posts.PostNewArticle()
+        self.response_obj['data'] = p.gen_post_identifier()
         return jsonify(self.response_obj)

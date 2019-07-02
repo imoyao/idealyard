@@ -60,9 +60,11 @@ class TagApi(Resource):
                 self.response_obj['data'] = data
                 return jsonify(self.response_obj)
             else:
+                # 数据为空，还没来得及初始化！
                 self.response_obj['code'] = 1
+                self.response_obj['msg'] = 'Please for initialization.'
                 self.response_obj['success'] = False
-                return jsonify_with_args(self.response_obj, 400)
+                return jsonify_with_args(self.response_obj, 417)
         else:
             self.response_obj['data'] = tags.show_all_tags()
             return jsonify_with_args(self.response_obj)

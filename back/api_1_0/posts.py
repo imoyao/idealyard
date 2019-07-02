@@ -116,6 +116,70 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'No args.'
             return jsonify_with_args(self.response_obj, 400)
 
+    def post(self):
+        """
+        创建文章
+        :return:
+        """
+        # TODO: 后期会发生更新
+        '''
+        {
+            "id": "",
+            "title": "fdhe",
+            "summary": "herj",
+            "category": {
+                # "article_counts": 17,
+                # "articles": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18],
+                "categoryname": "\\u524d\\u7aef",
+                "description": null,
+                "id": 1
+            },
+            "tags": [{
+                "id": 1
+            }, {
+                "id": 2
+            }],
+            "body": {
+                "content": "hrjh",
+                "contentHtml": "<p>hrjh</p>\\n"
+            }
+        }
+        '''
+        json_data = request.json
+        print('------data = request.json--------', json_data)
+        post_title = json_data.get('title')
+        # TODO: 默认抓取前200个字符
+        post_summary = json_data.get('summary')
+        post_title = json_data.get('title')
+        post_weight = json_data.get('weight') or 0
+        post_category = json_data.get('category')
+        post_tags = json_data.get('tags')  # TODO：去重！标签可以为空？
+        post_body = json_data.get('body')
+        content, content_html = (None,) * 2
+        if post_body:
+            content = post_body.get('content')
+            content_html = post_body.get('contentHtml')
+        if not all([post_title, post_summary, post_category, content, content_html]):
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Not enough args.'
+            return jsonify_with_args(self.response_obj, 400)
+        else:
+            post_category_id = post_category.get('id')
+            category_name = post_category.get('categoryname')
+            category_description = post_category.get('description')
+            post_control = posts.PostNewArticle()
+            print('--------11111111------', post_tags)
+            post_id = post_control.new_post(category_name, post_summary, content_html, content, post_title,
+                                            weight=post_weight, category_description=category_description,
+                                            post_tags=post_tags,
+                                            category_id=post_category_id)
+            data = {'articleId': post_id}
+            self.response_obj['data'] = data
+            # 服务器为新资源指派URL，并在响应的Location首部中返回
+            return jsonify_with_args(self.response_obj, 201, {
+                'Location': api.url_for(PostDetail, post_id=post_id, _external=True)})
+
     @staticmethod
     def parse_pagination(pagination, page=None, per_page=None):
         _posts_list = pagination.items
@@ -132,6 +196,7 @@ class PostApi(Resource):
 
 
 class PostDetail(Resource):
+    # TODO: maybe useless
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
