@@ -97,19 +97,21 @@ def posts_by_tag_id(tag_id):
     :return:dict,
     """
     tag_obj = Tag.query.filter(Tag.id == tag_id).first()
+    print('---------------',tag_obj)
     posts_data = tag_obj.articles
-    articles = []
+    print('---------posts_data------',posts_data)
+    data = dict()
     if posts_data:
         # 文章id列表
         articles = [data.post_id for data in posts_data]
-    tag_id = tag_obj.id
-    tag_name = tag_obj.tag_name
-    data = {
-        'id': tag_id,
-        'tagname': tag_name,
-        'articles': articles,
-        'article_counts': len(articles),
-    }
+        tag_id = tag_obj.id
+        tag_name = tag_obj.tag_name
+        data = {
+            'id': tag_id,
+            'tagname': tag_name,
+            'articles': articles,
+            'article_counts': len(articles),
+        }
     return data
 
 
