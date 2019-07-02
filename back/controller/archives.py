@@ -43,9 +43,10 @@ def extract_post_with_year_and_month():
     first = first_create_time()
     last = last_create_time()
     post_info_by_ct = []
-    for year in range(first, last + 1):
-        year_data = extract_post_with_month(year)
-        post_info_by_ct.extend(year_data)
+    if all([first, last]):
+        for year in range(first, last + 1):
+            year_data = extract_post_with_month(year)
+            post_info_by_ct.extend(year_data)
     return post_info_by_ct
 
 
@@ -62,7 +63,10 @@ def extract_post_with_month(year):
             for post in post_obj:
                 data_item = dict()
                 data_item['post_id'] = post.post_id
-                str_date = date_maker.make_strftime(post.create_date)
+                str_date = ''
+                create_date = post.create_date
+                if create_date:
+                    str_date = date_maker.make_strftime(create_date)
                 data_item['create_date'] = str_date
                 same_month_posts.append(data_item)
         # 没有博文，跳出本次循环

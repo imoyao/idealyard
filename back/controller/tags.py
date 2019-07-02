@@ -4,7 +4,7 @@
 
 from back.controller import posts
 from back.models import Article
-from back.models import Tag
+from back.models import Tag, db
 
 
 def query_tag_item(limit_count):  # DEPRECATED
@@ -72,7 +72,7 @@ def show_all_tags():
     :return:
     """
     data = []
-    tags = Tag.query.order_by(Tag.id).all()
+    tags = Tag.query.all()
     for data_obj in tags:
         tag = dict()
         # 文章id
@@ -168,3 +168,74 @@ def order_tags_by_include_post_counts(query_data, limit_count, desc=True):
     tags_sorted = sort_tags(tags_info, reverse=desc)
     data = makeup_tag_item_for_index(tags_sorted)
     return data
+
+
+# ====POST====
+
+def new_tag(tag_name):
+    """
+    添加单个tag
+    :param tag_name: str,
+    :return:str,tag_name
+    """
+    assert tag_name
+    tag = Tag(tag_name=tag_name)
+    db.session.add(tag)
+    db.session.commit()
+    return tag.tag_name
+
+
+def new_multi_tags(tag_names):
+    """
+    添加多个标签
+    :param tag_names:list/set,
+    :return:list, [tag_name1,tags_name2,……]
+    """
+    assert not isinstance(tag_names, str)
+    assert len(tag_names) >= 1
+    tags = []
+    for tag_item in tag_names:
+        tags.append(new_tag(tag_item))
+    return tags
+
+
+def add_tag(post_tags):
+    if post_tags:
+        # 新增 tag 没有默认id,过滤拿到之后去 POST
+        new_tags = []
+        origin_tags = []
+        new_add_tags = []
+        for tag in post_tags:
+            if not tag.get('id'):
+                should_new_tags = tag.get('name') and tag['name']
+                new_tags.append(should_new_tags)
+            else:
+                already_exist_tag = tag.get('name') and tag['name']
+                origin_tags.append(already_exist_tag)
+
+        if new_tags:
+            new_add_tags = new_multi_tags(new_tags)
+        all_tags_for_new_post = set(origin_tags) | set(new_add_tags)
+        return all_tags_for_new_post
+
+
+def add_tag_for_post(post_tags):
+    assert not isinstance(post_tags, str)
+    assert post_tags
+    # 新增 tag 没有默认id,过滤拿到之后去 POST
+    new_tags = []
+    origin_tags = []
+    new_add_tags = []
+    for tag in post_tags:
+        print('---332-----', tag)
+        if not tag.get('id'):
+            should_new_tags = tag.get('name') and tag['name']
+            new_tags.append(should_new_tags)
+        else:
+            already_exist_tag = tag.get('name') and tag['name']
+            origin_tags.append(already_exist_tag)
+
+    if new_tags:
+        new_add_tags = new_multi_tags(new_tags)
+    all_tags_for_new_post = set(origin_tags) | set(new_add_tags)
+    return all_tags_for_new_post

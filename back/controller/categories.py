@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 22:28
-from back.controller import posts
-from back.models import Article, Category
+from back.controller import post_by_category_id
+from back.models import Category
+from back.models import db
 
 """
 分类 按照类别分组
@@ -10,9 +11,16 @@ from back.models import Article, Category
 
 
 def posts_for_category(category_id):
+    """
+    根据分类 id 查找文章
+    :param category_id:
+    :return:
+    """
     data = dict()
     articles = post_by_category_id(category_id)
-    categories_data = posts.category_for_post(category_id)
+    print('------articles--------', articles)
+    # TODO: 如果这里返回不对，说明上一个函数返回的不是obj
+    categories_data = articles.categories
     data['id'] = category_id
     data['article_counts'] = len(articles)
     data['categoryname'] = categories_data['categoryname']
@@ -42,14 +50,16 @@ def show_categories():
     return all_data
 
 
-def post_by_category_id(category_id):
+# POST
+def new_category(category_name, description=''):
     """
-    根据分类id查询分类下文章
-    :param category_id: int,
-    :return: list,post id in it
+    新建分类
+    :param category_name:
+    :param description:
+    :return:
     """
-    posts_data = Article.query.filter_by(category_id=category_id).all()
-    articles = []
-    if posts_data:
-        articles = [data.post_id for data in posts_data]
-    return articles
+    assert category_name
+    category = Category(category_name, description)
+    db.session.add(category)
+    db.session.commit()
+    return category.id

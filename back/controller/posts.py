@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:18
-from back.models import User, ArticleBody, Article, Category
+import random
+from flask import g
+from sqlalchemy import func
+
+from back import setting
+from back.controller import categories
+from back.controller import tags, category_for_post, assert_new_tag_in_tags
+from back.models import User, ArticleBody, Article, Tag, db
 from back.utils import DateTime
 
 date_maker = DateTime()
@@ -83,7 +90,10 @@ def post_detail(post_info):
     category_info = category_for_post(category_id)
     post_id = post_info.post_id
     tags_info = tags_for_post(post_id)['tags_info']
-    str_date = date_maker.make_strftime(post_info.create_date)
+    str_date = ''
+    create_date = post_info.create_date
+    if create_date:
+        str_date = date_maker.make_strftime(create_date)
     json_post = {
         "author": user_info,
         "body": body_info,
@@ -134,7 +144,10 @@ def makeup_post_item_for_index(posts):
 
     for post_item in posts:
         user_id = post_item.author_id
-        str_date = date_maker.make_strftime(post_item.create_date)
+        str_date = ''
+        create_date = post_item.create_date
+        if create_date:
+            str_date = date_maker.make_strftime(create_date)
         str_user_id = str(user_id) if isinstance(user_id, int) else user_id
         # 一般来说：post数量大于user数量，所以我们这里在获取用户信息时先判断一下是否已经获取到了，没有回去到的话再去数据库中查询
         already_got = shown_user_info.get(str_user_id)
@@ -201,20 +214,6 @@ def content_for_post(body_id):
                 }
 
 
-def category_for_post(category_id):
-    """
-    文章归档信息
-    :param category_id: str(number)
-    :return: dict
-    """
-    data = Category.query.get(category_id)
-    if data:
-        return {'categoryname': data.category_name,
-                'id': category_id,
-                'description': data.description,
-                }
-
-
 def tags_for_post(post_id):
     """
     根据文章 id 查找对应的 tags 信息
@@ -238,3 +237,98 @@ def tags_for_post(post_id):
         'tag_count': tag_count
     }
     return data
+
+
+class PostNewArticle:
+    # TODO: 其他 controllers 也应该这么写
+    """
+    创建新博文
+    """
+
+    @staticmethod
+    def new_post_body(summary, content_html, content):
+        body = ArticleBody(summary=summary, content=content, content_html=content_html)
+        db.session.add(body)
+        db.session.commit()
+        return body.id
+
+    @staticmethod
+    def gen_post_identifier():
+        """
+        生成新的文章标识码
+        规则：找到现有最大值，然后加随机数
+        :return: int
+        """
+        # (19930126,)[0]
+        max_identifier = db.session.query(func.max(Article.identifier)).one_or_none()
+        if max_identifier:
+            max_num = max_identifier[0]
+            increase_int = random.randrange(1, 5)
+            post_identifier = max_num + increase_int
+        else:
+            post_identifier = setting.INITIAL_POST_IDENTIFIER
+        return post_identifier
+
+    def new_post_action(self, category_id, all_tags_for_new_post, title, body_id, weight=0):
+        """
+        添加一篇博文
+        :param category_id: int,
+        :param all_tags_for_new_post: list
+        :param title: str,
+        :param body_id: int
+        :param weight:
+        :return:
+        """
+        new_identifier = self.gen_post_identifier()
+        print('-----g.user.id------', g)
+        # print('-----g.user.id------', g.user.id)
+        author_id = '1'  # TODO: just for test
+        post = Article(title=title, identifier=new_identifier, author_id=author_id, body_id=body_id,
+                       view_counts=setting.INITIAL_VIEW_COUNTS,
+                       weight=weight, category_id=category_id)
+        print('-----all_tags_for_new_post', all_tags_for_new_post)
+        need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
+        # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
+        if need_add_tags:
+            tags.new_multi_tags(need_add_tags)
+        for tag_name in all_tags_for_new_post:
+            # tag_obj = Tag.query.filter_by(tag_name=tag_name).first()
+            # TODO: next line is right
+            tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+            post.tags.append(tag_obj)
+
+        db.session.add(post)
+        db.session.commit()
+        post_id = post.post_id
+        print('post_id', 'post_id')
+        return post_id
+
+    def new_post(self, category_name, summary, content_html, content, title, weight=0, category_description='',
+                 post_tags=None,
+                 category_id=None):
+        """
+        POST 博文，需要先看是否要 POST category、tag；然后 POST body；最后操作 Article 表
+        :param category_name:str,
+        :param category_description:str,
+        :param summary:str,
+        :param content_html:str,
+        :param content:str,
+        :param title:str,
+        :param weight:int #TODO:bool? int?
+        :param post_tags:list,
+        :param category_id:int,
+        :return:int,new_post_id
+        """
+        all_tags_for_new_post = None
+
+        if not category_id and category_name:
+            category_id = categories.new_category(category_name, category_description)
+
+        if post_tags:
+            all_tags_for_new_post = tags.add_tag_for_post(post_tags)
+
+        body_id = self.new_post_body(summary, content_html, content)
+
+        new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, body_id, weight=weight)
+
+        return new_post_id
