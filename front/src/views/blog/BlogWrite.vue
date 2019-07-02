@@ -51,28 +51,9 @@
           </el-form-item>
 
           <el-form-item label="文章标签" prop="tags">
-            <el-tag
-              :key="tag"
-              v-for="tag in dynamicTags"
-              closable
-              :disable-transitions="false"
-              @close="handleClose(tag)">
-              {{tag}}
-            </el-tag>
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible"
-              v-model="inputValue"
-              ref="saveTagInput"
-              size="small"
-              @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm"
-            >
-            </el-input>
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-            <!--<el-checkbox-group v-model="articleForm.tags">-->
-              <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
-            <!--</el-checkbox-group>-->
+            <el-checkbox-group v-model="articleForm.tags">
+              <el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -109,9 +90,6 @@
     },
     data() {
       return {
-        dynamicTags: ['标签一', '标签二', '标签三'],
-        inputVisible: true,
-        inputValue: '',
         publishVisible: false,
         categories: [],
         tags: [],
@@ -202,16 +180,17 @@
       this.inputValue = '';
       },
       getArticleById(id) {
+        console.log('-------------',id)
         let that = this
         reqArticleById(id).then(data => {
 
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
-
+          // TODO: 显示最热5个标签
           let tags = this.articleForm.tags.map(function (item) {
             return item.id;
           })
-
+          console.log('-----getArticleById--------',tags)
           this.articleForm.tags = tags
 
 
@@ -247,9 +226,16 @@
           if (valid) {
 
             let tags = this.articleForm.tags.map(function (item) {
-              return {id: item};
+              console.log('----itemitemitem--------',item)
+              // return {id: item};
+              // TODO: just for test
+              return {
+              'id':8,
+              'name':'test'
+            };
             });
-
+            console.log('---this.articleForm.id----------',this.articleForm.id)
+            console.log('---this.articleForm.title----------',this.articleForm.title)
             let article = {
               id: this.articleForm.id,
               title: this.articleForm.title,
@@ -262,7 +248,7 @@
               }
 
             }
-
+            // 关闭发布框
             this.publishVisible = false;
 
             let loading = this.$loading({

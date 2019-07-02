@@ -9,7 +9,7 @@ export function reqArticles(query, page) {
     params: {
       page: page.pageNumber,
       per_page: page.pageSize,
-      name: page.name,
+      order_by: page.orderBy,
       sort: page.sort,
       year: query.year,
       month: query.month,
@@ -66,7 +66,7 @@ export function reqArticlesByTag(id) {
 
 export function publishArticle(article) {
   return request({
-    url: '/articles/publish',
+    url: '/articles',
     method: 'post',
     data: article
   })

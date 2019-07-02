@@ -72,37 +72,38 @@ const router = new VueRouter({
   }
 })
 
-// 注册全局钩子拦截导航
-router.beforeEach((to, from, next) =>{
-  if (getToken()) {
-    if (to.path === '/signin') {
-      next({path: '/'})
-    } else {
-      next()
-      // if (store.state.account.length === 0) {
-      //   store.dispatch('getUserInfo').then(data => { //获取用户信息
-      //     next()
-      //   }).catch(() => {
-      //     next({path: '/'})
-      //   })
-      // } else {
-      //   next()
-      // }
-    }
-  }else {
-    if (to.matched.some(r => r.meta.requireLogin)) {
-      Message({
-        type: 'warning',
-        showClose: true,
-        message: '登录后才可以进行该操作哦~'
-      })
-      next('/signin')
-    }
-    else {
-      next();
-    }
-  }
-})
+// // 注册全局钩子拦截导航
+// router.beforeEach((to, from, next) =>{
+//   console.log('-----------------',getToken())
+//   if (getToken()) {
+//     if (to.path === '/signin') {
+//       next({path: '/'})
+//     } else {
+//       next()
+//       // if (store.state.account.length === 0) {
+//       //   store.dispatch('getUserInfo').then(data => { //获取用户信息
+//       //     next()
+//       //   }).catch(() => {
+//       //     next({path: '/'})
+//       //   })
+//       // } else {
+//       //   next()
+//       // }
+//     }
+//   }else {
+//     if (to.matched.some(r => r.meta.requireLogin)) {
+//       Message({
+//         type: 'warning',
+//         showClose: true,
+//         message: '登录后才可以进行该操作哦~'
+//       })
+//       next('/signin')
+//     }
+//     else {
+//       next();
+//     }
+//   }
+// })
 
 // router.beforeEach((to, from, next) => {
 //
