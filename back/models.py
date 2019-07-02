@@ -5,11 +5,9 @@
 定义所有需要用到的表结构
 """
 from datetime import datetime
-import random
 
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context
@@ -106,7 +104,7 @@ class Article(db.Model):
     identifier = db.Column(db.Integer, unique=True, comment='文章标识码')
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
-    view_counts = db.Column(db.Integer, comment='文章阅读数')
+    view_counts = db.Column(db.Integer, server_default='0', comment='文章阅读数')
     weight = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
@@ -116,6 +114,8 @@ class Article(db.Model):
                            back_populates='articles')
     authors = db.relationship('User',
                               back_populates='articles')
+    categories = db.relationship('Category',
+                                 back_populates='articles')
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -126,16 +126,6 @@ class Article(db.Model):
         if body is None or body == '':
             raise ValidationError('post dose not have a body.')
         return Article(body=body)
-
-    def post_identifier(self):
-        """
-        生成新的文章标识码
-        规则：找到现有最大值，然后加随机数
-        :return: int
-        """
-        max_num = db.session.query(func.max(self.identifier)).one().identifier
-        increase_int = random.randrange(1, 5)
-        return max_num + increase_int
 
     @staticmethod
     def update_post_by_id(post_id, post_info):
@@ -210,6 +200,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     category_name = db.Column(db.String(32), comment='分类名称')
     description = db.Column(db.String(255), comment='分类描述')
+    articles = db.relationship('Article')
 
     def __repr__(self):
         return '<Category %r>' % self.category_name

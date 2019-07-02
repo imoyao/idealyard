@@ -121,7 +121,8 @@ engine:InnoDB
 暂时手动，后期直接 source < xxx.sql
 
 ```sql
-CREATE DATABASE iyblog_dev CHARSET=UTF8;
+-- 要想用emoji，就用utf8mb4
+CREATE DATABASE iyblog_dev CHARSET=utf8mb4;
 
 USE iyblog_dev
 show tables;

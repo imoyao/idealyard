@@ -35,14 +35,15 @@ class MySQLConfig:
     MYSQL_USERNAME = 'root'
     MYSQL_PASSWORD = '111111'
     MYSQL_HOST = 'localhost:3306'
+    MYSQL_CHARSET = 'utf8mb4'  # 为了支持 emoji 显示，需要设置为 utf8mb4 编码
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
     database = 'iyblog_dev'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8'.format(MySQLConfig.MYSQL_USERNAME,
-                                                                                MySQLConfig.MYSQL_PASSWORD,
-                                                                                MySQLConfig.MYSQL_HOST, database)
+    # 1366, "Incorrect string value: '\\xF0\\x9F\\x98\\x83</...' for column 'content_html' at row 1"
+    SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{MySQLConfig.MYSQL_USERNAME}:{MySQLConfig.MYSQL_PASSWORD}' \
+                               f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
 
 
 class TestingConfig(Config):

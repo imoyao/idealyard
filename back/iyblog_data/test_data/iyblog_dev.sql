@@ -61,14 +61,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `iy_article_body`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `iy_article_body` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `content_html` text COMMENT '文章的html',
   `content` text COMMENT '文章内容',
   `summary` varchar(1000) DEFAULT '你如今的气质里，藏着你走过的路、读过的书和爱过的人。' COMMENT '文章摘要',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

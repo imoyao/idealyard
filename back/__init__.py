@@ -7,7 +7,7 @@ from werkzeug.utils import import_string
 
 from back.api_1_0 import api, auth, posts, users, tags, archives, categories
 from back.config import config
-# from .api_1_0.books import Books
+from .api_1_0.books import Books,Test
 from .models import db
 
 BLUEPRINTS = [
@@ -23,7 +23,7 @@ def add_api():
     添加 api 接口
     :return:
     """
-    # api.add_resource(Books, '/api/books', '/api/books/<string:book_id>', )
+    api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>', )
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.PostApi, '/api/articles')
