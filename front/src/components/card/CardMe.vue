@@ -3,16 +3,16 @@
     <div class="me-author-name">
       <h1 >{{ profile.username }}</h1>
       <p class="slogan-declare" align="center">
-        <span style="font-size:16px"><i class="iconfont icon-heart-fill"></i>{{ profile.slogan }}</span>
+        <span style="font-size:16px"><i class="iconfont icon-heart-fill icon-m-right"></i>{{ profile.slogan }}</span>
       </p>
     </div>
     <el-divider></el-divider>
     <div class="profile-detail">
-      <span style="margin-left: 6px"><i class="iconfont icon-location"></i>{{ profile.location }}</span>
+      <span><i class="iconfont icon-location icon-m-right"></i>{{ profile.location }}</span>
       &nbsp;
-      <span><i class="iconfont icon-company"></i>{{profile.company }}</span>
+      <span><i class="iconfont icon-company icon-m-right"></i>{{profile.company }}</span>
       &nbsp;
-      <span><i class="iconfont icon-idcard"></i>{{profile.occupation }}</span>
+      <span><i class="iconfont icon-idcard icon-m-right"></i>{{profile.occupation }}</span>
     </div>
 
     <div class="profile-detail">
@@ -87,15 +87,13 @@
     font-size: 30px;
     border-bottom: 1px solid #5FB878;
   }
-
+  .icon-m-right{
+    margin-right:6px;
+  }
   .profile-detail {
     text-align: center;
     padding-top: 10px;
     font-size: 15px;
-  }
-
-  .profile-detail>span>i{
-    margin-right: 6px;
   }
 
   .profile-detail>i {
