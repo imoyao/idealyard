@@ -209,6 +209,7 @@ def makeup_post_item_for_index(posts):
     '''
     post_list = []
     shown_user_info = dict()
+    shown_category_info = dict()
 
     for post_item in posts:
         user_id = post_item.author_id
@@ -216,17 +217,14 @@ def makeup_post_item_for_index(posts):
         create_date = post_item.create_date
         if create_date:
             str_date = date_maker.make_strftime(create_date)
-        str_user_id = str(user_id) if isinstance(user_id, int) else user_id
-        # 一般来说：post数量大于user数量，所以我们这里在获取用户信息时先判断一下是否已经获取到了，没有回去到的话再去数据库中查询
-        already_got = shown_user_info.get(str_user_id)
-        if already_got:
-            user_info = shown_user_info[str_user_id]
-        else:
-            user_info = author_info_for_post(user_id)
-            shown_user_info[str_user_id] = user_info
-        username = user_info['nickname']
+
+        #
+        category_id = post_item.category_id
         post_id = post_item.post_id
-        tag_infos = tags_for_post(post_id)['tags_info']
+        user_info = get_or_query(user_id, 'user')
+        category_info = get_or_query(category_id, 'category')
+        tag_infos = get_or_query(post_id, 'tag')['tags_info']
+        username = user_info['nickname']
         post_content = content_for_post(post_id)
         summary = post_content.get('summary') or ''
         tags = []
@@ -242,9 +240,33 @@ def makeup_post_item_for_index(posts):
             "id": post_item.post_id,
             "summary": summary,
             "tags": tags,
+            "category": category_info,
             "title": post_item.title,
             "viewCounts": post_item.view_counts,
             "weight": post_item.weight
         }
         post_list.append(post_info)
     return post_list
+
+
+def get_or_query(query_id, query_type):
+    """
+    一般来说：post数量大于user数量，所以我们这里在获取用户信息时先判断一下是否已经获取到了，没有获取到的话再去数据库中查询
+    加载首页信息时，有的信息查询一次就可以了，没有必要每次循环都去数据库拿
+    :return: query_id
+    """
+    unnecessary_every_time_dict = {
+        'user': author_info_for_post(query_id),
+        'category': category_for_post(query_id),
+        'tag': tags_for_post(query_id)
+    }
+    shown_info = dict()
+    str_query_id = str(query_id) if isinstance(query_id, int) else query_id
+    assert isinstance(str_query_id, str)
+    already_got = shown_info.get(str_query_id)
+    if already_got:
+        query_info = shown_info[str_query_id]
+    else:
+        query_info = unnecessary_every_time_dict.get(query_type)
+        shown_info[str_query_id] = query_info
+    return query_info

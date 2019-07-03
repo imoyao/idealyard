@@ -30,15 +30,6 @@ def posts_order_by_view_counts(desc=True):
     return posts_query
 
 
-def posts_by_category(category_id):
-    """
-
-    :param category_id:
-    :return:
-    """
-    pass
-
-
 def make_limit(query_data, limit_count):
     """
     是否对数量限制
@@ -103,15 +94,6 @@ def post_detail(post_info):
         "weight": post_info.weight,
     }
     return json_post
-
-
-
-
-
-
-
-
-
 
 
 class PostNewArticle:
