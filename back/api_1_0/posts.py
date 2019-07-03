@@ -96,8 +96,6 @@ class PostApi(Resource):
             print('query_by-------------------', query_by)
 
             query_data = None
-            # 标志位，不走下面的ORDER_BY逻辑
-            queryed = False
 
             if query_by == 'category':
                 query_data = controller.query_category(category_id)
@@ -110,15 +108,14 @@ class PostApi(Resource):
                 pass
 
             # ?new=true&limit=5
-            if not queryed:
-                if new or order_by == 'create_date':
-                    query_data = posts.posts_order_by_date(desc=order_by_desc)
-                # ?hot=true&limit=5
-                elif hot or order_by == 'view_counts':
-                    query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
 
-            # print(query_data_sql)
-            if query_data and not queryed:  # TODO:由于 tag_article表格 many to many 的设计，这个时候时候不能分页
+            if new or order_by == 'create_date':
+                query_data = posts.posts_order_by_date(desc=order_by_desc)
+            # ?hot=true&limit=5
+            elif hot or order_by == 'view_counts':
+                query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
+            print('--------11111111111-----------',query_data)
+            if query_data:
                 # ?page=1&per_page=10?order_by=name&order=asc
                 if all([page, per_page]):
                     pagination = posts.make_paginate(query_data, page=page, per_page=per_page)

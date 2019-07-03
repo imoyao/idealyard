@@ -85,7 +85,7 @@ def show_all_tags():
         tag['id'] = data_obj.id
         tag['tagname'] = data_obj.tag_name
         tag['articles'] = articles
-        tag['article_counts'] = len(data_obj.articles)
+        tag['article_counts'] = data_obj.articles.count()
         data.append(tag)
     return data
 
@@ -171,7 +171,7 @@ def tags_of_post_counts(query_data, limit_count):  # TODO:与 show_all_tags()合
             tag['id'] = data_obj.id
             tag['tagname'] = data_obj.tag_name
             tag['articles'] = articles
-            tag['posts_count'] = len(data_obj.articles)
+            tag['posts_count'] = data_obj.articles.count()
             all_tags[tag_name] = tag
     return all_tags
 

@@ -126,9 +126,9 @@ class Article(db.Model):
     'dynamic' 在有多条数据的时候是特别有用的。不是直接加载这些数据，SQLAlchemy 会返回一个查询对象，在加载数据前您可以过滤（提取）它们。
     您如何为反向引用（backrefs）定义惰性（lazy）状态？使用 backref() 函数:
     '''
-
-    articles = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('articles', lazy='dynamic'),
-                               lazy="dynamic")
+    # 注意：dynamic 会每次都进行查询，对性能有影响，不到不得已，不要使用该设置
+    tags = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('articles', lazy='dynamic'),
+                           lazy="dynamic")
 
     authors = db.relationship('User',
                               back_populates='articles')
@@ -181,8 +181,9 @@ class Tag(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     tag_name = db.Column(db.String(24), comment='标签名称')
-    articles = db.relationship('Article', secondary=posts_tags_table,
-                               back_populates='tags')
+
+    # articles = db.relationship('Article', secondary=posts_tags_table,
+    #                            back_populates='tags')
 
     def __repr__(self):
         return '<Tag %r>' % self.tag_name

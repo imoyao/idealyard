@@ -138,7 +138,7 @@ def query_tag(tag_id):
     :param tag_id:
     :return:
     """
-    posts_data = Tag.query.filter(Tag.id == tag_id).one().articles
+    posts_data = Tag.query.filter_by(id=tag_id).one().articles
     return posts_data
 
 
