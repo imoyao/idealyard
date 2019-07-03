@@ -10,8 +10,8 @@ from flask import g, jsonify, request
 from flask import url_for, current_app
 from flask_restful import Resource
 
-from back import setting
-from back.controller import posts
+from back import controller
+from back.controller import posts, tags
 from back.models import Article
 from . import api
 from .errors import forbidden
@@ -56,7 +56,8 @@ class PostApi(Resource):
     ?page=2&per_page=100：指定第几页，以及每页的记录数。
     ?order_by=name&order=asc：指定返回结果按照哪个属性排序，以及排序顺序。
     ?animal_type_id=1：指定筛选条件
-    参数的设计允许存在冗余，即允许API路径和URL参数偶尔有重复。比如，GET /zoo/ID/animals 与 GET /animals?zoo_id=ID 的含义是相同的。
+    参数的设计允许存在冗余，即允许API路径和URL参数偶尔有重复。
+    比如，GET /zoo/ID/animals 与 GET /animals?zoo_id=ID 的含义是相同的。
     '''
 
     def __init__(self):
@@ -74,9 +75,9 @@ class PostApi(Resource):
             hot = args.get('hot', False, type=bool)
             # ?order = asc
             order = args.get('order')  # 默认降序
-            order_by_desc = order and order == 'asc' or True  # 暂时默认是降序
+            order_by_desc = order and order == 'asc' or 'desc'  # 暂时默认是降序
             # ?limit=5
-            limit_count = int(args.get('limit')) if args.get('limit') else setting.LIMIT_NEW_POST_COUNT
+            limit_count = int(args.get('limit')) if args.get('limit') else None
             # 最新最热走limit逻辑，截取而不是分页
             page, per_page = (None,) * 2
             order_by = ''
@@ -88,26 +89,56 @@ class PostApi(Resource):
                 per_page = args.get('per_page', type=int) or current_app.config['FLASKY_POSTS_PER_PAGE']
                 # ?order_by=create_date
                 order_by = args.get('order_by', 'create_date', type=str)
+            query_by = args.get('query_by', type=str)
+            category_id = args.get('categories', type=int) or None
+            tag_id = args.get('tags', type=int) or None
             print('order-by', order_by)
-            # ?new=true&limit=5
+            print('query_by-------------------', query_by)
+
             query_data = None
-            if new or order_by == 'create_date':
-                query_data = posts.posts_order_by_date(desc=order_by_desc)
-            # ?hot=true&limit=5
-            elif hot or order_by == 'view_counts':
-                query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
+            # 标志位，不走下面的ORDER_BY逻辑
+            queryed = False
+
+            if query_by == 'category':
+                query_data = controller.query_category(category_id)
+                print('-------------', query_data)
+            elif query_by == 'tag':
+                # queryed = True
+                query_data = controller.query_tag(tag_id)
+            else:
+                queryed = True
+                pass
+
+            # ?new=true&limit=5
+            if not queryed:
+                if new or order_by == 'create_date':
+                    query_data = posts.posts_order_by_date(desc=order_by_desc)
+                # ?hot=true&limit=5
+                elif hot or order_by == 'view_counts':
+                    query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
+
             # print(query_data_sql)
-            if query_data:
+            if query_data and not queryed:  # TODO:由于 tag_article表格 many to many 的设计，这个时候时候不能分页
                 # ?page=1&per_page=10?order_by=name&order=asc
                 if all([page, per_page]):
                     pagination = posts.make_paginate(query_data, page=page, per_page=per_page)
-                    prev_page, next_page, data = self.parse_pagination(pagination, page=page, per_page=per_page)
+                    prev_page, next_page, data = self.parse_pagination(pagination, page=page, per_page=per_page,
+                                                                       order_by=order_by, order=order_by_desc,
+                                                                       query_by=query_by, categories=category_id,
+                                                                       tags=tag_id, limit=limit_count)
                     self.response_obj['data'] = data
                     self.response_obj['prev'] = prev_page
                     self.response_obj['next'] = next_page
                     self.response_obj['total'] = pagination.total
                 else:
                     data = posts.make_limit(query_data, limit_count)
+                    self.response_obj['data'] = data
+            else:
+                if query_data:
+                    # if all([page, per_page]): TODO: 需要想办法
+                    #     pass
+                    # else:
+                    data = controller.make_post_obj_limit(query_data, limit_count)
                     self.response_obj['data'] = data
             return jsonify(self.response_obj)
         else:
@@ -181,17 +212,21 @@ class PostApi(Resource):
                 'Location': api.url_for(PostDetail, post_id=post_id, _external=True)})
 
     @staticmethod
-    def parse_pagination(pagination, page=None, per_page=None):
+    def parse_pagination(pagination, page=None, per_page=None, order_by=None, order='desc', query_by=None,
+                         categories=None, tags=None, limit=None):
         _posts_list = pagination.items
         prev_page = None
         # https://stackoverflow.com/questions/24223628/how-do-i-use-flask-url-for-with-flask-restful
+        # TODO: category tag
         if pagination.has_prev:
-            prev_page = api.url_for(PostApi, page=page - 1, per_page=per_page, _external=True)
+            prev_page = api.url_for(PostApi, page=page - 1, per_page=per_page, order_by=order_by, sort=order,
+                                    query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
         next_page = None
         if pagination.has_next:
-            next_page = api.url_for(PostApi, page=page + 1, per_page=per_page, _external=True)
+            next_page = api.url_for(PostApi, page=page + 1, per_page=per_page, order_by=order_by, sort=order,
+                                    query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
 
-        data = posts.makeup_post_item_for_index(_posts_list)
+        data = controller.makeup_post_item_for_index(_posts_list)
         return prev_page, next_page, data
 
 

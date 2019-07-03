@@ -110,8 +110,26 @@ class Article(db.Model):
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
     update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
                             comment='文章更新时间')
-    tags = db.relationship('Tag', secondary=posts_tags_table,
-                           back_populates='articles')
+    # tags = db.relationship('Tag', secondary=posts_tags_table,
+    #                        back_populates='articles')
+    '''
+    # https://stackoverflow.com/questions/36225736/flask-sqlalchemy-paginate-over-objects-in-a-relationship
+    # http://www.pythondoc.com/flask-sqlalchemy/models.html#one-to-many
+    # https://docs.sqlalchemy.org/en/13/orm/basic_relationships.html#many-to-many
+    # https://stackoverflow.com/questions/23469093/flask-sqlalchemy-query-in-a-many-to-many-itself-relationship
+    
+    backref 和 lazy 意味着什么了？backref 是一个在 Address 类上声明新属性的简单方法。您也可以使用 my_address.person 来获取使用该地址(address)的人(person)。
+    lazy 决定了 SQLAlchemy 什么时候从数据库中加载数据:
+    'select' (默认值) 就是说 SQLAlchemy 会使用一个标准的 select 语句必要时一次加载数据。
+    'joined' 告诉 SQLAlchemy 使用 JOIN 语句作为父级在同一查询中来加载关系。
+    'subquery' 类似 'joined' ，但是 SQLAlchemy 会使用子查询。
+    'dynamic' 在有多条数据的时候是特别有用的。不是直接加载这些数据，SQLAlchemy 会返回一个查询对象，在加载数据前您可以过滤（提取）它们。
+    您如何为反向引用（backrefs）定义惰性（lazy）状态？使用 backref() 函数:
+    '''
+
+    articles = db.relationship('Tag', secondary=posts_tags_table, backref=db.backref('articles', lazy='dynamic'),
+                               lazy="dynamic")
+
     authors = db.relationship('User',
                               back_populates='articles')
     categories = db.relationship('Category',
