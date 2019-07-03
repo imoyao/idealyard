@@ -6,7 +6,7 @@ from back.models import Article, Category, Tag
 
 def category_for_post(category_id):
     """
-    文章归档信息
+    文章归档信息p
     :param category_id: str(number)
     :return: dict
     """
