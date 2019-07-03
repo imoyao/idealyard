@@ -11,7 +11,7 @@
 	    	<i class="iconfont icon-comment"></i>&nbsp;{{commentCounts}}
 	    </span>
       <span class="me-pull-right me-article-count">
-	    	<i class="el-icon-view"></i>&nbsp;{{viewCounts}}
+	    	<i class="iconfont icon-read"></i>&nbsp;{{viewCounts}}
 	    </span>
     </div>
 
@@ -23,8 +23,12 @@
 	    	<i class="iconfont icon-user"></i>&nbsp;{{author.nickname}}
 	    </span>
 
-      <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success">{{t.tagname}}</el-tag>
-
+      <i class="iconfont icon-tags"></i>
+      <!--# TODO:tags 大于三个时显示异常 ,为空时不应该显示图标-->
+      <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success" class="me-article-flag">{{t.tagname}}</el-tag>
+      <span class="me-article-category">
+	    	<i class="iconfont icon-folder-open"></i>&nbsp;{{category.categoryname}}
+	    </span>
       <span class="me-pull-right me-article-count">
 	    	<i class="el-icon-time"></i>&nbsp;{{createDate | format}}
 	    </span>
@@ -47,6 +51,7 @@
       summary: String,
       author: Object,
       tags: Array,
+      category: Object,
       createDate: String
     },
     data() {
@@ -82,6 +87,11 @@
     font-size: 13px;
   }
 
+  .me-article-flag {
+    margin-left: 1px !important;
+    font-size: 13px;
+  }
+
   .me-pull-right {
     float: right;
   }
@@ -95,6 +105,11 @@
   .me-article-author {
     color: #a6a6a6;
     padding-right: 18px;
+    font-size: 13px;
+  }
+  .me-article-category {
+    color: #a6a6a6;
+    padding-left: 18px;
     font-size: 13px;
   }
 
