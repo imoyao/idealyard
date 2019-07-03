@@ -46,7 +46,9 @@
     color: #e11111;
     display: block;
   }
-
+  .icon-m-right{
+    margin-right:6px;
+  }
   .no-enough {
     color: #e11111;
   }

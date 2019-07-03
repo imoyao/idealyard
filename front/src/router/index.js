@@ -23,6 +23,14 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/signin',
+      component: r => require.ensure([], () => r(require('@/views/Login')), 'signin')
+    },
+    {
+      path: '/register',
+      component: r => require.ensure([], () => r(require('@/views/Register')), 'register')
+    },
+    {
       path: '',
       // name: 'Home',
       component: Home,
@@ -48,6 +56,7 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {
+          //TODO: tag & categroy 公用，后期可能给拆分开？
           path: '/:type',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogAllCategoryTag')), 'blogallcategorytag')
         },
@@ -56,14 +65,6 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/blog/BlogCategoryTag')), 'blogcategorytag')
         }
       ]
-    },
-    {
-      path: '/signin',
-      component: r => require.ensure([], () => r(require('@/views/Login')), 'signin')
-    },
-    {
-      path: '/register',
-      component: r => require.ensure([], () => r(require('@/views/Register')), 'register')
     }
 
   ],

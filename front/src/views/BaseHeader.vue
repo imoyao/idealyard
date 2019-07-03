@@ -47,9 +47,9 @@
                 <img class="me-header-picture" :src="user.avatar" />
                 <!--<span class="el-dropdown-link userinfo-inner"><img class="me-header-picture" :src="user.avatar" /></span>-->
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item><i class="iconfont icon-bell"></i>我的消息</el-dropdown-item>
-                  <el-dropdown-item><i class="iconfont icon-icon-test"></i>设置</el-dropdown-item>
-                  <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout"></i>退出</el-dropdown-item>
+                  <el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>
+                  <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
+                  <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-col>
@@ -100,8 +100,9 @@
       // }
       logout: function () {
         var _this = this
-        this.$confirm('确认退出吗?', '提示', {
-          type: 'warning'
+        // this.$confirm('欲问后期何日是，寄书应见雁南征。确认退出？', '提示', {
+        this.$confirm('<i>欲问后期何日是，寄书应见雁南征。</i>', '确认退出？', {
+          dangerouslyUseHTMLString: true
         }).then(() => {
           // TODO: 清除工作
           removeToken()
