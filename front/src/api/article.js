@@ -25,12 +25,12 @@ export function reqArticles(query, page) {
   switch (queryType) {
     case 'tag':
       queryId = query.tagId
-      paramsObj.order_by = queryType
+      paramsObj.query_by = queryType
       paramsObj.tags = queryId
       break
     case 'category':
       queryId = query.categoryId
-      paramsObj.order_by = queryType
+      paramsObj.query_by = queryType
       paramsObj.categories = queryId
       break
     default:

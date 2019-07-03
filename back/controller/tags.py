@@ -2,9 +2,13 @@
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:23
 
+from back import controller
 from back.controller import posts
 from back.models import Article
 from back.models import Tag, db
+from back.utils import DateTime
+
+date_maker = DateTime()
 
 
 def query_tag_item(limit_count):  # DEPRECATED
@@ -113,19 +117,36 @@ def posts_by_tag_id(tag_id):
     return data
 
 
-def make_tag_limit(query_data, limit_count):
+def query_post_by_tag(tag_id, order_by='create_date', desc='desc'):     # TODO: 如果好用，这个则弃用！！！
     """
-    是否对数量限制
-    :param query_data:
-    :param limit_count:
+    按照标签查文章
+    :param tag_id:
+    :param order_by:
+    :param desc:
     :return:
     """
-    if limit_count >= 1:
-        # AttributeError: 'list' object has no attribute 'limit'
-        data = query_data[:limit_count]
-    else:
-        data = query_data
-    return data
+    reverse = True if desc == 'desc' else False
+    _data = None
+    tag_obj = Tag.query.filter(Tag.id == tag_id).one()
+    posts_data = tag_obj.articles
+    print('=-----------', posts_data)
+
+    for post in posts_data:
+        print('----------', type(post.create_date))
+    if order_by == 'create_date':
+        # 2019-06-17 10:07:43
+        # https://stackoverflow.com/questions/33512126/how-to-sort-an-array-of-objects-by-datetime-in-python/33512197
+        _data = sorted(
+            posts_data,
+            key=lambda x: date_maker.make_strftime(x.create_date), reverse=reverse
+        )
+    elif order_by == 'view_counts':
+        _data = sorted(
+            posts_data,
+            key=lambda x: x.view_counts, reverse=reverse
+        )
+    print(',--------------', _data)
+    return _data
 
 
 def tags_of_post_counts(query_data, limit_count):  # TODO:与 show_all_tags()合并
@@ -133,7 +154,7 @@ def tags_of_post_counts(query_data, limit_count):  # TODO:与 show_all_tags()合
     获取各标签下文章个数
     :return:dict,like {TAG_NAME: {POSTS_COUNT: int, ID: int,TAG_NAME:str}, ……}
     """
-    article_obj = make_tag_limit(query_data, limit_count)
+    article_obj = controller.make_tag_limit(query_data, limit_count)
     '''
     below equal this:
     return [{posts_by_tag_id(post.post_id)['tag_name']: posts_by_tag_id(post.post_id)['article_counts']} for post in article_obj]

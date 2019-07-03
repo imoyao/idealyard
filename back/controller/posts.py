@@ -6,8 +6,8 @@ from flask import g
 from sqlalchemy import func
 
 from back import setting
-from back.controller import categories
-from back.controller import tags, category_for_post, assert_new_tag_in_tags
+from back import controller
+from back.controller import categories, tags
 from back.models import User, ArticleBody, Article, Tag, db
 from back.utils import DateTime
 
@@ -30,6 +30,15 @@ def posts_order_by_view_counts(desc=True):
     return posts_query
 
 
+def posts_by_category(category_id):
+    """
+
+    :param category_id:
+    :return:
+    """
+    pass
+
+
 def make_limit(query_data, limit_count):
     """
     是否对数量限制
@@ -41,7 +50,7 @@ def make_limit(query_data, limit_count):
         posts = query_data.limit(limit_count).all()
     else:
         posts = query_data.all()
-    data = post_info_json(posts)
+    data = controller.post_info_json(posts)
     return data
 
 
@@ -60,22 +69,6 @@ def make_paginate(query_data, page=None, per_page=None):
     return pagination
 
 
-def post_info_json(posts):
-    """
-    返回id与title键值对
-    :param posts:list,
-    :return: list,
-    """
-    ret_data = []
-    for post in posts:
-        post_info = dict()
-        post_info['id'] = post.post_id
-        post_info['post_url_id'] = post.identifier
-        post_info['title'] = post.title
-        ret_data.append(post_info)
-    return ret_data
-
-
 def post_detail(post_info):
     """
     用户点击文章链接跳详情页的数据接口，返回在这里找
@@ -83,13 +76,13 @@ def post_detail(post_info):
     :return:
     """
     user_id = post_info.author_id
-    user_info = user_info_for_post(user_id)
+    user_info = controller.author_info_for_post(user_id)
     body_id = post_info.body_id
-    body_info = content_for_post(body_id)
+    body_info = controller.content_for_post(body_id)
     category_id = post_info.category_id
-    category_info = category_for_post(category_id)
+    category_info = controller.category_for_post(category_id)
     post_id = post_info.post_id
-    tags_info = tags_for_post(post_id)['tags_info']
+    tags_info = controller.tags_for_post(post_id)['tags_info']
     str_date = ''
     create_date = post_info.create_date
     if create_date:
@@ -112,131 +105,13 @@ def post_detail(post_info):
     return json_post
 
 
-def makeup_post_item_for_index(posts):
-    """
-    组装首页展示需要的数据
-    :return:
-    """
-    '''
-    [{
-    "author":{
-        "nickname":"imoyao"
-    },
-    "commentCounts":0,
-    "createDate":"2019.02.28 15:37",
-    "id":28,
-    "summary":"sample summary",
-    "tags":[
-        {
-            "tagname":"Python"
-        }
-    ],
-    "title":"tt",
-    "viewCounts":188,
-    "weight":0
-    },
-    ……
-    {……}
-    ]
-    '''
-    post_list = []
-    shown_user_info = dict()
-
-    for post_item in posts:
-        user_id = post_item.author_id
-        str_date = ''
-        create_date = post_item.create_date
-        if create_date:
-            str_date = date_maker.make_strftime(create_date)
-        str_user_id = str(user_id) if isinstance(user_id, int) else user_id
-        # 一般来说：post数量大于user数量，所以我们这里在获取用户信息时先判断一下是否已经获取到了，没有回去到的话再去数据库中查询
-        already_got = shown_user_info.get(str_user_id)
-        if already_got:
-            user_info = shown_user_info[str_user_id]
-        else:
-            user_info = user_info_for_post(user_id)
-            shown_user_info[str_user_id] = user_info
-        username = user_info['nickname']
-        post_id = post_item.post_id
-        tag_infos = tags_for_post(post_id)['tags_info']
-        post_content = content_for_post(post_id)
-        print('----post_content------', post_content)
-        summary = post_content.get('summary') or ''
-        tags = []
-        if tag_infos:
-            tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]
-        post_info = {
-            "author": {
-                "nickname": username
-            },
-            # TODO: 继续开发
-            "commentCounts": 0,
-            "createDate": str_date,
-            "id": post_item.post_id,
-            "summary": summary,
-            "tags": tags,
-            "title": post_item.title,
-            "viewCounts": post_item.view_counts,
-            "weight": post_item.weight
-        }
-        post_list.append(post_info)
-    return post_list
 
 
-def user_info_for_post(user_id):
-    """
-    文章作者信息
-    :param user_id: str(number),author_id
-    :return: dict,
-    """
-    user = User.query.get(user_id)
-    if user:
-        return {'avatar': user.avatar_hash,
-                'id': user_id,
-                'nickname': user.username,
-                }
 
 
-def content_for_post(body_id):
-    """
-    获取文章正文内容
-    TODO: 因为此处返回表所有的数据，所以是否可以直接返回，不需要手动组装（只是修改前端获取的字段键）
-    :param body_id: str(number)
-    :return: dict
-    """
-    body = ArticleBody.query.get(body_id)
-    # https://stackoverflow.com/questions/5022066/how-to-serialize-sqlalchemy-result-to-json
-    if body:
-        return {'id': body_id,
-                'content': body.content,
-                'contentHtml': body.content_html,
-                'summary': body.summary,
-                }
 
 
-def tags_for_post(post_id):
-    """
-    根据文章 id 查找对应的 tags 信息
-    ref:https://github.com/mrjoes/flask-admin/blob/402b56ea844dc5b215f6293e7dc63f39a6723692/examples/sqla/app.py
-    https://www.jianshu.com/p/cd5b1728832c
-    通过文章获取标签信息，重点在`posts_tags_table`的创建
-    :param post_id: int,
-    :return: dict,
-    """
-    article_obj = Article.query.filter(Article.post_id == post_id).first()
-    tags_data = article_obj.tags
-    tags_info = []
-    if tags_data:
-        # 标签信息列表
-        tags_info = [{'id': tag.id, 'tag_name': tag.tag_name} for tag in tags_data]
-    tag_count = len(tags_info)
 
-    data = {
-        'id': post_id,
-        'tags_info': tags_info,
-        'tag_count': tag_count
-    }
-    return data
 
 
 class PostNewArticle:
@@ -287,7 +162,7 @@ class PostNewArticle:
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
         print('-----all_tags_for_new_post', all_tags_for_new_post)
-        need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
+        need_add_tags = controller.assert_new_tag_in_tags(all_tags_for_new_post)
         # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
         if need_add_tags:
             tags.new_multi_tags(need_add_tags)
