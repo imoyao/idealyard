@@ -97,9 +97,7 @@ def posts_by_tag_id(tag_id):
     :return:dict,
     """
     tag_obj = Tag.query.filter(Tag.id == tag_id).first()
-    print('---------------',tag_obj)
     posts_data = tag_obj.articles
-    print('---------posts_data------',posts_data)
     data = dict()
     if posts_data:
         # 文章id列表

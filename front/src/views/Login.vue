@@ -1,8 +1,5 @@
 <template>
   <div id="login" v-title data-title="登录 - For Fun">
-    <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
-          <source src="../../static/vedio/sea.mp4" type="video/mp4">
-      </video>-->
 
     <div class="me-login-box me-login-box-radius">
       <h1>别院牧志 登录</h1>
@@ -24,7 +21,7 @@
       <div class="me-login-design">
         <p>Designed by
           <strong>
-            <router-link to="/" class="me-login-design-color">别院牧志</router-link>
+            <router-link to="/" class="me-login-design-color">IMOYAO</router-link>
           </strong>
         </p>
       </div>
@@ -76,10 +73,7 @@
                   type: 'error'
                 })
               } else {
-                this.$message({
-                  message: msg,
-                  type: 'success'
-                })
+                this.$message({type: 'success', message: '何当共剪西窗烛，却话巴山夜雨时。💖 ', showClose: false})
                 // https://segmentfault.com/a/1190000012057010
                 setToken(JSON.stringify(token))
                 // sessionStorage.setItem('token', JSON.stringify(token))

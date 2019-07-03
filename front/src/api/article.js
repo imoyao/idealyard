@@ -3,19 +3,44 @@ import request from '@/request'
 // TODO: 里面很多api都是可以精简的
 
 export function reqArticles(query, page) {
+  let queryId = '', queryType = '', queryYear = '', queryMonth = ''
+  if (query.tagId) {
+    queryType = 'tag'
+    queryId = query.tagId
+  } else if (query.categoryId) {
+    queryType = 'category'
+    queryId = query.categoryId
+  } else if (query.year && query.month) {
+    queryType = 'archive'
+    queryYear = query.year
+    queryMonth = query.month
+  }
+  let paramsObj = {
+    page: page.pageNumber,
+    per_page: page.pageSize,
+    order_by: page.orderBy,
+    sort: page.sort,
+  }
+  console.log(queryType,'----------')
+  switch (queryType) {
+    case 'tag':
+      queryId = query.tagId
+      paramsObj.order_by = queryType
+      paramsObj.tags = queryId
+      break
+    case 'category':
+      queryId = query.categoryId
+      paramsObj.order_by = queryType
+      paramsObj.categories = queryId
+      break
+    default:
+      paramsObj.year = queryYear
+      paramsObj.month = queryMonth
+  }
   return request({
     url: '/articles',
     method: 'get',
-    params: {
-      page: page.pageNumber,
-      per_page: page.pageSize,
-      order_by: page.orderBy,
-      sort: page.sort,
-      year: query.year,
-      month: query.month,
-      tagId: query.tagId,
-      categoryId: query.categoryId
-    }
+    params: paramsObj
   })
 }
 
@@ -42,7 +67,7 @@ export function reqNewArtices() {
 }
 
 export function viewArticle(id) {
-  console.log('viewArticle------------',id)
+  console.log('viewArticle------------', id)
   return request({
     url: `/articles/${id}`,
     method: 'get'

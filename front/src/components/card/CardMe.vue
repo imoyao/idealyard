@@ -87,9 +87,7 @@
     font-size: 30px;
     border-bottom: 1px solid #5FB878;
   }
-  .icon-m-right{
-    margin-right:6px;
-  }
+
   .profile-detail {
     text-align: center;
     padding-top: 10px;

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 22:28
-from back.controller import post_by_category_id,category_for_post
+from back.controller import post_by_category_id, category_for_post
 from back.models import Category
 from back.models import db
 

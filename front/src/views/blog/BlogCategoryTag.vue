@@ -28,7 +28,6 @@
 
 <script>
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
-  import {reqArticlesByCategory, reqArticlesByTag} from '@/api/article'
   import {reqTagDetail} from '@/api/tag'
   import {reqCategoryDetail} from '@/api/category'
   import defaultAvatar from '@/assets/img/logo.png'
@@ -95,26 +94,6 @@
           }
         })
       },
-      getArticlesByCategory(id) {
-        let that = this
-        reqArticlesByCategory(id).then(data => {
-          that.articles = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
-          }
-        })
-      },
-      getArticlesByTag(id) {
-        let that = this
-        reqArticlesByTag(id).then(data => {
-          that.articles = data.data
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
-          }
-        })
-      }
     },
     components: {
       ArticleScrollPage
