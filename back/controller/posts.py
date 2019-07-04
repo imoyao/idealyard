@@ -6,97 +6,139 @@ from flask import g
 from sqlalchemy import func
 
 from back import setting
-from back import controller
+from back.controller import QueryComponent, MakeupPost, MakeQuery, assert_new_tag_in_tags
 from back.controller import categories, tags
-from back.models import User, ArticleBody, Article, Tag, db
+from back.models import ArticleBody, Article, Tag, db
 from back.utils import DateTime
 
 date_maker = DateTime()
 
 
-def posts_order_by_date(desc=True):
-    if desc:
-        posts_query = Article.query.order_by(Article.create_date.desc())
-    else:
-        posts_query = Article.query.order_by(Article.create_date)
-    return posts_query
+class GetPostCtrl:
+
+    def posts_order_by_date(self, desc=True):
+        if desc:
+            posts_query = Article.query.order_by(Article.create_date.desc())
+        else:
+            posts_query = Article.query.order_by(Article.create_date)
+        return posts_query
+
+    @staticmethod
+    def posts_order_by_view_counts(desc=True):
+        if desc:
+            posts_query = Article.query.order_by(Article.view_counts.desc())
+        else:
+            posts_query = Article.query.order_by(Article.view_counts)
+        return posts_query
+
+    @staticmethod
+    def make_limit(query_data, limit_count):
+        """
+        是否对数量限制
+        :param query_data:
+        :param limit_count:
+        :return:
+        """
+        if limit_count >= 1:
+            posts = query_data.limit(limit_count).all()
+        else:
+            posts = query_data.all()
+        data = MakeupPost.post_info_json(posts)
+        return data
+
+    @staticmethod
+    def make_paginate(query_data, page=None, per_page=None):
+        """
+        返回分页对象
+        :param query_data:
+        :param page:
+        :param per_page:
+        :return:
+        """
+        assert all([page, per_page])
+        pagination = query_data.paginate(
+            page, per_page=per_page, error_out=False
+        )
+        return pagination
+
+    @staticmethod
+    def post_detail(post_info):
+        """
+        用户点击文章链接跳详情页的数据接口，返回在这里找
+        :param post_info:
+        :return:
+        """
+        user_id = post_info.author_id
+        body_id = post_info.body_id
+        category_id = post_info.category_id
+        post_id = post_info.post_id
+        post_identifier = post_info.identifier
+        create_date = post_info.create_date
+        user_info = QueryComponent.author_info_for_post(user_id)
+        body_info = QueryComponent.content_for_post(body_id)
+        category_info = QueryComponent.category_for_post(category_id)
+        tags_info = QueryComponent.tags_for_post(post_id)['tags_info']
+        str_date = ''
+        if create_date:
+            str_date = date_maker.make_strftime(create_date)
+        json_post = {
+            "author": user_info,
+            "body": body_info,
+            "category": category_info,
+            # TODO:后期添加
+            "commentCounts": 0,
+            "createDate": str_date,
+            "id": post_id,
+            "identifier": post_identifier,
+            # TODO:摘要，暂无；感觉这个api不需要该参数？？？
+            # "summary": "本节将介绍如何在项目中使用 Element。",
+            "tags": tags_info,
+            "title": post_info.title,
+            "viewCounts": post_info.view_counts,
+            "weight": post_info.weight,
+        }
+        return json_post
+
+    def get_post_detail_by_args(self, query_by, order_by, category_id, tag_id, year, month, new=False, hot=False,
+                                order_by_desc='desc'):
+        """
+        根据各种条件查询文章
+        :param query_by: str,查询字段:item in ['category','tag','archive']
+        :param order_by: 排序字段
+        :param category_id: int,分类id
+        :param tag_id: int, 标签id
+        :param year: int, 年份
+        :param month: int,月份
+        :param new: bool
+        :param hot: bool
+        :param order_by_desc: str, 'desc' / 'asc'
+        :return:
+        """
+        query_data = None
+        queryed = False
+        if query_by:
+            if query_by == 'category':
+                query_data = MakeQuery.query_category(category_id)
+            elif query_by == 'tag':
+                queryed = True
+                query_data = MakeQuery.query_tag_by(tag_id, order_by=order_by, desc=order_by_desc)
+            elif query_by == 'archive':
+                queryed = True
+                query_data = MakeQuery.query_post_by_year_and_month(year, month, order_by=order_by, desc=order_by_desc)
+            else:
+                queryed = True
+                pass
+        # ?new=true&limit=5
+        if not queryed:
+            if new or order_by == 'create_date':
+                query_data = self.posts_order_by_date(desc=order_by_desc)
+            # ?hot=true&limit=5
+            elif hot or order_by == 'view_counts':
+                query_data = self.posts_order_by_view_counts(desc=order_by_desc)
+        return query_data
 
 
-def posts_order_by_view_counts(desc=True):
-    if desc:
-        posts_query = Article.query.order_by(Article.view_counts.desc())
-    else:
-        posts_query = Article.query.order_by(Article.view_counts)
-    return posts_query
-
-
-def make_limit(query_data, limit_count):
-    """
-    是否对数量限制
-    :param query_data:
-    :param limit_count:
-    :return:
-    """
-    if limit_count >= 1:
-        posts = query_data.limit(limit_count).all()
-    else:
-        posts = query_data.all()
-    data = controller.post_info_json(posts)
-    return data
-
-
-def make_paginate(query_data, page=None, per_page=None):
-    """
-    返回分页对象
-    :param query_data:
-    :param page:
-    :param per_page:
-    :return:
-    """
-    assert all([page, per_page])
-    pagination = query_data.paginate(
-        page, per_page=per_page, error_out=False
-    )
-    return pagination
-
-
-def post_detail(post_info):
-    """
-    用户点击文章链接跳详情页的数据接口，返回在这里找
-    :param post_info:
-    :return:
-    """
-    user_id = post_info.author_id
-    body_id = post_info.body_id
-    category_id = post_info.category_id
-    post_id = post_info.post_id
-    post_identifier = post_info.identifier
-    create_date = post_info.create_date
-    user_info = controller.author_info_for_post(user_id)
-    body_info = controller.content_for_post(body_id)
-    category_info = controller.category_for_post(category_id)
-    tags_info = controller.tags_for_post(post_id)['tags_info']
-    str_date = ''
-    if create_date:
-        str_date = date_maker.make_strftime(create_date)
-    json_post = {
-        "author": user_info,
-        "body": body_info,
-        "category": category_info,
-        # TODO:后期添加
-        "commentCounts": 0,
-        "createDate": str_date,
-        "id": post_id,
-        "identifier": post_identifier,
-        # TODO:摘要，暂无；感觉这个api不需要该参数？？？
-        # "summary": "本节将介绍如何在项目中使用 Element。",
-        "tags": tags_info,
-        "title": post_info.title,
-        "viewCounts": post_info.view_counts,
-        "weight": post_info.weight,
-    }
-    return json_post
-
+# ==POST==
 
 class PostNewArticle:
     # TODO: 其他 controllers 也应该这么写
@@ -146,7 +188,7 @@ class PostNewArticle:
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
         print('-----all_tags_for_new_post', all_tags_for_new_post)
-        need_add_tags = controller.assert_new_tag_in_tags(all_tags_for_new_post)
+        need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
         # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
         if need_add_tags:
             tags.new_multi_tags(need_add_tags)

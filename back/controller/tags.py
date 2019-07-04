@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:23
 
-from back import controller
-from back.controller import posts
+from back.controller import QueryComponent,MakeupPost
 from back.models import Article
 from back.models import Tag, db
 from back.utils import DateTime
@@ -19,7 +18,8 @@ def query_tag_item(limit_count):  # DEPRECATED
     :return: dict
     """
     '''
-    {'Python': {'count': 1, 'id': 1}, '原创': {'count': 5, 'id': 8}, '后端': {'count': 1, 'id': 9}, '杂文': {'count': 3, 'id': 5}, 'MySQL': {'count': 1, 'id': 4}}
+    {'Python': {'count': 1, 'id': 1}, '原创': {'count': 5, 'id': 8}, '后端': {'count': 1, 'id': 9}, 
+    '杂文': {'count': 3, 'id': 5}, 'MySQL': {'count': 1, 'id': 4}}
     '''
     if limit_count:
         article_obj = Article.query.limit(limit_count).all()
@@ -28,7 +28,7 @@ def query_tag_item(limit_count):  # DEPRECATED
     tag_info = {}
     for post in article_obj:
         post_id = post.post_id
-        tags = posts.tags_for_post(post_id)['tags_info']
+        tags = QueryComponent.tags_for_post(post_id)['tags_info']
         for tag in tags:
             if tag['tag_name'] not in tag_info:
                 tag_info[tag['tag_name']] = {}
@@ -154,10 +154,11 @@ def tags_of_post_counts(query_data, limit_count):  # TODO:与 show_all_tags()合
     获取各标签下文章个数
     :return:dict,like {TAG_NAME: {POSTS_COUNT: int, ID: int,TAG_NAME:str}, ……}
     """
-    article_obj = controller.make_tag_limit(query_data, limit_count)
+    article_obj = MakeupPost.make_data_limit(query_data, limit_count)
     '''
     below equal this:
-    return [{posts_by_tag_id(post.post_id)['tag_name']: posts_by_tag_id(post.post_id)['article_counts']} for post in article_obj]
+    return [{posts_by_tag_id(post.post_id)['tag_name']: posts_by_tag_id(post.post_id)['article_counts']} 
+    for post in article_obj]
     '''
     # 组装
     all_tags = {}

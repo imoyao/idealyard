@@ -10,12 +10,16 @@ from flask import g, jsonify, request
 from flask import url_for, current_app
 from flask_restful import Resource
 
-from back import controller
-from back.controller import posts
+from back.controller import MakeupPost
+from back.controller.posts import GetPostCtrl, PostNewArticle
 from back.models import Article
 from . import api
 from .errors import forbidden
 from .utils import jsonify_with_args
+
+post_getter = GetPostCtrl()
+post_maker = MakeupPost()
+article_poster = PostNewArticle()
 
 
 def abort_if_not_exist(post_id):
@@ -66,7 +70,7 @@ class PostApi(Resource):
     def get(self):
         # 请求数据
         args = request.args
-        print([_ for _ in args])
+        print('[_ for _ in args]', args)
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             # ?new=true
@@ -94,36 +98,18 @@ class PostApi(Resource):
             tag_id = args.get('tags', type=int) or None
             year = args.get('year', type=int) or None
             month = args.get('month', type=int) or None
-            print('order-by', order_by)
-            print('query_by-------------------', query_by)
 
-            query_data = None
-            queryed = False
             # 关键字查询
-            if query_by:
-                if query_by == 'category':
-                    query_data = controller.query_category(category_id)
-                elif query_by == 'tag':
-                    queryed = True
-                    query_data = controller.query_tag_by(tag_id, order_by=order_by, desc=order_by_desc)
-                elif query_by == 'archive':
-                    queryed = True
-                    query_data = controller.query_post_by_year_and_month(year, month, order_by=order_by, desc=order_by_desc)
-                else:
-                    queryed = True
-                    pass
-            # ?new=true&limit=5
-            if not queryed:
-                if new or order_by == 'create_date':
-                    query_data = posts.posts_order_by_date(desc=order_by_desc)
-                # ?hot=true&limit=5
-                elif hot or order_by == 'view_counts':
-                    query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
-                print('--------11111111111-----------', query_data)
+            query_data = post_getter.get_post_detail_by_args(query_by, order_by, category_id, tag_id, year, month, new,
+                                                             hot,
+                                                             order_by_desc=order_by_desc)
+
+            # print('--------11111111111-----------', query_data)
             if query_data:
+                # 因为分页要调api，为防止循环引用，所以此处放在内部
                 # ?page=1&per_page=10?order_by=name&order=asc
                 if all([page, per_page]):
-                    pagination = posts.make_paginate(query_data, page=page, per_page=per_page)
+                    pagination = GetPostCtrl.make_paginate(query_data, page=page, per_page=per_page)
                     prev_page, next_page, data = self.parse_pagination(pagination, page=page, per_page=per_page,
                                                                        order_by=order_by, order=order_by_desc,
                                                                        query_by=query_by, categories=category_id,
@@ -133,15 +119,8 @@ class PostApi(Resource):
                     self.response_obj['next'] = next_page
                     self.response_obj['total'] = pagination.total
                 else:
-                    data = posts.make_limit(query_data, limit_count)
+                    data = GetPostCtrl.make_limit(query_data, limit_count)
                     self.response_obj['data'] = data
-            # else:
-            #     if query_data:
-            #         # if all([page, per_page]): TODO: 需要想办法
-            #         #     pass
-            #         # else:
-            #         data = controller.make_post_obj_limit(query_data, limit_count)
-            #         self.response_obj['data'] = data
             return jsonify(self.response_obj)
         else:
             self.response_obj['code'] = 1
@@ -180,7 +159,6 @@ class PostApi(Resource):
         '''
         json_data = request.json
         print('------data = request.json--------', json_data)
-        post_title = json_data.get('title')
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
@@ -201,12 +179,12 @@ class PostApi(Resource):
             post_category_id = post_category.get('id')
             category_name = post_category.get('categoryname')
             category_description = post_category.get('description')
-            post_control = posts.PostNewArticle()
+
             print('--------11111111------', post_tags)
-            post_id = post_control.new_post(category_name, post_summary, content_html, content, post_title,
-                                            weight=post_weight, category_description=category_description,
-                                            post_tags=post_tags,
-                                            category_id=post_category_id)
+            post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
+                                         weight=post_weight, category_description=category_description,
+                                         post_tags=post_tags,
+                                         category_id=post_category_id)
             data = {'articleId': post_id}
             self.response_obj['data'] = data
             # 服务器为新资源指派URL，并在响应的Location首部中返回
@@ -228,7 +206,7 @@ class PostApi(Resource):
             next_page = api.url_for(PostApi, page=page + 1, per_page=per_page, order_by=order_by, sort=order,
                                     query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
 
-        data = controller.makeup_post_item_for_index(_posts_list)
+        data = post_maker.makeup_post_item_for_index(_posts_list)
         return prev_page, next_page, data
 
 
@@ -244,7 +222,7 @@ class PostDetail(Resource):
         :return: json,
         """
         post = abort_if_not_exist(post_id)
-        post_info = posts.post_detail(post)
+        post_info = post_getter.post_detail(post)
         self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
