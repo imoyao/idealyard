@@ -106,19 +106,6 @@ class QueryComponent:
         pass
 
 
-def post_by_category_id(category_id):
-    """
-    根据分类id查询分类下文章
-    :param category_id: int,
-    :return: list,post id in it
-    """
-    posts_data = MakeQuery.query_post_by_category(category_id)
-    articles = []
-    if posts_data:
-        articles = [data.post_id for data in posts_data]
-    return articles
-
-
 class MakeQuery:
     """
     根据添加做查询，最后返回sql
@@ -178,9 +165,16 @@ class MakeQuery:
         return post_obj
 
     @staticmethod
-    def query_post_by_year_and_month(year, month, order_by='create_date', desc='desc'):
+    def query_post_year_month(year, month):
+        data = Article.query.filter(and_(
+            extract('year', Article.create_date) == year,
+            extract('month', Article.create_date) == month
+        ))
+        return data
+
+    def order_archive(self, year, month, order_by='create_date', desc='desc'):
         """
-        按照年月查询文章        # TODO:是否可以合并
+        按照归档（年、月）排序文章
         :param year:
         :param month:
         :param order_by:
@@ -188,26 +182,17 @@ class MakeQuery:
         :return:
         """
         post_obj = None
+        _data = self.query_post_year_month(year, month)
         if order_by == 'create_date':
             if desc == 'desc':
-                post_obj = Article.query.filter(and_(
-                    extract('year', Article.create_date) == year,
-                    extract('month', Article.create_date) == month
-                )).order_by(Article.create_date.desc())
+                post_obj = _data.order_by(Article.create_date.desc())
             else:
-                post_obj = Article.query.filter(and_(
-                    extract('year', Article.create_date) == year,
-                    extract('month', Article.create_date) == month
-                )).order_by(Article.create_date.desc())
+                post_obj = _data.order_by(Article.create_date.desc())
         elif order_by == 'view_counts':
             if desc == 'desc':
-                post_obj = Tag.query.filter(and_(
-                    extract('year', Article.create_date) == year,
-                    extract('month', Article.create_date) == month)).order_by(Article.view_counts.desc())
+                post_obj = _data.order_by(Article.view_counts.desc())
             else:
-                post_obj = Tag.query.filter(and_(
-                    extract('year', Article.create_date) == year,
-                    extract('month', Article.create_date) == month)).order_by(Article.view_counts.desc())
+                post_obj = _data.order_by(Article.view_counts.desc())
         return post_obj
 
 

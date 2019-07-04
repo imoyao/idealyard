@@ -8,7 +8,9 @@
 from flask import jsonify
 from flask_restful import Resource
 
-from back.controller import archives
+from back.controller.archives import GetArchiveCtrl
+
+Archives_getter = GetArchiveCtrl()
 
 
 class Archives(Resource):
@@ -21,7 +23,7 @@ class Archives(Resource):
 
     def get(self):
         # 请求数据
-        data = archives.extract_post_with_year_and_month()
+        data = Archives_getter.extract_post_with_year_and_month()
         self.response_obj['data'] = data
         return jsonify(self.response_obj)
 

@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/7/1 11:05
 """
-
+归档API
 """
 
 from flask import request
 from flask_restful import Resource
 
-from back.controller import categories
+from back.controller.categories import GetCategoryCtrl
 from .utils import jsonify_with_args
+
+category_getter = GetCategoryCtrl()
 
 
 class CategoryApi(Resource):
@@ -24,7 +26,7 @@ class CategoryApi(Resource):
         # 请求数据
         args = request.args
         if category_id:
-            data = categories.posts_for_category(category_id)
+            data = category_getter.posts_for_category(category_id)
             self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj)
 
@@ -35,5 +37,5 @@ class CategoryApi(Resource):
             self.response_obj['success'] = False
             return jsonify_with_args(self.response_obj, 400)
         else:
-            self.response_obj['data'] = categories.show_categories()
+            self.response_obj['data'] = category_getter.show_categories()
             return jsonify_with_args(self.response_obj)

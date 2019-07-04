@@ -124,7 +124,7 @@ class GetPostCtrl:
                 query_data = MakeQuery.query_tag_by(tag_id, order_by=order_by, desc=order_by_desc)
             elif query_by == 'archive':
                 queryed = True
-                query_data = MakeQuery.query_post_by_year_and_month(year, month, order_by=order_by, desc=order_by_desc)
+                query_data = MakeQuery.order_archive(year, month, order_by=order_by, desc=order_by_desc)
             else:
                 queryed = True
                 pass
