@@ -134,6 +134,7 @@ class Article(db.Model):
                               back_populates='articles')
     categories = db.relationship('Category',
                                  back_populates='articles')
+    comments = db.relationship('Comment', back_populates='articles', cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -217,12 +218,36 @@ class Category(db.Model):
     __tablename__ = 'iy_category'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True, comment='主键')
-    category_name = db.Column(db.String(32), comment='分类名称')
+    category_name = db.Column(db.String(32), unique=True, comment='分类名称')
     description = db.Column(db.String(255), comment='分类描述')
     articles = db.relationship('Article')
 
     def __repr__(self):
         return '<Category %r>' % self.category_name
+
+
+class Comment(db.Model):
+    """
+    评论表，暂时只建表，不未开发相应功能
+    """
+    __tablename__ = 'iy_comment'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(30), comment='评论者名称')
+    email = db.Column(db.String(64), comment='评论者邮箱')
+    site = db.Column(db.String(64), comment='评论者网址')
+    body = db.Column(db.Text, comment='评论内容')
+    from_admin = db.Column(db.Boolean, default=False, comment='来自作者')
+    reviewed = db.Column(db.Boolean, default=False, comment='评论审核')
+    create_timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True, comment='评论时间')
+    commented_post_id = db.Column(db.Integer, db.ForeignKey('iy_article.post_id'), comment='评论文章id')
+    # 被回复id
+    replied_id = db.Column(db.Integer, db.ForeignKey('iy_comment.id'), comment='回复id')
+    articles = db.relationship('Article', back_populates='comments')
+    # 被回复
+    replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
+    # 回复的评论
+    replies = db.relationship('Comment', back_populates='replied', cascade='all,delete-orphan')
 
 
 class SysLog(db.Model):
