@@ -260,7 +260,7 @@ class PostDetail(Resource):
             self.response_obj['success'] = False
             return jsonify_with_args(self.response_obj, 400)
         else:
-            json_data = request.get_json()
+            json_data = request.json
             post = Article.from_json(json_data)
             post.author_id = g.current_user  # TODO:用户登录之后保存用户名称和用户id
             Article.insert_new_post(post)  # TODO:need func()

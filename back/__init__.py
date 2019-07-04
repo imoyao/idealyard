@@ -5,9 +5,9 @@ from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
 
-from back.api_1_0 import api, auth, posts, users, tags, archives, categories
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments
 from back.config import config
-from .api_1_0.books import Books,Test
+from .api_1_0.books import Books, Test
 from .models import db
 
 BLUEPRINTS = [
@@ -32,6 +32,7 @@ def add_api():
     api.add_resource(categories.CategoryApi, '/api/categories', '/api/categories/<int:category_id>')
     # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
     api.add_resource(archives.Archives, '/api/archives')
+    api.add_resource(comments.Comments, '/api/comments','/api/tags/<int:comment_id>')
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
 
