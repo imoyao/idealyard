@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:17
+from sqlalchemy import extract, and_
+
 from back.models import Article, ArticleBody, Category, Tag, User
 from back.utils import DateTime
 
@@ -283,3 +285,36 @@ def get_or_query(query_id, query_type):
         query_info = unnecessary_every_time_dict.get(query_type)
         shown_info[str_query_id] = query_info
     return query_info
+
+
+def query_post_by_year_and_month(year, month, order_by='create_date', desc='desc'):
+    """
+    按照年月查询文章        # TODO:是否可以合并
+    :param year:
+    :param month:
+    :param order_by:
+    :param desc:
+    :return:
+    """
+    post_obj = None
+    if order_by == 'create_date':
+        if desc == 'desc':
+            post_obj = Article.query.filter(and_(
+                extract('year', Article.create_date) == year,
+                extract('month', Article.create_date) == month
+            )).order_by(Article.create_date.desc())
+        else:
+            post_obj = Article.query.filter(and_(
+                extract('year', Article.create_date) == year,
+                extract('month', Article.create_date) == month
+            )).order_by(Article.create_date.desc())
+    elif order_by == 'view_counts':
+        if desc == 'desc':
+            post_obj = Tag.query.filter(and_(
+                extract('year', Article.create_date) == year,
+                extract('month', Article.create_date) == month)).order_by(Article.view_counts.desc())
+        else:
+            post_obj = Tag.query.filter(and_(
+                extract('year', Article.create_date) == year,
+                extract('month', Article.create_date) == month)).order_by(Article.view_counts.desc())
+    return post_obj

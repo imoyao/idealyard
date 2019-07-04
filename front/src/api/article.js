@@ -33,8 +33,8 @@ export function reqArticles(query, page) {
       paramsObj.query_by = queryType
       paramsObj.categories = queryId
       break
-    default:
-      queryId = query.categoryId
+    case 'archive':
+      paramsObj.query_by = queryType
       paramsObj.year = queryYear
       paramsObj.month = queryMonth
   }

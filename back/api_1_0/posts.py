@@ -92,6 +92,8 @@ class PostApi(Resource):
             query_by = args.get('query_by', type=str) or None
             category_id = args.get('categories', type=int) or None
             tag_id = args.get('tags', type=int) or None
+            year = args.get('year', type=int) or None
+            month = args.get('month', type=int) or None
             print('order-by', order_by)
             print('query_by-------------------', query_by)
 
@@ -101,11 +103,12 @@ class PostApi(Resource):
             if query_by:
                 if query_by == 'category':
                     query_data = controller.query_category(category_id)
-                    print('-------------', query_data)
                 elif query_by == 'tag':
                     queryed = True
                     query_data = controller.query_tag_by(tag_id, order_by=order_by, desc=order_by_desc)
-                    print('-------13234---', query_data)
+                elif query_by == 'archive':
+                    queryed = True
+                    query_data = controller.query_post_by_year_and_month(year, month, order_by=order_by, desc=order_by_desc)
                 else:
                     queryed = True
                     pass
