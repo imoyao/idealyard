@@ -27,6 +27,17 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 [预览地址](http://shiminghui.top:8000/)
 
 # 后端
-## TODO:
 
-使用`Flask`自己写逻辑。
+## TODO:
+- [x] 标签添加
+- [x] 分类添加
+- [x] 概览页（index）显示
+- [x] 博客作者自己删除
+- [x] 博客自己修改
+- [x] 标签云
+- [x] 管理员账户
+- [x] 后端代码OOP
+
+---
+
+- [x] 移动端，这个之后再做
