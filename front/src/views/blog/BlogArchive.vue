@@ -6,7 +6,7 @@
           <p></p>
           <ul class="me-month-list">
             <li v-for="( a, index ) in archives" :key="index" class="me-month-item">
-              <el-badge :value="a.count">
+              <el-badge :value="a.counts">
                 <el-button @click="changeArchive(a.year, a.month)" size="small">{{a.year +'年' + a.month + '月'}}
                 </el-button>
               </el-badge>
