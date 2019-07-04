@@ -53,8 +53,7 @@ const router = new VueRouter({
         },
         {
           // hint: 关于route传值 https://www.cnblogs.com/beka/p/8583924.html
-          path: '/post/:identifier',
-          name: 'viewpost',
+          path: '/view/:id',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {

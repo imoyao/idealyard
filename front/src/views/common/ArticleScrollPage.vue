@@ -70,7 +70,7 @@
         this.getArticles()
       },
       view(postId,identifier) {
-        this.$router.push({path: `/post/${identifier}`,name: 'viewpost', params:{id:postId,identifier:identifier}})
+        this.$router.push({name: 'post', params:{id:postId,identifier:identifier}})
       },
       reachEndLine() {
         this.$notify({

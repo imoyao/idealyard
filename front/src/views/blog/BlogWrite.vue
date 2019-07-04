@@ -180,7 +180,7 @@
       this.inputValue = '';
       },
       getArticleById(id) {
-        console.log('-------------',id)
+        console.log('-------getArticleById-----',id)
         let that = this
         reqArticleById(id).then(data => {
 

@@ -19,7 +19,7 @@
 
             </div>
             <el-button
-              v-if="this.article.author.id == this.$store.state.id"
+
               @click="editArticle()"
               style="position: absolute;left: 60%;"
               size="mini"
@@ -120,8 +120,8 @@
     data() {
       return {
         article: {
-          id: '',
-          identifier: '',
+          id: String,
+          identifier: String,
           title: '',
           commentCounts: 0,
           viewCounts: 0,
@@ -162,15 +162,11 @@
         this.$router.push({path: `/${type}/${id}`})
       },
       editArticle() {
-        // TODO: 编辑也是identifier
-      //   view(postId,identifier) {
-      //   this.$router.push({path: `/post/${identifier}`,params:{id:postId}})
-      // }
         this.$router.push({path: `/write/${this.article.id}`})
       },
       getArticle() {
         let that = this
-        // console.log('this.$store.state.id---',this.$store.state.id)
+        console.log('this.$store.state.id--111-',that.$route.params)
         viewArticle(that.$route.params.id).then(data => {
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content

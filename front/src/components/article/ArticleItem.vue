@@ -60,7 +60,7 @@
     },
     methods: {
       view(postId,identifier) {
-        this.$router.push({path: `/post/${identifier}`,name: 'viewpost', params:{id:postId,identifier:identifier}})
+        this.$router.push({path: `/view/${postId}`, params:{id:postId,identifier:identifier}})
       }
     }
   }
