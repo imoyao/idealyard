@@ -23,9 +23,11 @@
 	    	<i class="iconfont icon-user"></i>&nbsp;{{author.nickname}}
 	    </span>
 
-      <i class="iconfont icon-tags"></i>
-      <!--# TODO:tags 大于三个时显示异常 ,为空时不应该显示图标-->
-      <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success" class="me-article-flag">{{t.tagname}}</el-tag>
+      <!--# tags 大于三个时显示异常 ,为空时不应该显示图标-->
+      <template v-if="tags.length!==0">
+        <i class="iconfont icon-tags"></i>
+        <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success" class="me-article-flag">{{t.tagname}}</el-tag>
+      </template>
       <span class="me-article-category">
 	    	<i class="iconfont icon-folder-open"></i>&nbsp;{{category.categoryname}}
 	    </span>
@@ -61,6 +63,12 @@
     methods: {
       view(postId,identifier) {
         this.$router.push({path: `/view/${postId}`, params:{id:postId,identifier:identifier}})
+      },
+      sliceTags (){
+        let tagCounts = this.tags.length
+        if (tagCounts){
+          this.tags= [{'tagname':'hello'},{'tagname':'测试'},{'tagname':'后端开发'},{'tagname':'不要显示'}]
+        }
       }
     }
   }
@@ -105,7 +113,7 @@
 
   .me-article-author {
     color: #a6a6a6;
-    padding-right: 18px;
+    padding-right: 12px;
     font-size: 13px;
   }
   .me-article-category {
