@@ -2,9 +2,13 @@ import request from '@/request'
 
 
 export function reqCommentsByArticle(id) {
+  let paramsObj ={
+    'post_id':id
+  }
   return request({
-    url: `/comments/article/${id}`,
-    method: 'get'
+    url: `/comments`,
+    method: 'get',
+    params:paramsObj
   })
 }
 

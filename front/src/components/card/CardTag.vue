@@ -6,9 +6,13 @@
     </div>
 
     <ul class="me-tag-list">
-      <li class="me-tag-item" v-for="t in tags" :key="t.id">
+      <li class="me-tag-item" v-for="t in clickableTags" :key="t.id">
         <!--type="primary"-->
         <el-button @click="tag(t.id)" size="mini" type="primary" round plain>{{t.tagname}}</el-button>
+      </li>
+      <li class="me-tag-item" v-for="t in justShowTags" :key="t.id">
+        <!--type="primary"-->
+        <el-button size="mini" type="info" disabled="" round plain>{{t.tagname}}</el-button>
       </li>
     </ul>
   </el-card>
@@ -30,6 +34,20 @@
       },
       tag(id) {
         this.$router.push({path: `/tag/${id}`})
+      }
+    },
+    computed: {
+      // 只有标签下有文章时，才可点进去
+      clickableTags: function () {
+        return this.tags.filter(function (tag) {
+          return tag.count > 0
+        })
+      },
+      // 否则，仅展示
+      justShowTags: function () {
+        return this.tags.filter(function (tag) {
+          return tag.count === 0
+        })
       }
     }
   }
