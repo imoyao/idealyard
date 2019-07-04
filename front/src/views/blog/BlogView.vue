@@ -19,7 +19,7 @@
 
             </div>
             <el-button
-
+              v-if="this.article.author.id == this.$store.state.id"
               @click="editArticle()"
               style="position: absolute;left: 60%;"
               size="mini"
