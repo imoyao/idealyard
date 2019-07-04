@@ -11,7 +11,7 @@ from flask import url_for, current_app
 from flask_restful import Resource
 
 from back import controller
-from back.controller import posts, tags
+from back.controller import posts
 from back.models import Article
 from . import api
 from .errors import forbidden
@@ -61,7 +61,7 @@ class PostApi(Resource):
     '''
 
     def __init__(self):
-        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': 'Get data ok.'}
 
     def get(self):
         # 请求数据
@@ -89,32 +89,34 @@ class PostApi(Resource):
                 per_page = args.get('per_page', type=int) or current_app.config['FLASKY_POSTS_PER_PAGE']
                 # ?order_by=create_date
                 order_by = args.get('order_by', 'create_date', type=str)
-            query_by = args.get('query_by', type=str)
+            query_by = args.get('query_by', type=str) or None
             category_id = args.get('categories', type=int) or None
             tag_id = args.get('tags', type=int) or None
             print('order-by', order_by)
             print('query_by-------------------', query_by)
 
             query_data = None
-
-            if query_by == 'category':
-                query_data = controller.query_category(category_id)
-                print('-------------', query_data)
-            elif query_by == 'tag':
-                # queryed = True
-                query_data = controller.query_tag(tag_id)
-            else:
-                queryed = True
-                pass
-
+            queryed = False
+            # 关键字查询
+            if query_by:
+                if query_by == 'category':
+                    query_data = controller.query_category(category_id)
+                    print('-------------', query_data)
+                elif query_by == 'tag':
+                    queryed = True
+                    query_data = controller.query_tag_by(tag_id, order_by=order_by, desc=order_by_desc)
+                    print('-------13234---', query_data)
+                else:
+                    queryed = True
+                    pass
             # ?new=true&limit=5
-
-            if new or order_by == 'create_date':
-                query_data = posts.posts_order_by_date(desc=order_by_desc)
-            # ?hot=true&limit=5
-            elif hot or order_by == 'view_counts':
-                query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
-            print('--------11111111111-----------',query_data)
+            if not queryed:
+                if new or order_by == 'create_date':
+                    query_data = posts.posts_order_by_date(desc=order_by_desc)
+                # ?hot=true&limit=5
+                elif hot or order_by == 'view_counts':
+                    query_data = posts.posts_order_by_view_counts(desc=order_by_desc)
+                print('--------11111111111-----------', query_data)
             if query_data:
                 # ?page=1&per_page=10?order_by=name&order=asc
                 if all([page, per_page]):
@@ -130,13 +132,13 @@ class PostApi(Resource):
                 else:
                     data = posts.make_limit(query_data, limit_count)
                     self.response_obj['data'] = data
-            else:
-                if query_data:
-                    # if all([page, per_page]): TODO: 需要想办法
-                    #     pass
-                    # else:
-                    data = controller.make_post_obj_limit(query_data, limit_count)
-                    self.response_obj['data'] = data
+            # else:
+            #     if query_data:
+            #         # if all([page, per_page]): TODO: 需要想办法
+            #         #     pass
+            #         # else:
+            #         data = controller.make_post_obj_limit(query_data, limit_count)
+            #         self.response_obj['data'] = data
             return jsonify(self.response_obj)
         else:
             self.response_obj['code'] = 1

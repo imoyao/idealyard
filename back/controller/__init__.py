@@ -132,14 +132,26 @@ def query_category(category_id):
     return Article.query.filter_by(category_id=category_id)
 
 
-def query_tag(tag_id):
+def query_tag_by(tag_id, order_by='create_date', desc='desc'):
     """
     根据 id 过滤 >> 返回
-    :param tag_id:
-    :return:
+    :param tag_id:int,
+    :param order_by:排序字段
+    :param desc:
+    :return:sql
     """
-    posts_data = Tag.query.filter_by(id=tag_id).one().articles
-    return posts_data
+    tag_obj = None
+    if order_by == 'create_date':
+        if desc == 'desc':
+            tag_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.create_date.desc())
+        else:
+            tag_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.create_date)
+    elif order_by == 'view_counts':
+        if desc == 'desc':
+            tag_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.view_counts.desc())
+        else:
+            tag_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.view_counts)
+    return tag_obj
 
 
 def post_info_json(posts):
