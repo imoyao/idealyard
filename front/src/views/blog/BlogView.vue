@@ -314,6 +314,16 @@
   .v-note-wrapper .v-note-panel .v-note-show .v-show-content, .v-note-wrapper .v-note-panel .v-note-show .v-show-content-html {
     background: #fff !important;
   }
+  blockquote {
+    margin: 1rem 10px!important;
+    padding: .5em 10px!important;
+    background: inherit;
+    color: #cc2a41 !important;
+    quotes: "\201C" "\201D" "\2018" "\2019"!important;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: 'Open Sans',"Helvetica Neue", "Helvetica","Microsoft YaHei", "WenQuanYi Micro Hei",Arial, sans-serif
 
+  }
 
 </style>
