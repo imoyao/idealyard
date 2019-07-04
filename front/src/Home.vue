@@ -1,17 +1,17 @@
 <template>
   <div id="home">
     <el-container>
-    	
+
     	<base-header :activeIndex="activeIndex"></base-header>
-		  
+
 		  <router-view class="me-container"/>
-		  
+
 			<base-footer v-show="footerShow"></base-footer>
-		  
+
 		</el-container>
-		
+
   </div>
-  
+
 </template>
 
 <script>
@@ -31,6 +31,7 @@ export default {
   	'base-footer':BaseFooter
   },
   beforeRouteEnter (to, from, next){
+    console.log('--to.path----',to.path)
   	 next(vm => {
     	vm.activeIndex = to.path
   	})

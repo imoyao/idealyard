@@ -34,6 +34,7 @@ export function reqArticles(query, page) {
       paramsObj.categories = queryId
       break
     default:
+      queryId = query.categoryId
       paramsObj.year = queryYear
       paramsObj.month = queryMonth
   }
