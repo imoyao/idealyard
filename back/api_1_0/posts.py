@@ -135,6 +135,8 @@ class PostApi(Resource):
         """
         # TODO: 后期会发生更新
         '''
+        
+        
         {
             "id": "",
             "title": "fdhe",
@@ -159,6 +161,7 @@ class PostApi(Resource):
         '''
         json_data = request.json
         print('------data = request.json--------', json_data)
+        return
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
@@ -182,9 +185,9 @@ class PostApi(Resource):
 
             print('--------11111111------', post_tags)
             post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
-                                         weight=post_weight, category_description=category_description,
-                                         post_tags=post_tags,
-                                         category_id=post_category_id)
+                                              weight=post_weight, category_description=category_description,
+                                              post_tags=post_tags,
+                                              category_id=post_category_id)
             data = {'articleId': post_id}
             self.response_obj['data'] = data
             # 服务器为新资源指派URL，并在响应的Location首部中返回
