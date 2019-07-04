@@ -4,7 +4,7 @@
 
       <a @click="view(id,identifier)" class="me-article-title">{{title}}</a>
       <!--<el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>-->
-      <span class="me-article-icon" type="text">
+      <span v-if="weight > 0" class="me-article-icon" type="text">
         <i class="iconfont icon-pushpin"></i>
       </span>
       <span class="me-pull-right me-article-count">

@@ -45,15 +45,48 @@
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
             <!--https://element.eleme.cn/#/zh-CN/component/select#chuang-jian-tiao-mu-->
-            <el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">
-              <el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>
+            <!--<el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">-->
+              <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
+            <!--</el-select>-->
+            <el-select
+              v-model="articleForm.category"
+              filterable
+              allow-create
+              default-first-option
+              placeholder="请选择文章分类">
+              <el-option
+                v-for="item in categories"
+                :key="item.id"
+                :label="item.categoryname"
+                :value="item.categoryname">
+              </el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="文章标签" prop="tags">
-            <el-checkbox-group v-model="articleForm.tags">
-              <el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>
-            </el-checkbox-group>
+            <el-tag
+              :key="tag"
+              v-for="tag in dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)">
+              {{tag}}
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible"
+              v-model="inputValue"
+              ref="saveTagInput"
+              size="small"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <!--TODO:添加清空所有的按钮-->
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            <!--<el-checkbox-group v-model="articleForm.tags">-->
+              <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
+            <!--</el-checkbox-group>-->
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -70,7 +103,7 @@
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, reqArticleById} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
-  import {reqAllTags} from '@/api/tag'
+  import {reqHotTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
@@ -82,7 +115,6 @@
 
       this.getCategorysAndTags()
       this.editorToolBarToFixedWrapper = this.$_.throttle(this.editorToolBarToFixed, 200)
-
       window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false);
     },
     beforeDestroy() {
@@ -90,9 +122,22 @@
     },
     data() {
       return {
+        options: [{
+          value: 'HTML',
+          label: 'HTML'
+        }, {
+          value: 'CSS',
+          label: 'CSS'
+        }, {
+          value: 'JavaScript',
+          label: 'JavaScript'
+        }],
+        dynamicTags: [],
+        inputVisible: false,
+        inputValue: '',
         publishVisible: false,
+        userVisableTags: [],
         categories: [],
-        tags: [],
         articleForm: {
           id: '',
           title: '',
@@ -138,7 +183,8 @@
             {required: true, message: '请选择文章分类', trigger: 'change'}
           ],
           tags: [
-            {type: 'array', required: true, message: '请选择标签', trigger: 'change'}
+            // {type: 'array', required: true, message: '请选择标签', trigger: 'change'}
+            {type: 'array', message: '请选择标签', trigger: 'change'}
           ]
         }
       }
@@ -153,7 +199,6 @@
       handleClose(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
       },
-
       showInput() {
         this.inputVisible = true;
         this.$nextTick(_ => {
@@ -164,9 +209,11 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
+          // 对用户输入值进行切分
           let values = inputValue.split(/[,， \n]/).filter(item=>{
             return item!='' && item!=undefined
           })
+          // 对列表索引，没有找到则push
           values.forEach(element => {
             let index = this.dynamicTags.findIndex(i=>{
             return i === element
@@ -186,13 +233,12 @@
 
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
-          // TODO: 显示最热5个标签
+
           let tags = this.articleForm.tags.map(function (item) {
             return item.id;
           })
-          console.log('-----getArticleById--------',tags)
-          this.articleForm.tags = tags
 
+          this.articleForm.tags = tags
 
         }).catch(error => {
           if (error !== 'error') {
@@ -201,8 +247,9 @@
         })
       },
       publishShow() {
+        console.log(this.articleForm.tags)
         if (!this.articleForm.title) {
-          this.$message({message: '标题不能为空哦', type: 'warning', showClose: true})
+          this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
         }
 
@@ -212,7 +259,7 @@
         }
 
         if (!this.articleForm.editor.ref.d_render) {
-          this.$message({message: '内容不能为空哦', type: 'warning', showClose: true})
+          this.$message({message: '内容要满满的诚意哦 😜', type: 'warning', showClose: true})
           return
         }
 
@@ -226,22 +273,19 @@
           if (valid) {
 
             let tags = this.articleForm.tags.map(function (item) {
-              console.log('----itemitemitem--------',item)
-              // return {id: item};
+              return {id: item};
               // TODO: just for test
-              return {
-              'id':8,
-              'name':'test'
-            };
             });
             console.log('---this.articleForm.id----------',this.articleForm.id)
+            console.log('---this.articleForm.id----------',tags)
             console.log('---this.articleForm.title----------',this.articleForm.title)
             let article = {
               id: this.articleForm.id,
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               category: this.articleForm.category,
-              tags: tags,
+              dynamicTags: this.dynamicTags,
+              tags: this.userVisableTags,
               body: {
                 content: this.articleForm.editor.value,
                 contentHtml: this.articleForm.editor.ref.d_render
@@ -291,9 +335,17 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-
-        reqAllTags().then(data => {
+        // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
+        reqHotTags().then(data => {
           that.tags = data.data
+          that.tags.forEach(tag => {
+            console.log('$$$$$$$$$$$',tag)
+            // 保存用户最终添加的tags
+            this.dynamicTags.push(tag.tagname)
+            // 保存用户可见tags
+            this.userVisableTags.push(tag.tagname)
+          })
+          console.log('-------reqAllTags------1111-----',this.dynamicTags)
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '标签加载失败', showClose: true})
