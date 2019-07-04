@@ -250,6 +250,7 @@ def makeup_post_item_for_index(posts):
             "commentCounts": 0,
             "createDate": str_date,
             "id": post_item.post_id,
+            "identifier": post_item.identifier,
             "summary": summary,
             "tags": tags,
             "category": category_info,

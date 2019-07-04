@@ -30,6 +30,7 @@ export default new Vuex.Store({
       state.id = id
     }
   },
+  // 异步操作
   actions: {
     login({commit}, user) {
       return new Promise((resolve, reject) => {

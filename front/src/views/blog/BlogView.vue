@@ -121,6 +121,7 @@
       return {
         article: {
           id: '',
+          identifier: '',
           title: '',
           commentCounts: 0,
           viewCounts: 0,
@@ -161,10 +162,15 @@
         this.$router.push({path: `/${type}/${id}`})
       },
       editArticle() {
+        // TODO: 编辑也是identifier
+      //   view(postId,identifier) {
+      //   this.$router.push({path: `/post/${identifier}`,params:{id:postId}})
+      // }
         this.$router.push({path: `/write/${this.article.id}`})
       },
       getArticle() {
         let that = this
+        // console.log('this.$store.state.id---',this.$store.state.id)
         viewArticle(that.$route.params.id).then(data => {
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content

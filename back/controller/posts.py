@@ -67,15 +67,16 @@ def post_detail(post_info):
     :return:
     """
     user_id = post_info.author_id
-    user_info = controller.author_info_for_post(user_id)
     body_id = post_info.body_id
-    body_info = controller.content_for_post(body_id)
     category_id = post_info.category_id
-    category_info = controller.category_for_post(category_id)
     post_id = post_info.post_id
+    post_identifier = post_info.identifier
+    create_date = post_info.create_date
+    user_info = controller.author_info_for_post(user_id)
+    body_info = controller.content_for_post(body_id)
+    category_info = controller.category_for_post(category_id)
     tags_info = controller.tags_for_post(post_id)['tags_info']
     str_date = ''
-    create_date = post_info.create_date
     if create_date:
         str_date = date_maker.make_strftime(create_date)
     json_post = {
@@ -86,6 +87,7 @@ def post_detail(post_info):
         "commentCounts": 0,
         "createDate": str_date,
         "id": post_id,
+        "identifier": post_identifier,
         # TODO:摘要，暂无；感觉这个api不需要该参数？？？
         # "summary": "本节将介绍如何在项目中使用 Element。",
         "tags": tags_info,
