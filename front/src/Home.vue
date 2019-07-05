@@ -30,14 +30,13 @@ export default {
   	'base-header':BaseHeader,
   	'base-footer':BaseFooter
   },
-  beforeRouteEnter (to, from, next){
-    console.log('--to.path----',to.path)
+  beforeRouteEnter (to, from, next) {
   	 next(vm => {
     	vm.activeIndex = to.path
   	})
   },
   beforeRouteUpdate (to, from, next) {
-	  if(to.path == '/'){
+	  if(to.path === '/'){
 	  	this.footerShow = true
 	  }else{
 	  	this.footerShow = false
