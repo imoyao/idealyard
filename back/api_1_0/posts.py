@@ -160,6 +160,12 @@ class PostApi(Resource):
         }
         '''
         json_data = request.json
+        # 用户最终提交的
+        user_post_tags = json_data.get('dynamicTags', '')
+        # TODO:交集 >> 已经存在的  :already_exist_tags =
+        # 差集：need_pin_tags = user_post_tags-already_exist_tags
+        # get_all_tags = tags.all_tags()
+
         print('------data = request.json--------', json_data)
         return
         # TODO: 默认抓取前200个字符

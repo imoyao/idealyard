@@ -117,7 +117,7 @@ def posts_by_tag_id(tag_id):
     return data
 
 
-def query_post_by_tag(tag_id, order_by='create_date', desc='desc'):     # TODO: 如果好用，这个则弃用！！！
+def query_post_by_tag(tag_id, order_by='create_date', desc='desc'):     # deprecated
     """
     按照标签查文章
     :param tag_id:
@@ -129,10 +129,7 @@ def query_post_by_tag(tag_id, order_by='create_date', desc='desc'):     # TODO: 
     _data = None
     tag_obj = Tag.query.filter(Tag.id == tag_id).one()
     posts_data = tag_obj.articles
-    print('=-----------', posts_data)
 
-    for post in posts_data:
-        print('----------', type(post.create_date))
     if order_by == 'create_date':
         # 2019-06-17 10:07:43
         # https://stackoverflow.com/questions/33512126/how-to-sort-an-array-of-objects-by-datetime-in-python/33512197
@@ -145,7 +142,6 @@ def query_post_by_tag(tag_id, order_by='create_date', desc='desc'):     # TODO: 
             posts_data,
             key=lambda x: x.view_counts, reverse=reverse
         )
-    print(',--------------', _data)
     return _data
 
 
