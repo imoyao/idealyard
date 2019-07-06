@@ -106,3 +106,7 @@ venv.bak/
 node_modules/
 
 .idea/
+#TODO: ignore conf for dev
+front/src/api/index.js
+front/config/dev.env.js
+
