@@ -143,7 +143,7 @@ class MakeQuery:
         return Article.query.filter_by(category_id=category_id)
 
     @staticmethod
-    def query_tag_by(tag_id, order_by='create_date', desc='desc'):
+    def query_post_by_tag_of(tag_id, order_by='create_date', desc='desc'):
         """
         根据 id 过滤 >> 返回
         :param tag_id:int,
@@ -218,7 +218,7 @@ class MakeupPost:
         return ret_data
 
     @staticmethod
-    def make_data_limit(query_data, limit_count):
+    def make_data_limit(query_data, limit_count=0):
         """
         返回列表时使用这个方法
         是否对数量限制

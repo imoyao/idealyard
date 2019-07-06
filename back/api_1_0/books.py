@@ -5,7 +5,7 @@
 from flask import jsonify, request
 from flask_restful import Resource
 
-from back.controller import posts
+from back.controller import posts,tags
 
 BOOKS = [
     {
@@ -87,6 +87,7 @@ class Test(Resource):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self):
-        p = posts.PostNewArticle()
-        self.response_obj['data'] = p.gen_post_identifier()
+        t = tags.GetTagCtrl()
+        data = t.show_all_tags()
+        self.response_obj['data'] = data
         return jsonify(self.response_obj)
