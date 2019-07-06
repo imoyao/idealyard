@@ -38,10 +38,11 @@ class GetArchiveCtrl:
         first_year = date_maker.year(first_time)
         return first_year
 
-    def extract_post_with_year_and_month(self):
+    def extract_post_with_year_and_month(self, order_desc=True):
         """
         按照年、月筛选博文
-        :return:list,文章信息列表
+        :param order_desc: bool,排序方式，默认按照时间倒序
+        :return: list,文章信息列表
         """
         first = self.first_create_time()
         last = self.last_create_time()
@@ -50,7 +51,8 @@ class GetArchiveCtrl:
             for year in range(first, last + 1):
                 year_data = self.extract_post_with_month(year)
                 post_info_by_ct.extend(year_data)
-        return post_info_by_ct
+        return post_info_by_ct[::-1] if order_desc else post_info_by_ct
+
 
     @staticmethod
     def extract_post_with_month(year):

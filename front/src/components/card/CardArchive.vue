@@ -39,12 +39,13 @@
     methods: {
       showMore(){
         let showDataLen = Object.keys(this.archives).length
-        this.isShow = !this.isShow;
-        this.limitShowNum = this.isShow? this.defalutShowNum: showDataLen;
+        this.isShow = !this.isShow
         if (this.isShow) {
+          this.limitShowNum = this.defalutShowNum
           this.showAllTip ='我全都要 😜'
           this.showIcon = 'el-icon-caret-bottom'
         }else{
+          this.limitShowNum = showDataLen
           this.showAllTip ='一般货色 🙄'
           this.showIcon = 'el-icon-caret-top'
         }
