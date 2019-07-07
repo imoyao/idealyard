@@ -8,8 +8,6 @@ export function reqAllCategories() {
   })
 }
 
-// 带文章
-// TODO:应该是查找文章该分类下的文章
 export function reqCategoryDetail(id) {
   return request({
     url: `/categories/${id}`,

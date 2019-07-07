@@ -114,6 +114,7 @@
     name: 'BlogView',
     created() {
       this.getArticle()
+      this.readCountAdd()   //TODO:统计+1
     },
     watch: {
       '$route': 'getArticle'
@@ -159,6 +160,10 @@
       }
     },
     methods: {
+      // TODO:统计+1
+      readCountAdd(){
+        console.log('----','Page read counts +1.')
+      },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
       },

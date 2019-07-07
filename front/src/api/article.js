@@ -21,7 +21,6 @@ export function reqArticles(query, page) {
     order_by: page.orderBy,
     sort: page.sort,
   }
-  console.log(queryType,'----------')
   switch (queryType) {
     case 'tag':
       queryId = query.tagId
@@ -68,7 +67,6 @@ export function reqNewArtices() {
 }
 
 export function viewArticle(id) {
-  console.log('viewArticle------------', id)
   return request({
     url: `/articles/${id}`,
     method: 'get'

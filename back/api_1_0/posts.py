@@ -175,7 +175,7 @@ class PostApi(Resource):
         _posts_list = pagination.items
         prev_page = None
         # https://stackoverflow.com/questions/24223628/how-do-i-use-flask-url-for-with-flask-restful
-        # TODO: category tag
+        # TODO: category tag 测试
         if pagination.has_prev:
             prev_page = api.url_for(PostApi, page=page - 1, per_page=per_page, order_by=order_by, sort=order,
                                     query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
@@ -205,29 +205,6 @@ class PostDetail(Resource):
         self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
-    # def post(self, post_id):
-    #     """
-    #     创建指定id文章
-    #     :return:
-    #     """
-    #     # 获取post请求参数
-    #     # https://blog.csdn.net/longting_/article/details/80637002
-    #     post = Article.query.get(post_id)
-    #     if post:
-    #         self.response_obj['error'] = 'Invalid post id.'
-    #         self.response_obj['data'] = ''
-    #         self.response_obj['msg'] = 'Create an exist post is impossible.'
-    #         self.response_obj['success'] = False
-    #         return jsonify_with_args(self.response_obj, 400)
-    #     else:
-    #         json_data = request.json
-    #         post = Article.from_json(json_data)
-    #         post.author_id = g.current_user  # TODO:用户登录之后保存用户名称和用户id
-    #         Article.insert_new_post(post)  # TODO:need func()
-    #         # 服务器为新资源指派URL，并在响应的Location首部中返回
-    #         return jsonify_with_args(post.to_json()), 201, {
-    #             'Location': url_for('api.articles', id=post.id, _external=True)}
-
     def put(self, post_id):
         """
         更新指定文章
@@ -253,7 +230,7 @@ class PostDetail(Resource):
         """
         post = abort_if_not_exist(post_id)
         # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
-        if g.current_user != post.author_id:  # TODO:此处必须保证唯一，除了用户本人，管理员应该也可以删除
+        if g.current_user != post.author_id:  # TODO:此处必须保证唯一？除了用户本人，管理员应该也可以删除
             return forbidden('Insufficient permissions')
         Article.delete_post(post)
         return jsonify(post.to_json())

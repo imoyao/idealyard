@@ -113,7 +113,6 @@ class MakeQuery:
     @staticmethod
     def query_post_by_category(category_id, order_by='create_date', desc=True):
         """
-        与上一个函数相比：一个返回query data 一个返回id list,可以合并  # TODO: 重复了！！！
         :param category_id:
         :param order_by:
         :param desc:
