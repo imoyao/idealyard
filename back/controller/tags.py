@@ -23,7 +23,7 @@ class GetTagCtrl:
         :param reverse:
         :return:
         """
-        return sorted(unsorted_dict.items(), key=lambda item: item[1]['posts_count'], reverse=reverse)
+        return sorted(unsorted_dict.items(), key=lambda item: item[1]['article_counts'], reverse=reverse)
 
     @staticmethod
     def compress_tag_item_for_index(tags):
@@ -32,7 +32,7 @@ class GetTagCtrl:
         :param tags:
         :return:
         """
-        return [{'tagname': info[0], 'count': info[1]['posts_count'], 'id': info[1]['id']} for info in tags]
+        return [{'tagname': info[0], 'count': info[1]['article_counts'], 'id': info[1]['id']} for info in tags]
 
     @staticmethod
     def _make_up_tag_with_post_info(tag_data):
@@ -46,7 +46,7 @@ class GetTagCtrl:
             tag['id'] = data_obj.id
             tag['tagname'] = data_obj.tag_name
             tag['articles'] = articles
-            tag['posts_count'] = data_obj.articles.count()
+            tag['article_counts'] = data_obj.articles.count()
             all_tags[tag_name] = tag
         return all_tags
 
@@ -58,7 +58,6 @@ class GetTagCtrl:
         tag_data = Tag.query.all()
         limit_data = MakeupPost.make_data_limit(tag_data, limit_count)
         all_tags = self._make_up_tag_with_post_info(limit_data)
-        print('all--------', all_tags)
         return all_tags
 
     def order_tags_by_include_post_counts(self, limit_count, desc=True):
@@ -91,14 +90,10 @@ class GetTagCtrl:
         assert query_by in ['tag_name', 'tag_id']
         if query_by == 'tag_name':
             assert isinstance(query_key, str)
-            if order_by_desc:
-                query_data = Tag.query.filter(Tag.tag_name == query_key).one()
-            else:
-                query_data = Tag.query.filter(Tag.tag_name == query_key).one().order_by(Tag.id)
+            query_data = Tag.query.filter(Tag.tag_name == query_key)
         elif query_by == 'tag_id':
-            # 如果是按照 id 查询，则关键字是 int 型
-            assert isinstance(query_key, int)
-            Tag.query.filter(Tag.id == query_key).one()
+            # 按照 id 查询
+            query_data = Tag.query.filter(Tag.id == query_key)
         if query_data:
             assert order_key in ['id', 'name']
             if order_key == 'id':
@@ -188,7 +183,6 @@ class PostTagCtrl:
         origin_tags = []
         new_add_tags = []
         for tag in post_tags:
-            print('---332-----', tag)
             if not tag.get('id'):
                 should_new_tags = tag.get('name') and tag['name']
                 new_tags.append(should_new_tags)

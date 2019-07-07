@@ -87,7 +87,10 @@
       getTagDetail(id) {
         let that = this
         reqTagDetail(id).then(data => {
-          that.ct = data.data
+          // 注意：此处返回数据变为 {'test': {'id': 7, 'tagname': 'test', 'articles': [20, 21, 22, 23, 24], 'article_counts': 5}}
+          let ctObj =data.data
+          let tagName = Object.keys(ctObj)[0]
+          that.ct = ctObj[tagName]
         }).catch(error => {
           if (error !== 'error') {
             that.$message({type: 'error', message: '标签加载失败', showClose: true})

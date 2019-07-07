@@ -226,7 +226,7 @@ class MakeupPost:
         :param limit_count:
         :return:
         """
-        if limit_count >= 1:
+        if limit_count and limit_count >= 1:
             # AttributeError: 'list' object has no attribute 'limit'
             data = query_data[:limit_count]
         else:

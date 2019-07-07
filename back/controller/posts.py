@@ -16,7 +16,8 @@ date_maker = DateTime()
 
 class GetPostCtrl:
 
-    def posts_order_by_date(self, desc=True):
+    @staticmethod
+    def posts_order_by_date(desc=True):
         if desc:
             posts_query = Article.query.order_by(Article.create_date.desc())
         else:

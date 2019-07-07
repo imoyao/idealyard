@@ -25,37 +25,38 @@ class TagApi(Resource):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self, tag_id=None):
-        # 请求数据
-        query_by = 'tag_id'
         args = request.args
-        if tag_id:
+        query_by = args.get('query', 'tag_id', type=str)
+        order_by= args.get('order_by', 'id', type=str)
+        order = args.get('order')  # 默认降序
+        order_by_desc = order and order == 'asc' or True
+        limit_count = None
+        # 最新最热走limit逻辑，截取而不是分页 TODO: 标签暂时应该没有这个必要
+        page, per_page = (None,) * 2
+        if args.get('limit') and args['limit']:
+            limit_count = int(args.get('limit'))
+        hot = args.get('hot', False, type=bool)
+        if tag_id:  # 查单个
             # /api/tags/id
             query_key = tag_id
-        elif args:
+
+        elif not hot:
+            # TODO:默认按照id排，后续可以添加按照名字排（index >> name）
+            order_by = args.get('order_by', 'id', type=str)
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             query_key = args.get('name') and args['name'] or args.get('id') and args['id']
-            hot = args.get('hot', False, type=bool)
-            order = args.get('order')  # 默认降序
-            order_by_desc = order and order == 'asc' or True
-            limit_count = None
-            if args.get('limit') and args['limit']:
-                limit_count = int(args.get('limit'))
+
             if not limit_count:
                 # 没有请求参数时，总数少于设定值则全返回，否则返回设定值
                 limit_count = Tag.query.count() if Tag.query.count() < setting.LIMIT_HOT_TAG_COUNT else \
                     setting.LIMIT_HOT_TAG_COUNT
-            # 最新最热走limit逻辑，截取而不是分页 TODO: 标签暂时应该没有这个必要
-            page, per_page = (None,) * 2
-            order_by = ''
-            if not hot:
-                # TODO:默认按照id排，后续可以添加按照名字排（index >> name）
-                order_by = args.get('order_by', 'id', type=str)
         else:
             # 查全部
-            self.response_obj['data'] = tag_getter.show_all_tags(limit_count=0)
+            data = tag_getter.order_tags_by_include_post_counts(limit_count=limit_count, desc=order_by_desc)
+            self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj)
         # ?hot=true&limit=5
-        data = tag_getter.get_tag_detail_by_args(query_key, query_by='tag_id', order_by=order_by, hot=hot,
+        data = tag_getter.get_tag_detail_by_args(query_key, query_by=query_by, order_by=order_by, hot=hot,
                                                  order_by_desc=order_by_desc,
                                                  limit_count=limit_count)
         if data:
@@ -67,7 +68,6 @@ class TagApi(Resource):
             self.response_obj['msg'] = 'Please for initialization.'
             self.response_obj['success'] = False
             return jsonify_with_args(self.response_obj, 417)
-
 
 
 class TagDetail(Resource):
