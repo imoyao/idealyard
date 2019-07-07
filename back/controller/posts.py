@@ -12,6 +12,9 @@ from back.models import ArticleBody, Article, Tag, db
 from back.utils import DateTime
 
 date_maker = DateTime()
+category_poster = categories.PostCategoryCtrl()
+tag_poster = tags.PostTagCtrl()
+query_maker = MakeQuery()
 
 
 class GetPostCtrl:
@@ -118,16 +121,17 @@ class GetPostCtrl:
         query_data = None
         queryed = False
         if query_by:
+            queryed = True
             if query_by == 'category':
-                query_data = MakeQuery.query_category(category_id)
+                query_data = MakeQuery.query_post_by_category_of(category_id, order_by=order_by, desc=order_by_desc)
+                print(query_data)
             elif query_by == 'tag':
-                queryed = True
                 query_data = MakeQuery.query_post_by_tag_of(tag_id, order_by=order_by, desc=order_by_desc)
             elif query_by == 'archive':
-                queryed = True
-                query_data = MakeQuery.order_archive(year, month, order_by=order_by, desc=order_by_desc)
+                print(query_by, order_by, category_id, tag_id, year, month, new, hot,
+                      order_by_desc)
+                query_data = query_maker.order_archive(year, month, order_by=order_by, desc=order_by_desc)
             else:
-                queryed = True
                 pass
         # ?new=true&limit=5
         if not queryed:
@@ -139,7 +143,7 @@ class GetPostCtrl:
         return query_data
 
 
-class PostNewArticle:
+class PostArticleCtrl:
     # TODO: 其他 controllers 也应该这么写
     """
     创建新博文
@@ -190,9 +194,8 @@ class PostNewArticle:
         need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
         # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
         if need_add_tags:
-            tags.new_multi_tags(need_add_tags)
+            tag_poster.new_multi_tags(need_add_tags)
         for tag_name in all_tags_for_new_post:
-            # tag_obj = Tag.query.filter_by(tag_name=tag_name).first()
             # TODO: next line is right
             tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
             post.tags.append(tag_obj)
@@ -200,32 +203,29 @@ class PostNewArticle:
         db.session.add(post)
         db.session.commit()
         post_id = post.post_id
-        print('post_id', 'post_id')
         return post_id
 
-    def new_post(self, category_name, summary, content_html, content, title, weight=0, category_description='',
-                 post_tags=None,
-                 category_id=None):
+    def new_post(self, category_name, summary, content_html, content, title, weight=0,
+                 post_tags=None):
         """
         POST 博文，需要先看是否要 POST category、tag；然后 POST body；最后操作 Article 表
         :param category_name:str,
-        :param category_description:str,
         :param summary:str,
         :param content_html:str,
         :param content:str,
         :param title:str,
         :param weight:int #TODO:bool? int?
         :param post_tags:list,
-        :param category_id:int,
         :return:int,new_post_id
         """
         all_tags_for_new_post = None
+        category_id = None
 
-        if not category_id and category_name:
-            category_id = categories.new_category(category_name, category_description)
+        if category_name:  # 新增条目？ new : get id
+            category_id = category_poster.new_or_query_category(category_name)
 
         if post_tags:
-            all_tags_for_new_post = tags.add_tag_for_post(post_tags)
+            all_tags_for_new_post = tag_poster.add_tag_for_post(post_tags)
 
         body_id = self.new_post_body(summary, content_html, content)
 

@@ -26,11 +26,11 @@ class TagApi(Resource):
 
     def get(self, tag_id=None):
         args = request.args
-        query_by = args.get('query', 'tag_id', type=str)
+        query_by = args.get('query', None, type=str)
         order_by = args.get('order_by', 'id', type=str)
         order = args.get('order')  # 默认降序
         order_by_desc = order and order == 'asc' or True
-        limit_count = None
+        query_key,limit_count = (None,)*2
         # 最新最热走limit逻辑，截取而不是分页 TODO: 标签暂时应该没有这个必要
         page, per_page = (None,) * 2
         if args.get('limit') and args['limit']:
@@ -50,15 +50,12 @@ class TagApi(Resource):
                 # 没有请求参数时，总数少于设定值则全返回，否则返回设定值
                 limit_count = Tag.query.count() if Tag.query.count() < setting.LIMIT_HOT_TAG_COUNT else \
                     setting.LIMIT_HOT_TAG_COUNT
-        else:
-            # 查全部
-            data = tag_getter.order_tags_by_include_post_counts(limit_count=limit_count, desc=order_by_desc)
-            self.response_obj['data'] = data
-            return jsonify_with_args(self.response_obj)
-        # ?hot=true&limit=5
-        print('tag-------1', (query_key, query_by, order_by, hot,
-                              order_by_desc,
-                              limit_count))
+        # else:
+        #     # 查全部
+        #     data = tag_getter.order_tags_by_include_post_counts(hot=hot, limit_count=limit_count, desc=order_by_desc)
+        #     print('----123434------',data)
+        #     self.response_obj['data'] = data
+        #     return jsonify_with_args(self.response_obj)
         if not args:
             # 没有请求参数，则返回全部
             limit_count = None
@@ -67,6 +64,7 @@ class TagApi(Resource):
                                                  limit_count=limit_count)
         if data:
             self.response_obj['data'] = data
+            self.response_obj['total'] = len(data)
             return jsonify(self.response_obj)
         else:
             # 数据为空，还没来得及初始化！

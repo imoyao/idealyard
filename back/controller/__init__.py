@@ -12,7 +12,6 @@ date_maker = DateTime()
 def assert_new_tag_in_tags(tags_for_new_post):
     tags = Tag.query.all()
     tags = set([tag.tag_name for tag in tags])
-    print('------------tags_for_new_post', tags, tags_for_new_post)
     try:
         assert tags_for_new_post.issubset(tags)
     except AssertionError:
@@ -134,13 +133,24 @@ class MakeQuery:
         return posts_data
 
     @staticmethod
-    def query_category(category_id):
+    def query_post_by_category_of(category_id, order_by='create_date', desc='desc'):
         """
         根据 id 过滤 >> 返回
         :param category_id:
         :return:
         """
-        return Article.query.filter_by(category_id=category_id)
+        post_obj = None
+        if order_by == 'create_date':
+            if desc == 'desc':
+                post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.create_date.desc())
+            else:
+                post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.create_date)
+        elif order_by == 'view_counts':
+            if desc == 'desc':
+                post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.view_counts.desc())
+            else:
+                post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.view_counts)
+        return post_obj
 
     @staticmethod
     def query_post_by_tag_of(tag_id, order_by='create_date', desc='desc'):
@@ -153,12 +163,12 @@ class MakeQuery:
         """
         post_obj = None
         if order_by == 'create_date':
-            if desc == 'desc':
+            if desc:
                 post_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.create_date.desc())
             else:
                 post_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.create_date)
         elif order_by == 'view_counts':
-            if desc == 'desc':
+            if desc:
                 post_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.view_counts.desc())
             else:
                 post_obj = Tag.query.filter(Tag.id == tag_id).one().articles.order_by(Article.view_counts)
@@ -172,24 +182,25 @@ class MakeQuery:
         ))
         return data
 
-    def order_archive(self, year, month, order_by='create_date', desc='desc'):
+    def order_archive(self, year, month, order_by='create_date', desc=True):
         """
         按照归档（年、月）排序文章
-        :param year:
-        :param month:
-        :param order_by:
-        :param desc:
+        :param year:int
+        :param month:int
+        :param order_by:str
+        :param desc:bool
         :return:
         """
         post_obj = None
+        assert all((year, month))
         _data = self.query_post_year_month(year, month)
         if order_by == 'create_date':
-            if desc == 'desc':
+            if desc:
                 post_obj = _data.order_by(Article.create_date.desc())
             else:
                 post_obj = _data.order_by(Article.create_date.desc())
         elif order_by == 'view_counts':
-            if desc == 'desc':
+            if desc:
                 post_obj = _data.order_by(Article.view_counts.desc())
             else:
                 post_obj = _data.order_by(Article.view_counts.desc())
@@ -267,6 +278,7 @@ class MakeupPost:
             username = user_info['nickname']
             post_content = QueryComponent.content_for_post(post_id)
             summary = post_content.get('summary') or ''
+            print('summary-------', summary)
             tags = []
             if tag_infos:
                 tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]

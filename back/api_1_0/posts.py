@@ -7,11 +7,11 @@
 import json
 
 from flask import g, jsonify, request
-from flask import url_for, current_app
+from flask import current_app
 from flask_restful import Resource
 
 from back.controller import MakeupPost
-from back.controller.posts import GetPostCtrl, PostNewArticle
+from back.controller.posts import GetPostCtrl, PostArticleCtrl
 from back.models import Article
 from . import api
 from .errors import forbidden
@@ -19,7 +19,7 @@ from .utils import jsonify_with_args
 
 post_getter = GetPostCtrl()
 post_maker = MakeupPost()
-article_poster = PostNewArticle()
+article_poster = PostArticleCtrl()
 
 
 def abort_if_not_exist(post_id):
@@ -98,13 +98,10 @@ class PostApi(Resource):
             tag_id = args.get('tags', type=int) or None
             year = args.get('year', type=int) or None
             month = args.get('month', type=int) or None
-
             # 关键字查询
             query_data = post_getter.get_post_detail_by_args(query_by, order_by, category_id, tag_id, year, month, new,
                                                              hot,
                                                              order_by_desc=order_by_desc)
-
-            # print('--------11111111111-----------', query_data)
             if query_data:
                 # 因为分页要调api，为防止循环引用，所以此处放在内部
                 # ?page=1&per_page=10?order_by=name&order=asc
@@ -129,71 +126,43 @@ class PostApi(Resource):
             return jsonify_with_args(self.response_obj, 400)
 
     def post(self):
+
         """
         创建文章
         :return:
         """
         # TODO: 后期会发生更新
         '''
-        
-        
-        {
-            "id": "",
-            "title": "fdhe",
-            "summary": "herj",
-            "category": {
-                # "article_counts": 17,
-                # "articles": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18],
-                "categoryname": "\\u524d\\u7aef",
-                "description": null,
-                "id": 1
-            },
-            "tags": [{
-                "id": 1
-            }, {
-                "id": 2
-            }],
-            "body": {
-                "content": "hrjh",
-                "contentHtml": "<p>hrjh</p>\\n"
-            }
-        }
+        {'id': '', 'title': '多喝热水', 'summary': '爱是什么？', 'category': '生活', 'dynamicTags': ['恋爱', '生活'],
+         'tags': ['test', '原创', 'Python', '影评', '阅读', 'MySQL', '推荐'],
+         'body': {'content': '除了清明都是情人节', 'contentHtml': '<p>除了清明都是情人节</p>\n'}}
         '''
         json_data = request.json
         # 用户最终提交的
-        user_post_tags = json_data.get('dynamicTags', '')
-        # TODO:交集 >> 已经存在的  :already_exist_tags =
-        # 差集：need_pin_tags = user_post_tags-already_exist_tags
-        # get_all_tags = tags.all_tags()
+        post_tags = json_data.get('dynamicTags', [])
+        category_name = json_data.get('category')
 
         print('------data = request.json--------', json_data)
-        return
+        # return
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
         post_weight = json_data.get('weight') or 0
-        post_category = json_data.get('category')
-        post_tags = json_data.get('tags')  # TODO：去重！标签可以为空？
+        visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
         content, content_html = (None,) * 2
         if post_body:
             content = post_body.get('content')
             content_html = post_body.get('contentHtml')
-        if not all([post_title, post_summary, post_category, content, content_html]):
+        if not all([post_title, post_summary, category_name, content, content_html]):
             self.response_obj['code'] = 1
             self.response_obj['success'] = False
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_category_id = post_category.get('id')
-            category_name = post_category.get('categoryname')
-            category_description = post_category.get('description')
-
             print('--------11111111------', post_tags)
             post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
-                                              weight=post_weight, category_description=category_description,
-                                              post_tags=post_tags,
-                                              category_id=post_category_id)
+                                              weight=post_weight, post_tags=post_tags)
             data = {'articleId': post_id}
             self.response_obj['data'] = data
             # 服务器为新资源指派URL，并在响应的Location首部中返回
@@ -216,6 +185,7 @@ class PostApi(Resource):
                                     query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
 
         data = post_maker.makeup_post_item_for_index(_posts_list)
+        print(data)
         return prev_page, next_page, data
 
 
@@ -235,28 +205,28 @@ class PostDetail(Resource):
         self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
-    def post(self, post_id):
-        """
-        创建指定id文章
-        :return:
-        """
-        # 获取post请求参数
-        # https://blog.csdn.net/longting_/article/details/80637002
-        post = Article.query.get(post_id)
-        if post:
-            self.response_obj['error'] = 'Invalid post id.'
-            self.response_obj['data'] = ''
-            self.response_obj['msg'] = 'Create an exist post is impossible.'
-            self.response_obj['success'] = False
-            return jsonify_with_args(self.response_obj, 400)
-        else:
-            json_data = request.json
-            post = Article.from_json(json_data)
-            post.author_id = g.current_user  # TODO:用户登录之后保存用户名称和用户id
-            Article.insert_new_post(post)  # TODO:need func()
-            # 服务器为新资源指派URL，并在响应的Location首部中返回
-            return jsonify_with_args(post.to_json()), 201, {
-                'Location': url_for('api.articles', id=post.id, _external=True)}
+    # def post(self, post_id):
+    #     """
+    #     创建指定id文章
+    #     :return:
+    #     """
+    #     # 获取post请求参数
+    #     # https://blog.csdn.net/longting_/article/details/80637002
+    #     post = Article.query.get(post_id)
+    #     if post:
+    #         self.response_obj['error'] = 'Invalid post id.'
+    #         self.response_obj['data'] = ''
+    #         self.response_obj['msg'] = 'Create an exist post is impossible.'
+    #         self.response_obj['success'] = False
+    #         return jsonify_with_args(self.response_obj, 400)
+    #     else:
+    #         json_data = request.json
+    #         post = Article.from_json(json_data)
+    #         post.author_id = g.current_user  # TODO:用户登录之后保存用户名称和用户id
+    #         Article.insert_new_post(post)  # TODO:need func()
+    #         # 服务器为新资源指派URL，并在响应的Location首部中返回
+    #         return jsonify_with_args(post.to_json()), 201, {
+    #             'Location': url_for('api.articles', id=post.id, _external=True)}
 
     def put(self, post_id):
         """

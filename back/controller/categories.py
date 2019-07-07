@@ -11,6 +11,9 @@ from back.models import db
 
 
 class GetCategoryCtrl:
+    @staticmethod
+    def query_all_category():
+        return Category.query.all()
 
     @staticmethod
     def posts_for_category(category_id):
@@ -53,15 +56,22 @@ class GetCategoryCtrl:
 class PostCategoryCtrl:
 
     @staticmethod
-    def new_category(category_name, description=''):
+    def new_or_query_category(category_name, description=''):
         """
-        新建分类
+        如果已存在，则查找id,否则新建分类
         :param category_name:
         :param description:
         :return:
         """
         assert category_name
-        category = Category(category_name, description)
-        db.session.add(category)
-        db.session.commit()
-        return category.id
+        already_exist_category = {category.category_name: category.id for category in
+                                  GetCategoryCtrl.query_all_category()}
+        has_cgr = already_exist_category
+        if has_cgr and category_name in already_exist_category.keys():
+            category_id = already_exist_category[category_name]
+        else:
+            category = Category(category_name=category_name, description=description)
+            db.session.add(category)
+            db.session.commit()
+            category_id = category.id
+        return category_id

@@ -50,28 +50,32 @@ class GetTagCtrl:
             all_tags[tag_name] = tag
         return all_tags
 
-    def show_all_tags(self, limit_count=0):
-        """
-        查询所有的tag 信息 （全查）
-        :return:
-        """
-        tag_data = self.query_all_tags()
-        limit_data = MakeupPost.make_data_limit(tag_data, limit_count)
-        all_tags = self._make_up_tag_with_post_info(limit_data)
-        return all_tags
+    # def show_all_tags(self, limit_count=0):
+    #     """
+    #     查询所有的tag 信息 （全查）
+    #     :param hot:热度排序
+    #     :param limit_count:int,限制数量
+    #     :return:
+    #     """
+    #     tag_data = self.query_all_tags()
+    #     limit_data = MakeupPost.make_data_limit(tag_data, limit_count)
+    #     all_tags = self._make_up_tag_with_post_info(limit_data)
+    #     return all_tags
 
     def order_tags_by_include_post_counts(self, limit_count, desc=True):
         """
         按照标签热度排就是按照各标签下文章的个数排
-        :param limit_count:
-        :param desc:
+        :param limit_count:int,限制数量
+        :param desc:bool
         :return:
         """
-        # TODO：这个里面的方法都要梳理
-        tags_info = self.show_all_tags(limit_count)
-        # 把列表展开放到字典中，因为标签是唯一的
+        # 如果按照热度排序，则不能在此处切割，否则数据不完整，热度无法获取
+        tags_data = self.query_all_tags()
+        tags_info = self._make_up_tag_with_post_info(tags_data)
         tags_sorted = self.sort_tags(tags_info, reverse=desc)
-        data = self.compress_tag_item_for_index(tags_sorted)
+        limit_data = MakeupPost.make_data_limit(tags_sorted, limit_count)
+        # 把列表展开放到字典中，因为标签是唯一的
+        data = self.compress_tag_item_for_index(limit_data)
         return data
 
     @staticmethod
@@ -87,16 +91,16 @@ class GetTagCtrl:
         """
         data = None
         query_data = None
-        assert query_by in ['tag_name', 'tag_id']
-        if query_by == 'tag_name':
-            assert isinstance(query_key, str)
-            query_data = Tag.query.filter(Tag.tag_name == query_key)
-        elif query_by == 'tag_id':
-            # 按照 id 查询
-            if query_key:
+        if query_by:
+            assert query_by in ['tag_name', 'tag_id']
+            if query_by == 'tag_name':
+                assert isinstance(query_key, str)
+                query_data = Tag.query.filter(Tag.tag_name == query_key)
+            elif query_by == 'tag_id' and query_key:
+                # 按照 id 查询
                 query_data = Tag.query.filter(Tag.id == query_key)
-            else:
-                query_data = Tag.query
+        else:
+            query_data = Tag.query
         if query_data:
             assert order_key in ['id', 'name']
             if order_key == 'id':
@@ -119,15 +123,12 @@ class GetTagCtrl:
         :param limit_count:int,截取
         :return:
         """
-        # https://stackoverflow.com/questions/33512126/how-to-sort-an-array-of-objects-by-datetime-in-python/33512197
-        data = None
-        if query_by:
+        if hot:
+            data = self.order_tags_by_include_post_counts(limit_count, desc=order_by_desc)
+        else:
             query_data = self.query_tag_by(query_key, query_by=query_by, order_key=order_by,
                                            order_by_desc=order_by_desc)
-            print('------query_data------', query_data)
             data = self._make_up_tag_with_post_info(query_data)
-        elif hot:
-            data = self.order_tags_by_include_post_counts(limit_count, desc=order_by_desc)
 
         return data
 
@@ -160,41 +161,25 @@ class PostTagCtrl:
             tags.append(self.new_tag(tag_item))
         return tags
 
-    def add_tag(self, post_tags):
-        if post_tags:
-            # 新增 tag 没有默认id,过滤拿到之后去 POST
-            new_tags = []
-            origin_tags = []
-            new_add_tags = []
-            for tag in post_tags:
-                if not tag.get('id'):
-                    should_new_tags = tag.get('name') and tag['name']
-                    new_tags.append(should_new_tags)
-                else:
-                    already_exist_tag = tag.get('name') and tag['name']
-                    origin_tags.append(already_exist_tag)
-
-            if new_tags:
-                new_add_tags = self.new_multi_tags(new_tags)
-            all_tags_for_new_post = set(origin_tags) | set(new_add_tags)
-            return all_tags_for_new_post
-
     def add_tag_for_post(self, post_tags):
+        """
+        # 差集：need_pin_tags = user_post_tags-already_exist_tags
+        # get_all_tags = tags.all_tags()
+        :param post_tags:list,用户提交的文章 tag
+        :return:
+        """
         assert post_tags
         assert not isinstance(post_tags, str)
         # 新增 tag 没有默认id,过滤拿到之后去 POST
-        new_tags = []
-        origin_tags = []
         new_add_tags = []
-        for tag in post_tags:
-            if not tag.get('id'):
-                should_new_tags = tag.get('name') and tag['name']
-                new_tags.append(should_new_tags)
-            else:
-                already_exist_tag = tag.get('name') and tag['name']
-                origin_tags.append(already_exist_tag)
-
-        if new_tags:
-            new_add_tags = self.new_multi_tags(new_tags)
-        all_tags_for_new_post = set(origin_tags) | set(new_add_tags)
-        return all_tags_for_new_post
+        tags_to_set = set(post_tags)
+        _all_tags = GetTagCtrl.query_all_tags()
+        all_exist_tags = set([tag.tag_name for tag in _all_tags])
+        user_choose_exist = all_exist_tags & tags_to_set
+        need_pin_tags = tags_to_set - user_choose_exist
+        if need_pin_tags:
+            new_add_tags = self.new_multi_tags(need_pin_tags)
+        all_tags_for_new_post = set(user_choose_exist) | set(new_add_tags)
+        # 验证相等
+        assert not (all_tags_for_new_post - tags_to_set)
+        return tags_to_set
