@@ -60,10 +60,19 @@
                 :label="item.categoryname"
                 :value="item.categoryname">
               </el-option>
+
             </el-select>
+            <el-tooltip class="item" effect="dark" content="你可以点击选择已有分类或者为文章创建新分类" placement="right">
+              <i class="iconfont icon-question-circle"></i>
+            </el-tooltip>
           </el-form-item>
 
           <el-form-item label="文章标签" prop="tags">
+            <el-tooltip class="item" effect="dark" placement="right">
+              <div slot="content">你可以选择删除推荐标签然后点击按钮为文章创建新标签<br>（多个标签支持以逗号、空格分割批量添加）</div>
+              <i class="iconfont icon-question-circle"></i>
+            </el-tooltip>
+            <br>
             <el-tag
               :key="tag"
               v-for="tag in dynamicTags"
@@ -83,7 +92,7 @@
             >
             </el-input>
             <!--TODO:添加清空所有的按钮-->
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 创建标签</el-button>
             <!--<el-checkbox-group v-model="articleForm.tags">-->
               <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
             <!--</el-checkbox-group>-->
@@ -205,7 +214,7 @@
           this.$refs.saveTagInput.$refs.input.focus();
         });
       },
-      // TODO:https://www.jianshu.com/p/24f3320d3d40
+      // see:https://www.jianshu.com/p/24f3320d3d40
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
@@ -223,7 +232,8 @@
           }
         });
       }
-      this.inputVisible = true;
+      // 添加完成自动消失
+      this.inputVisible = false;
       this.inputValue = '';
       },
       getArticleById(id) {
@@ -271,14 +281,9 @@
 
         this.$refs[articleForm].validate((valid) => {
           if (valid) {
-
-            let tags = this.articleForm.tags.map(function (item) {
-              return {id: item};
-              // TODO: just for test
-            });
-            console.log('---this.articleForm.id----------',this.articleForm.id)
-            console.log('---this.articleForm.id----------',tags)
-            console.log('---this.articleForm.title----------',this.articleForm.title)
+            // let tags = this.articleForm.tags.map(function (item) {
+            //   return {id: item};
+            // });
             let article = {
               id: this.articleForm.id,
               title: this.articleForm.title,
@@ -430,6 +435,10 @@
   .me-title img {
     max-height: 2.4rem;
     max-width: 100%;
+  }
+
+  .item {
+    margin: 4px;
   }
 
   .me-write-toolbar-fixed {
