@@ -115,7 +115,7 @@ class GetTagCtrl:
         :param query_by: str,查询字段:tag_id <default> ,tag_name(查单个)
         :param order_by: 排序字段：id, post_count(热度),
         :param hot: bool, 是否按照热度排序
-        :param order_by_desc: str, 'desc' / 'asc'
+        :param order_by_desc: bool
         :param limit_count:int,截取
         :return:
         """

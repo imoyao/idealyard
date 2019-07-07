@@ -79,7 +79,7 @@ class PostApi(Resource):
             hot = args.get('hot', False, type=bool)
             # ?order = asc
             order = args.get('order')  # 默认降序
-            order_by_desc = order and order == 'asc' or 'desc'  # 暂时默认是降序
+            order_by_desc = order and order == 'asc' or True  # 默认是降序
             # ?limit=5
             limit_count = int(args.get('limit')) if args.get('limit') else None
             # 最新最热走limit逻辑，截取而不是分页

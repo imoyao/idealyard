@@ -50,15 +50,18 @@ class GetCategoryCtrl:
 
 
 # POST
-def new_category(category_name, description=''):
-    """
-    新建分类
-    :param category_name:
-    :param description:
-    :return:
-    """
-    assert category_name
-    category = Category(category_name, description)
-    db.session.add(category)
-    db.session.commit()
-    return category.id
+class PostCategoryCtrl:
+
+    @staticmethod
+    def new_category(category_name, description=''):
+        """
+        新建分类
+        :param category_name:
+        :param description:
+        :return:
+        """
+        assert category_name
+        category = Category(category_name, description)
+        db.session.add(category)
+        db.session.commit()
+        return category.id

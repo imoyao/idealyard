@@ -101,7 +101,7 @@ class GetPostCtrl:
         return json_post
 
     def get_post_detail_by_args(self, query_by, order_by, category_id, tag_id, year, month, new=False, hot=False,
-                                order_by_desc='desc'):
+                                order_by_desc=True):
         """
         根据各种条件查询文章
         :param query_by: str,查询字段:item in ['category','tag','archive']
@@ -112,7 +112,7 @@ class GetPostCtrl:
         :param month: int,月份
         :param new: bool
         :param hot: bool
-        :param order_by_desc: str, 'desc' / 'asc'
+        :param order_by_desc: bool
         :return:
         """
         query_data = None
@@ -138,8 +138,6 @@ class GetPostCtrl:
                 query_data = self.posts_order_by_view_counts(desc=order_by_desc)
         return query_data
 
-
-# ==POST==
 
 class PostNewArticle:
     # TODO: 其他 controllers 也应该这么写

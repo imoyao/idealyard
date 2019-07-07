@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/30 8:38
 
+"""
+归档：
+先找出年份最大和最小值 >>> 按年划分
+再找出每一年的按月划分 >> range(0,13)
+"""
 from sqlalchemy import func
 
 from back.controller import MakeQuery
@@ -10,11 +15,6 @@ from back.utils import DateTime
 
 date_maker = DateTime()
 query_maker = MakeQuery()
-"""
-归档：
-先找出年份最大和最小值 >>> 按年划分
-再找出每一年的按月划分 >> range(0,13)
-"""
 
 
 class GetArchiveCtrl:
@@ -52,7 +52,6 @@ class GetArchiveCtrl:
                 year_data = self.extract_post_with_month(year)
                 post_info_by_ct.extend(year_data)
         return post_info_by_ct[::-1] if order_desc else post_info_by_ct
-
 
     @staticmethod
     def extract_post_with_month(year):
