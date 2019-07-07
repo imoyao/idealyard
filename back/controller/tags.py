@@ -91,7 +91,7 @@ class GetTagCtrl:
         """
         data = None
         query_data = None
-        if query_by:
+        if query_key:
             assert query_by in ['tag_name', 'tag_id']
             if query_by == 'tag_name':
                 assert isinstance(query_key, str)

@@ -39,6 +39,8 @@ class TagApi(Resource):
         if tag_id:  # 查单个
             # /api/tags/id
             query_key = tag_id
+            query_by = 'tag_id'     # 只传id时给默认值
+            print(query_key)
 
         elif not hot:
             # TODO:默认按照id排，后续可以添加按照名字排（index >> name）
@@ -50,15 +52,10 @@ class TagApi(Resource):
                 # 没有请求参数时，总数少于设定值则全返回，否则返回设定值
                 limit_count = Tag.query.count() if Tag.query.count() < setting.LIMIT_HOT_TAG_COUNT else \
                     setting.LIMIT_HOT_TAG_COUNT
-        # else:
-        #     # 查全部
-        #     data = tag_getter.order_tags_by_include_post_counts(hot=hot, limit_count=limit_count, desc=order_by_desc)
-        #     print('----123434------',data)
-        #     self.response_obj['data'] = data
-        #     return jsonify_with_args(self.response_obj)
         if not args:
             # 没有请求参数，则返回全部
             limit_count = None
+        print(query_key, query_by, order_by, hot,order_by_desc,limit_count)
         data = tag_getter.get_tag_detail_by_args(query_key, query_by=query_by, order_by=order_by, hot=hot,
                                                  order_by_desc=order_by_desc,
                                                  limit_count=limit_count)

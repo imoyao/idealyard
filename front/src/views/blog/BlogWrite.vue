@@ -34,7 +34,6 @@
                  :visible.sync="publishVisible"
                  :close-on-click-modal=false
                  custom-class="me-dialog">
-
         <el-form :model="articleForm" ref="articleForm" :rules="rules">
           <el-form-item prop="summary">
             <el-input type="textarea"

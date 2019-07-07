@@ -84,7 +84,7 @@ class QueryComponent:
         tags_info = []
         if tags_data:
             # 标签信息列表
-            tags_info = [{'id': tag.id, 'tag_name': tag.tag_name} for tag in tags_data]
+            tags_info = [{'id': tag.id, 'tagname': tag.tag_name} for tag in tags_data]
         tag_count = len(tags_info)
 
         data = {
@@ -133,20 +133,22 @@ class MakeQuery:
         return posts_data
 
     @staticmethod
-    def query_post_by_category_of(category_id, order_by='create_date', desc='desc'):
+    def query_post_by_category_of(category_id, order_by='create_date', desc=True):
         """
         根据 id 过滤 >> 返回
-        :param category_id:
+        :param category_id: str,
+        :param order_by: str,
+        :param desc: bool
         :return:
         """
         post_obj = None
         if order_by == 'create_date':
-            if desc == 'desc':
+            if desc:
                 post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.create_date.desc())
             else:
                 post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.create_date)
         elif order_by == 'view_counts':
-            if desc == 'desc':
+            if desc:
                 post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.view_counts.desc())
             else:
                 post_obj = Article.query.filter_by(category_id=category_id).order_by(Article.view_counts)
@@ -281,7 +283,7 @@ class MakeupPost:
             print('summary-------', summary)
             tags = []
             if tag_infos:
-                tags = [{'tagname': tag.get('tag_name') or ''} for tag in tag_infos]
+                tags = [{'tagname': tag.get('tagname') or ''} for tag in tag_infos]
             post_info = {
                 "author": {
                     "nickname": username

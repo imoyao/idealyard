@@ -42,11 +42,12 @@
           <div class="me-view-tag">
             标签：
             <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
+
             <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags" :key="t.id" round plain>{{t.tagname}}</el-button>
           </div>
 
           <div class="me-view-tag">
-            文章分类：
+            分类：
             <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
             <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>{{article.category.categoryname}}</el-button>
           </div>
