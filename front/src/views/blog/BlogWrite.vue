@@ -103,7 +103,7 @@
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, reqArticleById} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
-  import {reqHotTags} from '@/api/tag'
+  import {reqMostTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
@@ -336,7 +336,7 @@
           }
         })
         // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
-        reqHotTags().then(data => {
+        reqMostTags().then(data => {
           that.tags = data.data
           that.tags.forEach(tag => {
             console.log('$$$$$$$$$$$',tag)
