@@ -44,7 +44,7 @@ class GetTagCtrl:
             articles = [data.post_id for data in data_obj.articles]
             tag_name = data_obj.tag_name
             tag['id'] = data_obj.id
-            tag['tagname'] = data_obj.tag_name
+            tag['tagname'] = tag_name
             tag['articles'] = articles
             tag['article_counts'] = data_obj.articles.count()
             all_tags[tag_name] = tag
@@ -55,7 +55,7 @@ class GetTagCtrl:
         查询所有的tag 信息 （全查）
         :return:
         """
-        tag_data = Tag.query.all()
+        tag_data = self.query_all_tags()
         limit_data = MakeupPost.make_data_limit(tag_data, limit_count)
         all_tags = self._make_up_tag_with_post_info(limit_data)
         return all_tags
@@ -93,7 +93,10 @@ class GetTagCtrl:
             query_data = Tag.query.filter(Tag.tag_name == query_key)
         elif query_by == 'tag_id':
             # 按照 id 查询
-            query_data = Tag.query.filter(Tag.id == query_key)
+            if query_key:
+                query_data = Tag.query.filter(Tag.id == query_key)
+            else:
+                query_data = Tag.query
         if query_data:
             assert order_key in ['id', 'name']
             if order_key == 'id':
@@ -121,6 +124,7 @@ class GetTagCtrl:
         if query_by:
             query_data = self.query_tag_by(query_key, query_by=query_by, order_key=order_by,
                                            order_by_desc=order_by_desc)
+            print('------query_data------', query_data)
             data = self._make_up_tag_with_post_info(query_data)
         elif hot:
             data = self.order_tags_by_include_post_counts(limit_count, desc=order_by_desc)

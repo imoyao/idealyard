@@ -27,7 +27,7 @@ class TagApi(Resource):
     def get(self, tag_id=None):
         args = request.args
         query_by = args.get('query', 'tag_id', type=str)
-        order_by= args.get('order_by', 'id', type=str)
+        order_by = args.get('order_by', 'id', type=str)
         order = args.get('order')  # 默认降序
         order_by_desc = order and order == 'asc' or True
         limit_count = None
@@ -56,6 +56,12 @@ class TagApi(Resource):
             self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj)
         # ?hot=true&limit=5
+        print('tag-------1', (query_key, query_by, order_by, hot,
+                              order_by_desc,
+                              limit_count))
+        if not args:
+            # 没有请求参数，则返回全部
+            limit_count = None
         data = tag_getter.get_tag_detail_by_args(query_key, query_by=query_by, order_by=order_by, hot=hot,
                                                  order_by_desc=order_by_desc,
                                                  limit_count=limit_count)
@@ -65,7 +71,7 @@ class TagApi(Resource):
         else:
             # 数据为空，还没来得及初始化！
             self.response_obj['code'] = 1
-            self.response_obj['msg'] = 'Please for initialization.'
+            self.response_obj['msg'] = 'Please make initialization first.'
             self.response_obj['success'] = False
             return jsonify_with_args(self.response_obj, 417)
 
