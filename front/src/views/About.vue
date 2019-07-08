@@ -23,7 +23,8 @@
               style="position: absolute;left: 60%;"
               size="mini"
               round
-              icon="el-icon-edit">编辑</el-button>
+              icon="el-icon-edit">编辑
+            </el-button>
           </div>
           <div class="me-view-content">
             <markdown-editor :editor=article.editor></markdown-editor>
@@ -42,13 +43,17 @@
             标签：
             <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
 
-            <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags" :key="t.id" round plain>{{t.tagname}}</el-button>
+            <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags"
+                       :key="t.id" round plain>{{t.tagname}}
+            </el-button>
           </div>
 
           <div class="me-view-tag">
             分类：
             <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
-            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>{{article.category.categoryname}}</el-button>
+            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>
+              {{article.category.categoryname}}
+            </el-button>
           </div>
 
           <div class="me-view-comment">
@@ -110,7 +115,7 @@
   import default_avatar from '@/assets/img/default_avatar.png'
 
   export default {
-    name: 'BlogView',
+    name: 'About',
     created() {
       this.addReadCount()
       this.getArticle()
@@ -162,7 +167,7 @@
     methods: {
       // TODO:统计+1
       addReadCount(){
-        let postId = this.$route.params.id
+        let postId = 20
         patchCount(postId).then(data => {
           this.viewCount = data.data.count
         })
@@ -175,8 +180,7 @@
       },
       getArticle() {
         let that = this
-        console.log('this.$store.state.id--111-',that.$route.params)
-        viewArticle(that.$route.params.id).then(data => {
+        viewArticle(20).then(data => {
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content
 
@@ -235,6 +239,9 @@
   }
 </script>
 
+<!--<style scoped>-->
+
+<!--</style>-->
 <style>
   .me-view-body {
     margin: 100px auto 140px;
@@ -323,15 +330,16 @@
   .v-note-wrapper .v-note-panel .v-note-show .v-show-content, .v-note-wrapper .v-note-panel .v-note-show .v-show-content-html {
     background: #fff !important;
   }
+
   blockquote {
-    margin: 1rem 10px!important;
-    padding: .5em 10px!important;
+    margin: 1rem 10px !important;
+    padding: .5em 10px !important;
     background: inherit;
     color: #cc2a41 !important;
-    quotes: "\201C" "\201D" "\2018" "\2019"!important;
+    quotes: "\201C" "\201D" "\2018" "\2019" !important;
     font-weight: bold;
     font-size: 14px;
-    font-family: 'Open Sans',"Helvetica Neue", "Helvetica","Microsoft YaHei", "WenQuanYi Micro Hei",Arial, sans-serif
+    font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
 
   }
 

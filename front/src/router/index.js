@@ -44,6 +44,10 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/Log')), 'log')
         },
         {
+          path: '/about',
+          component: r => require.ensure([], () => r(require('@/views/About')), 'about')
+        },
+        {
           path: '/archives/:year?/:month?',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogArchive')), 'archives')
         },

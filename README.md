@@ -32,6 +32,8 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 
 - [x] 概览页（index）显示
 - [x] 文章阅读计数
+- [ ] 该接口返回数据有误（summary） 
+    > http://192.168.31.133:5000/api/articles?page=1&per_page=5&order_by=create_date&sort=desc
 - [ ] 博客自己修改
 - [ ] 博客作者自己删除
 - [ ] 标签管理员手动添加

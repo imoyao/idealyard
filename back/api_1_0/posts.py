@@ -188,12 +188,14 @@ class PostApi(Resource):
 
 
 class PostDetail(Resource):
+    """
+    单个文件处理的 API
+    """
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self, post_id):
         """
-        # TODO: 只输入id时走这个函数比较好
         获得指定ID对应的文章
         :param post_id: int,
         :return: json,
