@@ -29,8 +29,8 @@ class TagApi(Resource):
         query_by = args.get('query', None, type=str)
         order_by = args.get('order_by', 'id', type=str)
         order = args.get('order')  # 默认降序
-        order_by_desc = order and order == 'asc' or True
-        query_key,limit_count = (None,)*2
+        order_by_desc = order and order == 'desc' if order else True
+        query_key, limit_count = (None,) * 2
         # 最新最热走limit逻辑，截取而不是分页 TODO: 标签暂时应该没有这个必要
         page, per_page = (None,) * 2
         if args.get('limit') and args['limit']:

@@ -79,7 +79,7 @@ class PostApi(Resource):
             hot = args.get('hot', False, type=bool)
             # ?order = asc
             order = args.get('order')  # 默认降序
-            order_by_desc = order and order == 'asc' or True  # 默认是降序
+            order_by_desc = order and order == 'desc' if order else True    # 暂时默认是降序
             # ?limit=5
             limit_count = int(args.get('limit')) if args.get('limit') else None
             # 最新最热走limit逻辑，截取而不是分页
@@ -143,7 +143,6 @@ class PostApi(Resource):
         category_name = json_data.get('category')
 
         print('------data = request.json--------', json_data)
-        # return
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
@@ -185,7 +184,6 @@ class PostApi(Resource):
                                     query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
 
         data = post_maker.makeup_post_item_for_index(_posts_list)
-        print(data)
         return prev_page, next_page, data
 
 

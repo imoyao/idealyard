@@ -113,9 +113,9 @@ class GetPostCtrl:
         :param tag_id: int, 标签id
         :param year: int, 年份
         :param month: int,月份
-        :param new: bool
-        :param hot: bool
-        :param order_by_desc: bool
+        :param new: bool,
+        :param hot: bool,
+        :param order_by_desc: bool,
         :return:
         """
         query_data = None
@@ -124,12 +124,9 @@ class GetPostCtrl:
             queryed = True
             if query_by == 'category':
                 query_data = MakeQuery.query_post_by_category_of(category_id, order_by=order_by, desc=order_by_desc)
-                print(query_data)
             elif query_by == 'tag':
                 query_data = MakeQuery.query_post_by_tag_of(tag_id, order_by=order_by, desc=order_by_desc)
             elif query_by == 'archive':
-                print(query_by, order_by, category_id, tag_id, year, month, new, hot,
-                      order_by_desc)
                 query_data = query_maker.order_archive(year, month, order_by=order_by, desc=order_by_desc)
             else:
                 pass
@@ -196,7 +193,6 @@ class PostArticleCtrl:
         if need_add_tags:
             tag_poster.new_multi_tags(need_add_tags)
         for tag_name in all_tags_for_new_post:
-            # TODO: next line is right
             tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
             post.tags.append(tag_obj)
 
