@@ -163,16 +163,6 @@ class Article(db.Model):
         db.session.add(post_obj)
         db.session.commit()
 
-    @staticmethod
-    def delete_post(obj):
-        """
-        删除文章
-        :param obj:
-        :return:
-        """
-        db.session.delete(obj)
-        db.session.commit()
-
 
 class Tag(db.Model):
     """

@@ -31,10 +31,8 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 ## TODO:
 
 - [x] 概览页（index）显示
-- [x] 后端代码OOP
-- [x] reqMostTags() 返回数据有误（没有反映最热）
+- [x] 文章阅读计数
 - [ ] 博客自己修改
-- [ ] 文章阅读计数
 - [ ] 博客作者自己删除
 - [ ] 标签管理员手动添加
 - [ ] 分类管理员手动添加

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:18
 import random
+from multiprocessing import Value
+
 from flask import g
 from sqlalchemy import func
 
@@ -228,3 +230,28 @@ class PostArticleCtrl:
         new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, body_id, weight=weight)
 
         return new_post_id
+
+
+class PatchPostCtrl:
+    """
+    关于文章的部分更新，应该在这个中进行
+    """
+
+    @staticmethod
+    def add_view_count(post_id):
+        """
+        https://stackoverflow.com/questions/42680357/increment-counter-for-every-access-to-a-flask-view
+        https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Value
+        :param post_id:
+        :return:
+        """
+        post_obj = Article.query.filter(Article.post_id == post_id).one()
+        if post_obj:
+            count = post_obj.view_counts
+            # https://www.jianshu.com/p/04c1ac8d9a94
+            counter = Value('i', count)
+            with counter.get_lock():
+                counter.value += 1
+            post_obj.view_counts = counter.value
+            db.session.commit()
+            return counter.value

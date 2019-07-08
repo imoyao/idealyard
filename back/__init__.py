@@ -32,7 +32,7 @@ def add_api():
     api.add_resource(categories.CategoryApi, '/api/categories', '/api/categories/<int:category_id>')
     # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
     api.add_resource(archives.Archives, '/api/archives')
-    api.add_resource(comments.Comments, '/api/comments','/api/tags/<int:comment_id>')
+    api.add_resource(comments.Comments, '/api/comments', '/api/tags/<int:comment_id>')
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
 

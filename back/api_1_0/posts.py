@@ -11,7 +11,7 @@ from flask import current_app
 from flask_restful import Resource
 
 from back.controller import MakeupPost
-from back.controller.posts import GetPostCtrl, PostArticleCtrl
+from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl
 from back.models import Article
 from . import api
 from .errors import forbidden
@@ -79,7 +79,7 @@ class PostApi(Resource):
             hot = args.get('hot', False, type=bool)
             # ?order = asc
             order = args.get('order')  # 默认降序
-            order_by_desc = order and order == 'desc' if order else True    # 暂时默认是降序
+            order_by_desc = order and order == 'desc' if order else True  # 暂时默认是降序
             # ?limit=5
             limit_count = int(args.get('limit')) if args.get('limit') else None
             # 最新最热走limit逻辑，截取而不是分页
@@ -188,12 +188,12 @@ class PostApi(Resource):
 
 
 class PostDetail(Resource):
-    # TODO: maybe useless
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
     def get(self, post_id):
         """
+        # TODO: 只输入id时走这个函数比较好
         获得指定ID对应的文章
         :param post_id: int,
         :return: json,
@@ -220,6 +220,24 @@ class PostDetail(Resource):
             Article.update_post_by_id(post_id, poster)
         return jsonify(post.to_json())
 
+    def patch(self, post_id):
+        """
+        更新文章部分信息操作
+        :param post_id:
+        :return:
+        """
+        assert post_id
+        data = None
+        args = request.args
+        patch_count = args.get('field')
+        if patch_count:
+            new_count = PatchPostCtrl.add_view_count(post_id)
+            if new_count:
+                data = {'count': new_count}
+
+        self.response_obj['data'] = data
+        return jsonify(self.response_obj)
+
     def delete(self, post_id):
         """
         删除指定文章
@@ -230,5 +248,5 @@ class PostDetail(Resource):
         # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
         if g.current_user != post.author_id:  # TODO:此处必须保证唯一？除了用户本人，管理员应该也可以删除
             return forbidden('Insufficient permissions')
-        Article.delete_post(post)
+        pass
         return jsonify(post.to_json())

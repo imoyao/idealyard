@@ -114,3 +114,13 @@ export function reqArticleById(id) {
     method: 'get'
   })
 }
+
+export function patchCount(id) {
+  return request({
+    url: `/articles/${id}`,
+    method: 'patch',
+    params: {
+      field: 'count'
+    }
+  })
+}

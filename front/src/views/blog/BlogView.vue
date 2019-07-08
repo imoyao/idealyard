@@ -13,7 +13,7 @@
               <span>{{article.author.nickname}}</span>
               <div class="me-view-meta">
                 <span>{{article.createDate | format}}</span>
-                <span>阅读   {{article.viewCounts}}</span>
+                <span>阅读   {{viewCount}}</span>
                 <span>评论   {{article.commentCounts}}</span>
               </div>
 
@@ -105,7 +105,7 @@
 <script>
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import CommmentItem from '@/components/comment/CommentItem'
-  import {viewArticle} from '@/api/article'
+  import {viewArticle,patchCount} from '@/api/article'
   import {reqCommentsByArticle, publishComment} from '@/api/comment'
 
   import default_avatar from '@/assets/img/default_avatar.png'
@@ -113,14 +113,15 @@
   export default {
     name: 'BlogView',
     created() {
+      this.addReadCount()
       this.getArticle()
-      this.readCountAdd()   //TODO:统计+1
     },
     watch: {
       '$route': 'getArticle'
     },
     data() {
       return {
+        viewCount: 0,
         article: {
           id: String,
           identifier: String,
@@ -161,8 +162,11 @@
     },
     methods: {
       // TODO:统计+1
-      readCountAdd(){
-        console.log('----','Page read counts +1.')
+      addReadCount(){
+        let postId = this.$route.params.id
+        patchCount(postId).then(data => {
+          this.viewCount = data.data.count
+        })
       },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
