@@ -18,16 +18,31 @@ auth = HTTPBasicAuth()
 class Auth(Resource):
     """
     参考：https://www.cnblogs.com/vovlie/p/4182814.html
+    https://www.cnblogs.com/PyKK2019/p/10889094.html
     """
 
-    @auth.login_required
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
     def post(self):
-        token = g.user.generate_auth_token()
-        if token:
-            username = g.user.username
-            return jsonify({'code': 0, 'msg': "success", 'token': token.decode('ascii'), 'username': username})
+        args = request.json
+        username = args.get('account') or args.get('authToken')
+        password = args.get('password')
+        verify_passed = verify_password(username, password)
+        if verify_passed:
+            token = g.user.generate_auth_token()
+            if token:
+                data = dict()
+                username = g.user.username
+                data['Oauth-Token'] = token.decode('ascii')
+                data['username'] = username
+                self.response_obj['data'] = data
+                return jsonify_with_args(self.response_obj)
         else:
-            return jsonify({'code': 1, 'msg': "请检查输入"})
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'UNAUTHORIZED'
+            return jsonify_with_args(self.response_obj, 401)
 
     @auth.login_required
     def get(self):
@@ -84,8 +99,6 @@ def verify_password(account_or_token, password):
     :param password:密码
     :return:
     """
-    print('------00--------', account_or_token)
-    print('------11--------', password)
     if not account_or_token:
         return False
     # account_or_token = re.sub(r'^"|"$', '', account_or_token)
