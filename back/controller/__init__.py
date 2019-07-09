@@ -270,14 +270,15 @@ class MakeupPost:
             if create_date:
                 str_date = date_maker.make_strftime(create_date)
 
-            #
             category_id = post_item.category_id
             post_id = post_item.post_id
+            body_id = post_item.body_id
             user_info = self.get_or_query(user_id, 'user')
             category_info = self.get_or_query(category_id, 'category')
             tag_infos = self.get_or_query(post_id, 'tag')['tags_info']
             username = user_info['nickname']
-            post_content = QueryComponent.content_for_post(post_id)
+            # 注意：此处应该是根据body_id查询内容
+            post_content = QueryComponent.content_for_post(body_id)
             summary = post_content.get('summary') or ''
             print('summary-------', summary)
             tags = []

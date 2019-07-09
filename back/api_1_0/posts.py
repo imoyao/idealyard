@@ -147,7 +147,7 @@ class PostApi(Resource):
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
         post_weight = json_data.get('weight') or 0
-        visable_tags = json_data.get('tags')
+        # visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
         content, content_html = (None,) * 2
         if post_body:
@@ -182,7 +182,6 @@ class PostApi(Resource):
         if pagination.has_next:
             next_page = api.url_for(PostApi, page=page + 1, per_page=per_page, order_by=order_by, sort=order,
                                     query_by=query_by, categories=categories, tags=tags, limit=limit, _external=True)
-
         data = post_maker.makeup_post_item_for_index(_posts_list)
         return prev_page, next_page, data
 
@@ -191,6 +190,7 @@ class PostDetail(Resource):
     """
     单个文件处理的 API
     """
+
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
