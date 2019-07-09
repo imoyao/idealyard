@@ -240,6 +240,7 @@ class PatchPostCtrl:
     @staticmethod
     def add_view_count(post_id):
         """
+        TODO:高级实现可以使用 redis HyperLogLog,参考:https://yemengying.com/2017/06/04/reddit-view-counting/
         https://stackoverflow.com/questions/42680357/increment-counter-for-every-access-to-a-flask-view
         https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Value
         :param post_id:
