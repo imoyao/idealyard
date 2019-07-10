@@ -138,20 +138,22 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path === '/signin') {
       next({path: '/'})
-    } else
-      {
-      if (store.state.account.length === 0) {
+    } else if (store.state.account.length === 0) {
+        console.log('111111111111')
         store.dispatch('getUserInfo').then(data => { //获取用户信息
+          console.log('100000000000')
           console.log(data.data)
           next()
         }).catch(() => {
+          console.log('2222222222')
           next({path: '/signin'})
         })
       } else {
+      console.log('333333333')
         next()
       }
+      console.log('44444444444')
       next()
-    }
     } else {
     if (to.matched.some(r => r.meta.requireLogin)) {
       Message({

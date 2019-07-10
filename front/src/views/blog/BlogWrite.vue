@@ -68,7 +68,7 @@
 
           <el-form-item label="文章标签" prop="tags">
             <el-tooltip class="item" effect="dark" placement="right">
-              <div slot="content">你可以选择删除推荐标签然后点击按钮为文章创建新标签<br>（多个标签支持以逗号、空格分割批量添加）</div>
+              <div slot="content">你可以选择删除已有标签然后点击按钮为文章创建新标签<br>（多个标签支持以逗号、空格分割批量添加）</div>
               <i class="iconfont icon-question-circle"></i>
             </el-tooltip>
             <br>
@@ -242,12 +242,16 @@
 
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
-
+          let postTags = []
           let tags = this.articleForm.tags.map(function (item) {
+            postTags.push(item.tagname)
+            console.log(item)
             return item.id;
           })
-
+          console.log('-----------',tags)
+          console.log('-----------',postTags)
           this.articleForm.tags = tags
+          this.dynamicTags = postTags
 
         }).catch(error => {
           if (error !== 'error') {
@@ -257,6 +261,7 @@
       },
       publishShow() {
         console.log(this.articleForm.tags)
+        console.log(this.dynamicTags)
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
@@ -339,23 +344,28 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-        // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
-        reqMostTags().then(data => {
-          that.tags = data.data
-          that.tags.forEach(tag => {
-            console.log('$$$$$$$$$$$',tag)
-            // 保存用户最终添加的tags
-            this.dynamicTags.push(tag.tagname)
-            // 保存用户可见tags
-            this.userVisableTags.push(tag.tagname)
+        console.log('edit-or-new',this.$route.params.id)
+        let postId = this.$route.params.id
+        let tagData = Object()
+        // 有id时上面已经获取到了
+        if(!postId){
+          // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
+          tagData = reqMostTags().then(data => {
+            that.tags = data.data
+            that.tags.forEach(tag => {
+              console.log('$$$$$$$$$$$',tag)
+              // 保存用户最终添加的tags
+              this.dynamicTags.push(tag.tagname)
+              // 保存用户可见tags
+              this.userVisableTags.push(tag.tagname)
+            })
+            console.log('-------reqAllTags------1111-----',this.dynamicTags)
+          }).catch(error => {
+            if (error !== 'error') {
+              that.$message({type: 'error', message: '标签加载失败', showClose: true})
+            }
           })
-          console.log('-------reqAllTags------1111-----',this.dynamicTags)
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '标签加载失败', showClose: true})
-          }
-        })
-
+        }
       },
       editorToolBarToFixed() {
 
