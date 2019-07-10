@@ -5,7 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
 
-from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
@@ -23,7 +23,7 @@ def add_api():
     添加 api 接口
     :return:
     """
-    api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>', )
+    api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.PostApi, '/api/articles')
@@ -34,7 +34,7 @@ def add_api():
     api.add_resource(archives.Archives, '/api/archives')
     api.add_resource(comments.Comments, '/api/comments', '/api/tags/<int:comment_id>')
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
-    api.add_resource(users.CGUser, '/api/register', '/api/users/<int:user_id>')
+    api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
 
     # api.add_resource(Setpwd, '/api/setpwd', )
 

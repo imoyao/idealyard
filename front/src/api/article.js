@@ -98,7 +98,6 @@ export function publishArticle(article) {
 
 export function listArchives(order) {
   let orderKey = order ? order : 'desc'
-  console.log(orderKey)
   return request({
     url: '/archives',
     method: 'get',

@@ -1,6 +1,7 @@
 import request from '@/request'
 import base from '@/api'
 import axios from 'axios'
+import {getToken} from '@/request/token'
 
 export function requestLogin(account, password) {
   const data = {
@@ -15,7 +16,7 @@ export function requestLogin(account, password) {
 }
 
 export function logout() {
-  var _this = this
+  let _this = this
   this.$confirm('确认退出吗?', '提示', {
     type: 'warning'
   }).then(() => {
@@ -27,9 +28,13 @@ export function logout() {
 }
 
 export function reqUserInfo() {
+  const data = {
+    token:getToken()
+  }
   return request({
-    url: '/users/currentUser',
-    method: 'get'
+    url: '/users',
+    method: 'get',
+    data
   })
 }
 

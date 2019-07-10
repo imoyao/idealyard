@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/25 14:34
 
-from flask import jsonify, request, abort, url_for
+from flask import jsonify, request, abort
 from flask_restful import Resource
 
 from back.models import User
@@ -21,14 +21,33 @@ def abort_if_not_exist(user_id):
     return user
 
 
-class CGUser(Resource):
+class UserApi(Resource):
     """
     创建或者获取用户信息
     """
 
-    def get(self, user_id):
-        user = abort_if_not_exist(user_id)
-        return jsonify(user)
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self, user_id=None):
+        data = dict()
+        if user_id:
+            user = abort_if_not_exist(user_id)
+        else:
+            token = request.headers.get('Oauth-Token')
+            user = User.verify_auth_token(token)
+        if user:
+            data['account'] = user.name
+            data['nickname'] = user.username
+            # TODO:just for test
+            data['avatar'] = '/static/user/admin.png'
+            data['id'] = user.id
+            self.response_obj['data'] = data
+            return jsonify(self.response_obj)
+        else:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            return jsonify_with_args(self.response_obj, 400)
 
     def post(self):
         json_data = request.json
