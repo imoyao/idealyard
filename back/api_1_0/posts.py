@@ -159,7 +159,6 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            print('--------11111111------', post_tags)
             post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
                                               weight=post_weight, post_tags=post_tags)
             data = {'articleId': post_id}
