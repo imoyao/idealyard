@@ -26,8 +26,11 @@ service.interceptors.response.use(function (response) {
   // Do something with response data
   return response.data
 }, function (error) {
+  console.log(error,'error')
+
   // Do something with response error
   if (error.response) {
+      console.log(error.response,'error.response')
     // 匹配不同的响应码
     switch  (error.response.status) {
       case 401:
@@ -73,14 +76,13 @@ service.interceptors.response.use(function (response) {
     Message({
           type: 'warning',
           showClose: true,
-          message: '要么你挂了，要么我挂了。😕'
+          message: '不好意思，我挂了。😕'
         })
-    console.log(error.request)
+
     // Vue.toasted.error('The request has not been sent to Flask API，because OPTIONS get error', { icon: 'fingerprint' })
   } else {
     console.log('Error: ', error.message)
   }
-  console.log(error.config)
 
   return Promise.reject(error)
 })

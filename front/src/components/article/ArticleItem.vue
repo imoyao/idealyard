@@ -26,7 +26,7 @@
       <!--# tags 大于三个时显示异常 ,为空时不应该显示图标-->
       <template v-if="tags.length!==0">
         <i class="iconfont icon-tags"></i>
-        <el-tag v-for="t in tags" :key="t.tagname" size="mini" type="success" class="me-article-flag">{{t.tagname}}</el-tag>
+        <el-tag v-for="t in tags.slice(0,3)" :key="t.tagname" size="mini" type="success" class="me-article-flag">{{t.tagname}}</el-tag>
       </template>
       <span class="me-article-category">
 	    	<i class="iconfont icon-folder-open"></i>&nbsp;{{category.categoryname}}
@@ -63,12 +63,6 @@
     methods: {
       view(postId,identifier) {
         this.$router.push({path: `/view/${postId}`, params:{id:postId,identifier:identifier}})
-      },
-      sliceTags (){
-        let tagCounts = this.tags.length
-        if (tagCounts){
-          this.tags= [{'tagname':'hello'},{'tagname':'测试'},{'tagname':'后端开发'},{'tagname':'不要显示'}]
-        }
       }
     }
   }
