@@ -33,6 +33,7 @@
 <script>
   import {requestLogin} from '@/api/login'
   import {setToken} from '@/request/token'
+  import axios from 'axios'
 
   export default {
     name: 'Login',
@@ -69,7 +70,8 @@
               that.$router.go(-1)
             }).catch((error) => {
               if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
+                console.log('login',error)
+                // that.$message({message: error, type: 'error', showClose: true});
                 this.logining = false
               }
             })

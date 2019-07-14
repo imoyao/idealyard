@@ -8,6 +8,7 @@ from datetime import datetime
 
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context
@@ -59,7 +60,7 @@ class User(db.Model):
 
     def generate_auth_token(self, expiration=600):
         """
-        获取token，有效时间10min  >> 10*60
+        生成token，有效时间10min  >> 10*60
         :param expiration:
         :return:
         """
@@ -80,8 +81,10 @@ class User(db.Model):
             return None  # valid token, but expired
         except BadSignature:
             return None  # invalid token
-        # 根据id查询，查到则认证通过，否则校验失败
-        user = User.query.get(data['id'])
+        # 根据username查询，查到则认证通过，否则校验失败
+        username = data.get('username')
+        user = User.query.filter(or_(User.username == username, User.email == username)).one_or_none()
+        # user = User.query.get(data['id'])
         return user
 
 
@@ -145,23 +148,6 @@ class Article(db.Model):
         if body is None or body == '':
             raise ValidationError('post dose not have a body.')
         return Article(body=body)
-
-    @staticmethod
-    def update_post_by_id(post_id, post_info):
-        """
-        更新硬件信息
-        :return:
-        """
-        post_obj = Article.query.filter(Article.post_id == post_id).first()
-        post_obj.title = post_info['title']
-        post_obj.author_id = post_info['author_id']
-        post_obj.body_id = post_info['body_id']
-        post_obj.view_counts = post_info['view_counts']
-        post_obj.weight = post_info['weight']
-        post_obj.category_id = post_info['category_id']
-        post_obj.create_date = post_info['create_date']
-        db.session.add(post_obj)
-        db.session.commit()
 
 
 class Tag(db.Model):

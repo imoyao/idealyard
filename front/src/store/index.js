@@ -35,10 +35,11 @@ export default new Vuex.Store({
     login({commit}, user) {
       return new Promise((resolve, reject) => {
         requestLogin(user.account, user.password).then(data => {
-          commit('SET_TOKEN', data.data['Oauth-Token'])
-          setToken(data.data['Oauth-Token'])
+          commit('SET_TOKEN', data.data['token'])
+          setToken(data.data['token'])
           resolve()
         }).catch(error => {
+          console.log('err in store', error)
           reject(error)
         })
       })
@@ -100,8 +101,8 @@ export default new Vuex.Store({
     register({commit}, user) {
       return new Promise((resolve, reject) => {
         register(user.account, user.nickname, user.password).then((data) => {
-          commit('SET_TOKEN', data.data['Oauth-Token'])
-          setToken(data.data['Oauth-Token'])
+          commit('SET_TOKEN', data.data['token'])
+          setToken(data.data['token'])
           resolve()
         }).catch((error) => {
           reject(error)
