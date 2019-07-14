@@ -6,6 +6,7 @@ from flask import jsonify, request,g
 from flask_restful import Resource
 
 from back.controller import posts, tags
+from .auth import basic_auth,token_auth,multi_auth
 
 BOOKS = [
     {
@@ -83,6 +84,7 @@ class Test(Resource):
     """
     用于快速测试的一个借口
     """
+    decorators = [basic_auth.login_required]
 
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}

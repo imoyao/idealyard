@@ -12,6 +12,9 @@ date_maker = DateTime()
 def assert_new_tag_in_tags(tags_for_new_post):
     tags = Tag.query.all()
     tags = set([tag.tag_name for tag in tags])
+    print(tags_for_new_post, tags)
+    if not isinstance(tags_for_new_post, set):
+        tags_for_new_post = set(tags_for_new_post)
     try:
         assert tags_for_new_post.issubset(tags)
     except AssertionError:

@@ -96,7 +96,6 @@ class GetPostCtrl:
             "createDate": str_date,
             "id": post_id,
             "identifier": post_identifier,
-            # TODO:摘要，暂无；感觉这个api不需要该参数？？？
             # "summary": "本节将介绍如何在项目中使用 Element。",
             "tags": tags_info,
             "title": post_info.title,
@@ -143,7 +142,6 @@ class GetPostCtrl:
 
 
 class PostArticleCtrl:
-    # TODO: 其他 controllers 也应该这么写
     """
     创建新博文
     """
@@ -183,13 +181,10 @@ class PostArticleCtrl:
         :return:
         """
         new_identifier = self.gen_post_identifier()
-        print('-----g.user.id------', g)
-        # print('-----g.user.id------', g.user.id)
         author_id = '1'  # TODO: just for test
         post = Article(title=title, identifier=new_identifier, author_id=author_id, body_id=body_id,
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
-        print('-----all_tags_for_new_post', all_tags_for_new_post)
         need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
         # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
         if need_add_tags:
@@ -230,6 +225,117 @@ class PostArticleCtrl:
         new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, body_id, weight=weight)
 
         return new_post_id
+
+
+class PutPostCtrl:
+    """
+    更新文章:更新一篇文章，要先更新标签、body表、然后再更新article
+    """
+
+    @staticmethod
+    def update_post_action(post_id, all_tags_for_new_post, title, current_user_id, update_body_id, category_id,
+                           weight=0):
+        """
+        更新文章数据的操作：先对tag进行区分，有新加的则更新；后更新文章内容
+        :param post_id: str,
+        :param all_tags_for_new_post: list,
+        :param title: str,
+        :param current_user_id: str,
+        :param update_body_id: str,
+        :param category_id: str,
+        :param weight: int
+        :return: 更新操作的文章id
+        """
+        need_add_tags = None
+        post_obj = Article.query.filter(Article.post_id == post_id).one()
+        if all_tags_for_new_post:
+            need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
+            for tag_name in all_tags_for_new_post:
+                tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+                post_obj.tags.append(tag_obj)
+        if need_add_tags:
+            tag_poster.new_multi_tags(need_add_tags)
+        post_obj.title = title
+        post_obj.author_id = current_user_id
+        post_obj.body_id = update_body_id
+        post_obj.view_counts = post_obj.view_counts
+        post_obj.weight = weight
+        post_obj.category_id = category_id
+        post_obj.create_date = post_obj.create_date
+        db.session.add(post_obj)
+        db.session.commit()
+        return post_id
+
+    @staticmethod
+    def update_body(body_id, content_html, content, summary):
+        """
+        更新文章body
+        :param body_id: str,
+        :param content_html: str,
+        :param content: str,
+        :param summary:str,
+        :return: str/None
+        """
+        body = ArticleBody.query.get(body_id)
+        if body:
+            body.content_html = content_html
+            body.content = content
+            body.summary = summary
+            db.session.add(body)
+            db.session.commit()
+            return body_id
+        return None
+
+    @staticmethod
+    def update_tag_for_post(post_id, post_tags=None):
+        """
+        更新指定文章的标签
+        '''
+        >>> old = {1,2,3}
+        >>> now = {2,3,4,5,6}
+        >>> old - now     # 原有被删的
+        set([1])
+        >>> now - old    #  新加的
+        set([4, 5, 6])
+        '''
+        :return:
+        """
+        new_add_tags = None
+        post_obj = Article.query.get(post_id)
+        old_tags = {tag.tag_name for tag in post_obj.tags}
+        need_del_tags = old_tags - set(post_tags)
+        need_add_tags = set(post_tags) - old_tags
+        if need_add_tags:  # 用户手动新增的
+            new_add_tags = tag_poster.new_multi_tags(need_add_tags)
+        if need_del_tags:  # 删除用户移除的标签
+            for tag in need_del_tags:
+                tag_obj = Tag.query.filter_by(tag_name=tag).one()
+                post_obj.tags.remove(tag_obj)
+                db.session.commit()
+        return new_add_tags
+
+    def update_post(self, post_id, current_user_id, category_name, summary, content_html, content, title, weight=0,
+                    post_tags=None):
+        """
+        更新更新文章分类、标签、body
+        :return:
+        """
+        category_id, update_body_id, all_tags_for_new_post = (None,) * 3
+        if category_name:  # 新增条目？ new : get id
+            category_id = category_poster.new_or_query_category(category_name)
+
+        add_tags_for_the_post = self.update_tag_for_post(post_id, post_tags)
+        print(add_tags_for_the_post)
+        post_obj = Article.query.get(post_id)
+        if post_obj:
+            body_id = post_obj.body_id
+            update_body_id = self.update_body(body_id, content_html, content, summary)
+            assert update_body_id == body_id
+        update_post_id = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
+                                                 category_id,
+                                                 weight=weight)
+
+        return update_post_id
 
 
 class PatchPostCtrl:

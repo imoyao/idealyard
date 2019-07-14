@@ -4,22 +4,23 @@
 """
 定义所有跟文章相关的api接口
 """
-import json
 
 from flask import g, jsonify, request
 from flask import current_app
 from flask_restful import Resource
 
 from back.controller import MakeupPost
-from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl
+from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl
 from back.models import Article
 from . import api
+from .auth import token_auth
 from .errors import forbidden
 from .utils import jsonify_with_args
 
 post_getter = GetPostCtrl()
 post_maker = MakeupPost()
 article_poster = PostArticleCtrl()
+post_updater = PutPostCtrl()
 
 
 def abort_if_not_exist(post_id):
@@ -131,7 +132,6 @@ class PostApi(Resource):
         创建文章
         :return:
         """
-        # TODO: 后期会发生更新
         '''
         {'id': '', 'title': '多喝热水', 'summary': '爱是什么？', 'category': '生活', 'dynamicTags': ['恋爱', '生活'],
          'tags': ['test', '原创', 'Python', '影评', '阅读', 'MySQL', '推荐'],
@@ -187,7 +187,7 @@ class PostApi(Resource):
 
 class PostDetail(Resource):
     """
-    单个文件处理的 API
+    单个文章处理的 API
     """
 
     def __init__(self):
@@ -204,6 +204,7 @@ class PostDetail(Resource):
         self.response_obj['data'] = post_info
         return jsonify(self.response_obj)
 
+    @token_auth.login_required
     def put(self, post_id):
         """
         更新指定文章
@@ -212,14 +213,35 @@ class PostDetail(Resource):
         :return:
         """
         post = abort_if_not_exist(post_id)
-        # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
-        if g.current_user != post.author_id:  # TODO:此处必须保证唯一
+        json_data = request.json
+        current_user_id = json_data.get('authorId')
+        if g.user.id != current_user_id:  # or  g.current_user.can(Permission.ADMINISTER):
             return forbidden('Insufficient permissions')
-        recvdata = json.loads(str(request.data, encoding="utf-8"))
-        if recvdata:
-            poster = recvdata['params']
-            Article.update_post_by_id(post_id, poster)
-        return jsonify(post.to_json())
+        post_tags = json_data.get('dynamicTags', [])
+        category_name = json_data.get('category')
+        post_summary = json_data.get('summary')
+        post_title = json_data.get('title')
+        post_weight = json_data.get('weight') or 0
+        # visable_tags = json_data.get('tags')
+        post_body = json_data.get('body')
+        content, content_html = (None,) * 2
+        if post_body:
+            content = post_body.get('content')
+            content_html = post_body.get('contentHtml')
+        if not all([post_title, post_summary, category_name, content, content_html]):
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Not enough args.'
+            return jsonify_with_args(self.response_obj, 400)
+        else:
+            post_id = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
+                                               content,
+                                               post_title,
+                                               weight=post_weight, post_tags=post_tags)
+            data = {'articleId': post_id}
+            self.response_obj['data'] = data
+            return jsonify_with_args(self.response_obj, 200, {
+                'Location': api.url_for(PostDetail, post_id=post_id, _external=True)})
 
     def patch(self, post_id):
         """
@@ -227,8 +249,8 @@ class PostDetail(Resource):
         :param post_id:
         :return:
         """
-        assert post_id
         data = None
+        post = abort_if_not_exist(post_id)
         args = request.args
         patch_count = args.get('field')
         if patch_count:

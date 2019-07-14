@@ -109,7 +109,7 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, reqArticleById} from '@/api/article'
+  import {publishArticle, reqArticleById,updateArticle} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
   import {reqMostTags} from '@/api/tag'
 
@@ -239,18 +239,17 @@
         console.log('-------getArticleById-----',id)
         let that = this
         reqArticleById(id).then(data => {
-
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
-          let postTags = []
-          let tags = this.articleForm.tags.map(function (item) {
-            postTags.push(item.tagname)
-            console.log(item)
-            return item.id;
+          that.articleForm.summary = data.data.body.summary
+          that.articleForm.category = data.data.category.categoryname
+          let postTags = this.articleForm.tags.map(function (item) {
+            // postTags.push(item.tagname)
+            return item.tagname;
           })
-          console.log('-----------',tags)
+          console.log('-----------',this.articleForm.tags)
           console.log('-----------',postTags)
-          this.articleForm.tags = tags
+          this.articleForm.tags = postTags
           this.dynamicTags = postTags
 
         }).catch(error => {
@@ -285,16 +284,19 @@
 
         this.$refs[articleForm].validate((valid) => {
           if (valid) {
-            // let tags = this.articleForm.tags.map(function (item) {
-            //   return {id: item};
-            // });
+            // TODO:重复
+            this.articleForm.tags.map(function (item) {
+              return item.tagname;
+            });
             let article = {
+              // 带上用户信息
+              authorId:this.$store.state.id,
               id: this.articleForm.id,
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               category: this.articleForm.category,
               dynamicTags: this.dynamicTags,
-              tags: this.userVisableTags,
+              tags: this.articleForm.tags,
               body: {
                 content: this.articleForm.editor.value,
                 contentHtml: this.articleForm.editor.ref.d_render
@@ -303,24 +305,38 @@
             }
             // 关闭发布框
             this.publishVisible = false;
-
+            console.log('this.articleForm.id',this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
             })
-
-            publishArticle(article).then((data) => {
+            let postId = article.id
+            if (postId){
+              updateArticle(article).then((data) => {
               loading.close();
-              that.$message({message: '发布成功啦', type: 'success', showClose: true})
+              that.$message({message: '更新成功啦', type: 'success', showClose: true})
               that.$router.push({path: `/view/${data.data.articleId}`})
 
             }).catch((error) => {
               loading.close();
               if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
+                console.log(error)
+                // that.$message({message: error, type: 'error', showClose: true});
               }
             })
 
+            }else {
+              publishArticle(article).then((data) => {
+                loading.close();
+                that.$message({message: '发布成功啦', type: 'success', showClose: true})
+                that.$router.push({path: `/view/${data.data.articleId}`})
+                }).catch((error) => {
+                  loading.close();
+                  if (error !== 'error') {
+                    that.$message({message: error, type: 'error', showClose: true});
+                  }
+                } )
+              }
           } else {
             return false;
           }

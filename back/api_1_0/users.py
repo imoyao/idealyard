@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/25 14:34
 
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, g
 from flask_restful import Resource
 
 from back.models import User
 from back.models import db
 from .utils import jsonify_with_args
+from .auth import token_auth
 
 
 def abort_if_not_exist(user_id):
@@ -26,6 +27,8 @@ class UserApi(Resource):
     创建或者获取用户信息
     """
 
+    decorators = [token_auth.login_required]
+
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
@@ -34,8 +37,7 @@ class UserApi(Resource):
         if user_id:
             user = abort_if_not_exist(user_id)
         else:
-            token = request.headers.get('Oauth-Token')
-            user = User.verify_auth_token(token)
+            user = g.user
         if user:
             data['account'] = user.name
             data['nickname'] = user.username
@@ -50,6 +52,10 @@ class UserApi(Resource):
             return jsonify_with_args(self.response_obj, 400)
 
     def post(self):
+        """
+        新建用户（注册）
+        :return:
+        """
         json_data = request.json
         username = json_data.get('username')
         password = json_data.get('password')
