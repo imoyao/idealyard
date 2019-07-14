@@ -156,6 +156,7 @@
             value: '',
             ref: '',//保存mavonEditor实例  实际不该这样
             default_open: 'edit',
+            placeholder: '唯有文字能担当此任，宣告生命曾经在场。',
             toolbars: {
               bold: true, // 粗体
               italic: true, // 斜体
@@ -431,7 +432,7 @@
   }
 
   .me-write-box {
-    max-width: 700px;
+    max-width: 900px;
     margin: 80px auto 0;
   }
 

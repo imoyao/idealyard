@@ -55,6 +55,7 @@
 <style scoped>
   .me-editor {
     z-index: 6 !important;
+    min-width: 500px
   }
 
   .v-note-wrapper.fullscreen {

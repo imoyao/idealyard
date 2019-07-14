@@ -79,80 +79,20 @@ const router = new VueRouter({
 })
 
 // 注册全局钩子拦截导航
-// router.beforeEach((to, from, next) =>{
-//   console.log('-----------------',getToken())
-//   if (getToken()) {
-//     console.log(store.state.account.length === 0)
-//     if(store.state.account.length === 0){
-//         console.log('---11111')
-//         store.dispatch('getUserInfo').then(data => {
-//           next()
-//         })
-//       }else{
-//       if (to.path === '/signin') {
-//         next()
-//       }else{
-//         next({path: '/'})
-//       }
-//         next()
-//       }
-//     // if (to.path === '/signin') {
-//     //   if(store.state.account.length === 0){
-//     //     console.log('---11111')
-//     //     store.dispatch('getUserInfo').then(data => {
-//     //       next()
-//     //     })
-//     //   }else{
-//     //     console.log('---22222')
-//     //     next({path: '/'})
-//     //   }
-//     // } else {
-//     //   console.log('---33333')
-//     //   next()
-//       // if (store.state.account.length === 0) {
-//       //   store.dispatch('getUserInfo').then(data => { //获取用户信息
-//       //     next()
-//       //   }).catch(() => {
-//       //     next({path: '/'})
-//       //   })
-//       // } else {
-//       //   next()
-//       // }
-//     }
-//   else {
-//     if (to.matched.some(r => r.meta.requireLogin)) {
-//       Message({
-//         type: 'warning',
-//         showClose: true,
-//         message: '登录后才可以进行该操作哦~'
-//       })
-//       next('/signin')
-//     }
-//     else {
-//       next();
-//     }
-//   }
-// })
-// TODO:getuserinfo
 router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path === '/signin') {
       next({path: '/'})
     } else if (store.state.account.length === 0) {
-        console.log('111111111111')
         store.dispatch('getUserInfo').then(data => { //获取用户信息
-          console.log('100000000000')
           console.log(data.data)
           next()
         }).catch(() => {
-          console.log('2222222222')
           next({path: '/signin'})
         })
       } else {
-      console.log('333333333')
         next()
       }
-      console.log('44444444444')
       next()
     } else {
     if (to.matched.some(r => r.meta.requireLogin)) {
