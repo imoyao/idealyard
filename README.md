@@ -32,6 +32,7 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 - [x] 概览页（index）显示
 - [x] 更新文章，对原有标签删除时，不成功，但新加正常。
 - [ ] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转。
+- [ ] 访问已删除文章时，不会跳转到首页！
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者说精准提示，一次只提示一条即可
 
 ## TODO:
@@ -46,6 +47,7 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 - [ ] 标签管理员手动添加
 - [ ] 分类管理员手动添加
 - [ ] 标签云
+参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)
 ---
 优先级中等
 - [ ] 管理员账户
