@@ -25,6 +25,9 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     # 分页
     FLASKY_POSTS_PER_PAGE = 10
+    # 上传图片
+    UPLOADED_IMAGES_DEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/images')
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024
 
     @staticmethod
     def init_app(app):
@@ -43,7 +46,7 @@ class DevelopmentConfig(Config):
     database = 'iyblog_dev'
     # 1366, "Incorrect string value: '\\xF0\\x9F\\x98\\x83</...' for column 'content_html' at row 1"
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{MySQLConfig.MYSQL_USERNAME}:{MySQLConfig.MYSQL_PASSWORD}' \
-                               f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
+                              f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
 
 
 class TestingConfig(Config):

@@ -36,7 +36,6 @@
         upload(formdata).then(data => {
           // 第二步.将返回的url替换到文本原位置![...](./0) -> ![...](url)
           if (data.code == 0) {
-
             that.$refs.md.$img2Url(pos, data.data.url);
           } else {
             that.$message({message: data.msg, type: 'error', showClose: true})

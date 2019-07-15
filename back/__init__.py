@@ -4,8 +4,9 @@
 from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
+from flask_uploads import configure_uploads, patch_request_class
 
-from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
@@ -35,6 +36,7 @@ def add_api():
     api.add_resource(comments.Comments, '/api/comments', '/api/tags/<int:comment_id>')
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
+    api.add_resource(uploads.UploadImage, '/api/images')
 
     # api.add_resource(Setpwd, '/api/setpwd', )
 
@@ -46,6 +48,8 @@ def create_app(config_name):
     # Load extensions
     cors.init_app(app)
     db.init_app(app)
+    configure_uploads(app, uploads.image_upload)  # configure_uploads(app, [files, photos])
+    patch_request_class(app, size=None)     # 防止用户上传过大文件导致服务器空间不足，加此自动引发HTTP错误。
     add_api()
     # api.init_app需要写在add_api()之后
     api.init_app(app)
