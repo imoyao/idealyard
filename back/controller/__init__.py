@@ -12,6 +12,9 @@ date_maker = DateTime()
 def assert_new_tag_in_tags(tags_for_new_post):
     tags = Tag.query.all()
     tags = set([tag.tag_name for tag in tags])
+    print(tags_for_new_post, tags)
+    if not isinstance(tags_for_new_post, set):
+        tags_for_new_post = set(tags_for_new_post)
     try:
         assert tags_for_new_post.issubset(tags)
     except AssertionError:
@@ -279,8 +282,7 @@ class MakeupPost:
             username = user_info['nickname']
             # 注意：此处应该是根据body_id查询内容
             post_content = QueryComponent.content_for_post(body_id)
-            summary = post_content.get('summary') or ''
-            print('summary-------', summary)
+            summary = post_content.get('summary') or '你如今的气质里，藏着你走过的路、读过的书和爱过的人。'
             tags = []
             if tag_infos:
                 tags = [{'tagname': tag.get('tagname') or ''} for tag in tag_infos]

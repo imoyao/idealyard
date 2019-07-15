@@ -68,7 +68,7 @@
 
           <el-form-item label="文章标签" prop="tags">
             <el-tooltip class="item" effect="dark" placement="right">
-              <div slot="content">你可以选择删除推荐标签然后点击按钮为文章创建新标签<br>（多个标签支持以逗号、空格分割批量添加）</div>
+              <div slot="content">你可以选择删除已有标签然后点击按钮为文章创建新标签<br>（多个标签支持以逗号、空格分割批量添加）</div>
               <i class="iconfont icon-question-circle"></i>
             </el-tooltip>
             <br>
@@ -109,7 +109,7 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, reqArticleById} from '@/api/article'
+  import {publishArticle, reqArticleById,updateArticle} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
   import {reqMostTags} from '@/api/tag'
 
@@ -156,6 +156,7 @@
             value: '',
             ref: '',//保存mavonEditor实例  实际不该这样
             default_open: 'edit',
+            placeholder: '唯有文字能担当此任，宣告生命曾经在场。',
             toolbars: {
               bold: true, // 粗体
               italic: true, // 斜体
@@ -239,15 +240,18 @@
         console.log('-------getArticleById-----',id)
         let that = this
         reqArticleById(id).then(data => {
-
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
-
-          let tags = this.articleForm.tags.map(function (item) {
-            return item.id;
+          that.articleForm.summary = data.data.body.summary
+          that.articleForm.category = data.data.category.categoryname
+          let postTags = this.articleForm.tags.map(function (item) {
+            // postTags.push(item.tagname)
+            return item.tagname;
           })
-
-          this.articleForm.tags = tags
+          console.log('-----------',this.articleForm.tags)
+          console.log('-----------',postTags)
+          this.articleForm.tags = postTags
+          this.dynamicTags = postTags
 
         }).catch(error => {
           if (error !== 'error') {
@@ -257,6 +261,7 @@
       },
       publishShow() {
         console.log(this.articleForm.tags)
+        console.log(this.dynamicTags)
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
@@ -280,16 +285,19 @@
 
         this.$refs[articleForm].validate((valid) => {
           if (valid) {
-            // let tags = this.articleForm.tags.map(function (item) {
-            //   return {id: item};
-            // });
+            // TODO:重复
+            this.articleForm.tags.map(function (item) {
+              return item.tagname;
+            });
             let article = {
+              // 带上用户信息
+              authorId:this.$store.state.id,
               id: this.articleForm.id,
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               category: this.articleForm.category,
               dynamicTags: this.dynamicTags,
-              tags: this.userVisableTags,
+              tags: this.articleForm.tags,
               body: {
                 content: this.articleForm.editor.value,
                 contentHtml: this.articleForm.editor.ref.d_render
@@ -298,24 +306,38 @@
             }
             // 关闭发布框
             this.publishVisible = false;
-
+            console.log('this.articleForm.id',this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
             })
-
-            publishArticle(article).then((data) => {
+            let postId = article.id
+            if (postId){
+              updateArticle(article).then((data) => {
               loading.close();
-              that.$message({message: '发布成功啦', type: 'success', showClose: true})
+              that.$message({message: '更新成功啦', type: 'success', showClose: true})
               that.$router.push({path: `/view/${data.data.articleId}`})
 
             }).catch((error) => {
               loading.close();
               if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
+                console.log(error)
+                // that.$message({message: error, type: 'error', showClose: true});
               }
             })
 
+            }else {
+              publishArticle(article).then((data) => {
+                loading.close();
+                that.$message({message: '发布成功啦', type: 'success', showClose: true})
+                that.$router.push({path: `/view/${data.data.articleId}`})
+                }).catch((error) => {
+                  loading.close();
+                  if (error !== 'error') {
+                    that.$message({message: error, type: 'error', showClose: true});
+                  }
+                } )
+              }
           } else {
             return false;
           }
@@ -339,23 +361,28 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-        // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
-        reqMostTags().then(data => {
-          that.tags = data.data
-          that.tags.forEach(tag => {
-            console.log('$$$$$$$$$$$',tag)
-            // 保存用户最终添加的tags
-            this.dynamicTags.push(tag.tagname)
-            // 保存用户可见tags
-            this.userVisableTags.push(tag.tagname)
+        console.log('edit-or-new',this.$route.params.id)
+        let postId = this.$route.params.id
+        let tagData = Object()
+        // 有id时上面已经获取到了
+        if(!postId){
+          // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
+          tagData = reqMostTags().then(data => {
+            that.tags = data.data
+            that.tags.forEach(tag => {
+              console.log('$$$$$$$$$$$',tag)
+              // 保存用户最终添加的tags
+              this.dynamicTags.push(tag.tagname)
+              // 保存用户可见tags
+              this.userVisableTags.push(tag.tagname)
+            })
+            console.log('-------reqAllTags------1111-----',this.dynamicTags)
+          }).catch(error => {
+            if (error !== 'error') {
+              that.$message({type: 'error', message: '标签加载失败', showClose: true})
+            }
           })
-          console.log('-------reqAllTags------1111-----',this.dynamicTags)
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '标签加载失败', showClose: true})
-          }
-        })
-
+        }
       },
       editorToolBarToFixed() {
 
@@ -405,7 +432,7 @@
   }
 
   .me-write-box {
-    max-width: 700px;
+    max-width: 900px;
     margin: 80px auto 0;
   }
 

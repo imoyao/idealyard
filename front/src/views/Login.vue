@@ -33,6 +33,7 @@
 <script>
   import {requestLogin} from '@/api/login'
   import {setToken} from '@/request/token'
+  import axios from 'axios'
 
   export default {
     name: 'Login',
@@ -62,38 +63,18 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.logining = true
-            var loginParams = {username: this.userForm.account, password: this.userForm.password}
-            requestLogin(loginParams).then(data => {
+            // 触发vuex中的login
+            that.$store.dispatch('login', that.userForm).then(() => {
               this.logining = false
-              console.log(data)
-              let {msg, code, token, name} = data
-              if (code !== 0) {
-                this.$message({
-                  message: msg,
-                  type: 'error'
-                })
-              } else {
-                this.$message({type: 'success', message: '何当共剪西窗烛，却话巴山夜雨时。💖 ', showClose: false})
-                // https://segmentfault.com/a/1190000012057010
-                setToken(JSON.stringify(token))
-                // sessionStorage.setItem('token', JSON.stringify(token))
-                sessionStorage.setItem('name', JSON.stringify(name))
-                this.$router.push({path: '/'})
+              // 从哪来到哪去：TODO:https://blog.csdn.net/Nalaluky/article/details/84201445
+              that.$router.go(-1)
+            }).catch((error) => {
+              if (error !== 'error') {
+                console.log('login',error)
+                // that.$message({message: error, type: 'error', showClose: true});
+                this.logining = false
               }
             })
-            // let loginParams = {username: this.userForm.account, password: this.userForm.password}
-            // // that.$store.dispatch('login', that.userForm).then(() => {
-            // // 触发vuex中的login
-            // that.$store.dispatch('login', loginParams).then(() => {
-            //   this.logining = false
-            //   // 从哪来到哪去：TODO:https://blog.csdn.net/Nalaluky/article/details/84201445
-            //   that.$router.go(-1)
-            // }).catch((error) => {
-            //   if (error !== 'error') {
-            //     that.$message({message: error, type: 'error', showClose: true});
-            //     this.logining = false
-            //   }
-            // })
           } else {
             return false;
           }

@@ -1,27 +1,26 @@
 import request from '@/request'
-import base from '@/api'
-import axios from 'axios'
+import {getToken} from '@/request/token'
 
-export const requestLogin = params => {
-  return axios({method: 'POST', url: `${base}/signin`, auth: params}).then(res => res.data)
+export function requestLogin(account, password) {
+  const data = {
+    username: account,
+    password: password
+  }
+  return request({
+    url: '/signin',
+    method: 'post',
+    auth:data,
+    // 这里是重点，因为对配置不熟悉搞了好久。`auth` 表示应该使用 HTTP 基础验证，并提供凭据
+    // 这将设置一个 `Authorization` 头，覆写掉现有的任意使用 `headers` 设置的自定义 `Authorization`头
+    // auth: {
+    //   username: 'janedoe',
+    //   password: 's00pers3cret'
+    // },
+  })
 }
 
-// TODO:how to?
-// export function requestLogin(account, password) {
-//   const data = {
-//     account,
-//     password
-//   }
-//   return request({
-//     url: '/signin',
-//     method: 'post',
-//     auth: data
-//     // data
-//   })
-// }
-
 export function logout() {
-  var _this = this
+  let _this = this
   this.$confirm('确认退出吗?', '提示', {
     type: 'warning'
   }).then(() => {
@@ -33,9 +32,13 @@ export function logout() {
 }
 
 export function reqUserInfo() {
+  const data = {
+    token:getToken()
+  }
   return request({
-    url: '/users/currentUser',
-    method: 'get'
+    url: '/users',
+    method: 'get',
+    data
   })
 }
 

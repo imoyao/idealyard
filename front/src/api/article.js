@@ -96,9 +96,17 @@ export function publishArticle(article) {
   })
 }
 
+export function updateArticle(article) {
+  const id = article.id
+  return request({
+    url: `/articles/${id}`,
+    method: 'put',
+    data: article
+  })
+}
+
 export function listArchives(order) {
   let orderKey = order ? order : 'desc'
-  console.log(orderKey)
   return request({
     url: '/archives',
     method: 'get',

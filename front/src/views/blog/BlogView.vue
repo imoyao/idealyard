@@ -179,6 +179,7 @@
         viewArticle(that.$route.params.id).then(data => {
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content
+          that.article.editor.value = data.data.body.content
 
           that.getCommentsByArticle()
         }).catch(error => {

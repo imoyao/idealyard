@@ -8,73 +8,83 @@ const service = axios.create({
   timeout: 10000
 })
 
-//request拦截器
-service.interceptors.request.use(config => {
-
-  if (store.state.token) {
-    config.headers['Oauth-Token'] = getToken()
+service.interceptors.request.use(function (config) {
+  // Do something before request is sent
+  const token = getToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
   return config
-}, error => {
-
-  Promise.reject(error)
+}, function (error) {
+  // Do something with request error
+  return Promise.reject(error)
 })
 
-// respone拦截器
-service.interceptors.response.use(
-  response => {
+// 响应拦截器
+// Add a response interceptor
+service.interceptors.response.use(function (response) {
+  // Do something with response data
+  return response.data
+}, function (error) {
+  console.log(error,'error')
 
-    //全局统一处理 Session超时
-    if (response.headers['session_time_out'] == 'timeout') {
-      store.dispatch('fedLogOut')
-    }
-
-    const res = response.data;
-
-    //0 为成功状态
-    if (res.code !== 0) {
-
-      //90001 Session超时
-      if (res.code === 90001) {
-        return Promise.reject('error');
-      }
-
-      //20001 用户未登录
-      if (res.code === 20001) {
-        console.info("用户未登录")
-
+  // Do something with response error
+  if (error.response) {
+      console.log(error.response,'error.response')
+    // 匹配不同的响应码
+    switch  (error.response.status) {
+      case 401:
+        // 清除 Token 及 已认证 等状态
+        store.dispatch('fedLogOut').then(data => { //获取用户信息
+          console.log(data.data)
+          next()
+        }).catch(() => {
+          console.log(error.response)
+        })
+        // 跳转到登录页
+          Message({
+          type: 'warning',
+          showClose: true,
+          message: '认证失败或登录超时，请检查登录信息！'
+        })
+        break
+      case 403:
+        console.log(error)
+        Message({
+          type: 'error',
+          showClose: true,
+          message: '你没有权限进行该项操作！'
+        })
+        break
+      case 404:
         Message({
           type: 'warning',
           showClose: true,
-          message: '未登录或登录超时，请重新登录哦'
+          message: '404: Not Found'
         })
+        break
 
-        return Promise.reject('error');
-      }
-
-      //70001 权限认证错误
-      if (res.code === 70001) {
-        console.info("权限认证错误")
+      case 500:  // 根本拿不到 500 错误，因为 CORs 不会过来
         Message({
           type: 'warning',
           showClose: true,
-          message: '你没有权限访问哦'
+          message: '500: Oops... INTERNAL SERVER ERROR'
         })
-        return Promise.reject('error');
-      }
-
-      return Promise.reject(res.msg);
-    } else {
-      return response.data;
+        break
     }
-  },
-  error => {
+  } else if (error.request) {
     Message({
-      type: 'warning',
-      showClose: true,
-      message: '要么你挂了，要么我挂了。😕'
-    })
-    return Promise.reject('error')
-  })
+          type: 'warning',
+          showClose: true,
+          message: '不好意思，我挂了。😕'
+        })
+
+    // Vue.toasted.error('The request has not been sent to Flask API，because OPTIONS get error', { icon: 'fingerprint' })
+  } else {
+    console.log('Error: ', error.message)
+  }
+
+  return Promise.reject(error)
+})
 
 export default service

@@ -66,8 +66,7 @@ class PostCategoryCtrl:
         assert category_name
         already_exist_category = {category.category_name: category.id for category in
                                   GetCategoryCtrl.query_all_category()}
-        has_cgr = already_exist_category
-        if has_cgr and category_name in already_exist_category.keys():
+        if already_exist_category and category_name in already_exist_category.keys():
             category_id = already_exist_category[category_name]
         else:
             category = Category(category_name=category_name, description=description)

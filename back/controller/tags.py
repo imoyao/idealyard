@@ -143,10 +143,12 @@ class PostTagCtrl:
         :return:str,tag_name
         """
         assert tag_name
-        tag = Tag(tag_name=tag_name)
-        db.session.add(tag)
-        db.session.commit()
-        return tag.tag_name
+        new_tag = Tag.query.filter_by(tag_name=tag_name).one_or_none()
+        if new_tag is None:     # 没有的话再去添加
+            tag = Tag(tag_name=tag_name)
+            db.session.add(tag)
+            db.session.commit()
+            return tag.tag_name
 
     def new_multi_tags(self, tag_names):
         """

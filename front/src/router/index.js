@@ -3,11 +3,11 @@ import VueRouter from 'vue-router'
 import Home from '@/Home'
 
 import {Message} from 'element-ui';
-
-
 import store from '@/store'
 
 import {getToken} from '@/request/token'
+
+import {requestLogin, reqUserInfo, logout, register} from '@/api/login'
 
 Vue.use(VueRouter)
 
@@ -78,70 +78,36 @@ const router = new VueRouter({
   }
 })
 
-// // 注册全局钩子拦截导航
-// router.beforeEach((to, from, next) =>{
-//   console.log('-----------------',getToken())
-//   if (getToken()) {
-//     if (to.path === '/signin') {
-//       next({path: '/'})
-//     } else {
-//       next()
-//       // if (store.state.account.length === 0) {
-//       //   store.dispatch('getUserInfo').then(data => { //获取用户信息
-//       //     next()
-//       //   }).catch(() => {
-//       //     next({path: '/'})
-//       //   })
-//       // } else {
-//       //   next()
-//       // }
-//     }
-//   }else {
-//     if (to.matched.some(r => r.meta.requireLogin)) {
-//       Message({
-//         type: 'warning',
-//         showClose: true,
-//         message: '登录后才可以进行该操作哦~'
-//       })
-//       next('/signin')
-//     }
-//     else {
-//       next();
-//     }
-//   }
-// })
-
-// router.beforeEach((to, from, next) => {
-//
-//   if (getToken()) {
-//
-//     if (to.path === '/signin') {
-//       next({path: '/'})
-//     } else {
-//       if (store.state.account.length === 0) {
-//         store.dispatch('getUserInfo').then(data => { //获取用户信息
-//           next()
-//         }).catch(() => {
-//           next({path: '/'})
-//         })
-//       } else {
-//         next()
-//       }
-//     }
-//   } else {
-//     if (to.matched.some(r => r.meta.requireLogin)) {
-//       Message({
-//         type: 'warning',
-//         showClose: true,
-//         message: '请先登录哦'
-//       })
-//
-//     }
-//     else {
-//       next();
-//     }
-//   }
-// })
+// 注册全局钩子拦截导航
+router.beforeEach((to, from, next) => {
+  if (getToken()) {
+    if (to.path === '/signin') {
+      next({path: '/'})
+    } else if (store.state.account.length === 0) {
+        store.dispatch('getUserInfo').then(data => { //获取用户信息
+          console.log(data.data)
+          next()
+        }).catch(() => {
+          next({path: '/signin'})
+        })
+      } else {
+        next()
+      }
+      next()
+    } else {
+    if (to.matched.some(r => r.meta.requireLogin)) {
+      Message({
+        type: 'warning',
+        showClose: true,
+        message: '登录后才可以进行该操作哦~'
+      })
+      next('/signin')
+    }
+    else {
+      next();
+    }
+  }
+})
 
 
 export default router
