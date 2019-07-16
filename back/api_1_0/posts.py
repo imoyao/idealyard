@@ -10,7 +10,7 @@ from flask import current_app
 from flask_restful import Resource
 
 from back.controller import MakeupPost
-from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl
+from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl, DelPostCtrl
 from back.models import Article
 from . import api
 from .auth import token_auth
@@ -21,6 +21,7 @@ post_getter = GetPostCtrl()
 post_maker = MakeupPost()
 article_poster = PostArticleCtrl()
 post_updater = PutPostCtrl()
+post_deleter = DelPostCtrl()
 
 
 def abort_if_not_exist(post_id):
@@ -263,18 +264,23 @@ class PostDetail(Resource):
         self.response_obj['data'] = data
         return jsonify(self.response_obj)
 
+    @token_auth.login_required
     def delete(self, post_id):
         """
         删除指定文章
         :param post_id: int
-        :return:
+        :return:json
         """
-        post = abort_if_not_exist(post_id)
+        abort_if_not_exist(post_id)
+        json_data = request.json
+        author_id = json_data.get('authorId')
         # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
-        if g.current_user != post.author_id:  # TODO:此处必须保证唯一？除了用户本人，管理员应该也可以删除
+        if g.user.id != author_id:  # TODO:对于普通用户来说，删除应该是数据库deleted字段置1，除了用户本人，管理员应该也可以删除
             return forbidden('Insufficient permissions')
-        pass
-        return jsonify(post.to_json())
+        else:
+            post_id = post_deleter.delete_post(post_id)
+            self.response_obj['msg'] = f'Delete post {post_id} success.'
+        return jsonify_with_args(self.response_obj, 204)
 
 
 class SlugApi(Resource):

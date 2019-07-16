@@ -142,3 +142,15 @@ export function reqArticleSlug(title) {
     }
   })
 }
+
+export function deleteArticle(id,authorId) {
+  console.log(authorId)
+  const params = {
+    authorId:authorId
+  }
+  return request({
+    url: `/articles/${id}`,
+    method: 'delete',
+    data: params
+  })
+}

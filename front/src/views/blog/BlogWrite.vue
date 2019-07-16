@@ -5,11 +5,21 @@
         <el-col :span="4" :offset="2">
           <div class="me-write-info">写文章</div>
         </el-col>
-        <el-col :span="4" :offset="6">
-          <div class="me-write-btn">
-            <el-button round @click="publishShow">发布</el-button>
-            <el-button round @click="cancel">取消</el-button>
-          </div>
+        <el-col :span="4" :offset="2">
+          <el-button-group class="me-write-btn">
+            <el-button size="small" round @click="publishShow">发布</el-button>
+            <el-button size="small" round @click="cancel">取消</el-button>
+          </el-button-group>
+          <!--<div class="me-write-btn">-->
+            <!--<el-button round @click="publishShow">发布</el-button>-->
+            <!--<el-button round @click="cancel">取消</el-button>-->
+            <!--&lt;!&ndash;<el-menu-item >&ndash;&gt;-->
+              <!--&lt;!&ndash;<el-button round @click="publishShow">发布</el-button>&ndash;&gt;-->
+            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
+            <!--&lt;!&ndash;<el-menu-item >&ndash;&gt;-->
+              <!--&lt;!&ndash;<el-button round @click="cancel">取消</el-button>&ndash;&gt;-->
+            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
+          <!--</div>-->
         </el-col>
       </base-header>
 
@@ -145,9 +155,6 @@
     data() {
       return {
         postTitle: '',
-        restaurants: [],
-        state: '',
-        timeout:  null,
         options: [{
           value: 'HTML',
           label: 'HTML'
@@ -219,7 +226,7 @@
     },
     computed: {
       title (){
-        return '写文章 - For Fun'
+        return '写文章  - 别院牧志'
       }
     },
     methods: {
@@ -459,6 +466,7 @@
 
   .me-write-btn {
     margin-top: 10px;
+    display: flex;
   }
 
   .me-write-box {
@@ -499,7 +507,7 @@
 
   .me-write-toolbar-fixed {
     position: fixed;
-    width: 700px !important;
+    width: 900px !important;
     top: 60px;
   }
 

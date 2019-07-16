@@ -81,21 +81,25 @@ const router = new VueRouter({
 // 注册全局钩子拦截导航
 router.beforeEach((to, from, next) => {
   if (getToken()) {
+    console.log('1111111111')
     if (to.path === '/signin') {
       next({path: '/'})
     } else if (store.state.account.length === 0) {
-        store.dispatch('getUserInfo').then(data => { //获取用户信息
-          console.log(data.data)
-          next()
-        }).catch(() => {
-          next({path: '/signin'})
-        })
+      console.log('444444')
+      store.dispatch('getUserInfo').then(data => { //获取用户信息
+        console.log(data.data)
+        next()
+      }).catch(() => {
+        console.log(response.status)
+        next({path: '/signin'})
+      })
       } else {
         next()
       }
       next()
     } else {
     if (to.matched.some(r => r.meta.requireLogin)) {
+      console.log('22222222')
       Message({
         type: 'warning',
         showClose: true,
@@ -104,6 +108,7 @@ router.beforeEach((to, from, next) => {
       next('/signin')
     }
     else {
+      console.log('33333333333333')
       next();
     }
   }

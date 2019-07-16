@@ -17,13 +17,7 @@
               </div>
 
             </div>
-            <el-button
-              v-if="this.article.author.id == this.$store.state.id"
-              @click="editArticle()"
-              style="position: absolute;left: 60%;"
-              size="mini"
-              round
-              icon="el-icon-edit">编辑</el-button>
+
           </div>
           <div class="me-view-content">
             <markdown-editor :editor=article.editor></markdown-editor>
@@ -50,6 +44,11 @@
             <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
             <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>{{article.category.categoryname}}</el-button>
           </div>
+          <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
+            <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+            <!--<el-button @click="btnVisable()" size="mini" type="primary" icon="el-icon-share" plain></el-button>-->
+            <el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          </el-button-group>
 
           <div class="me-view-comment">
             <div class="me-view-comment-write">
@@ -104,7 +103,7 @@
 <script>
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import CommmentItem from '@/components/comment/CommentItem'
-  import {viewArticle,patchCount} from '@/api/article'
+  import {viewArticle,patchCount,deleteArticle} from '@/api/article'
   import {reqCommentsByArticle, publishComment} from '@/api/comment'
 
   import default_avatar from '@/assets/img/default_avatar.png'
@@ -114,12 +113,14 @@
     created() {
       this.addReadCount()
       this.getArticle()
+      this.btnVisable()
     },
     watch: {
       '$route': 'getArticle'
     },
     data() {
       return {
+        visable:Boolean,
         viewCount: 0,
         article: {
           id: String,
@@ -156,11 +157,10 @@
         return default_avatar
       },
       title() {
-        return `${this.article.title} - 文章 - For Fun`
+        return `${this.article.title} - 文章  - 别院牧志`
       }
     },
     methods: {
-      // TODO:统计+1
       addReadCount(){
         let postId = this.$route.params.id
         patchCount(postId).then(data => {
@@ -173,6 +173,33 @@
       editArticle() {
         this.$router.push({path: `/write/${this.article.id}`})
       },
+      delArticle() {
+        this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let postId = this.article.id
+          let authorId = this.article.author.id
+          deleteArticle(postId,authorId).then(data => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.$router.push({path: '/'})
+          }).catch(error => {
+            console.log(error,'in delete')
+            if (error !== 'error') {
+              this.$message({type: 'error', message: '文章删除失败', showClose: true})
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       getArticle() {
         let that = this
         console.log('this.$store.state.id--111-',that.$route.params)
@@ -180,6 +207,8 @@
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content
           that.article.editor.value = data.data.body.content
+          that.article.author.id = data.data.author.id
+          console.log(that.article.author.id)
 
           that.getCommentsByArticle()
         }).catch(error => {
@@ -218,6 +247,11 @@
       },
       commentCountsIncrement() {
         this.article.commentCounts += 1
+      },
+      // TODO: 获取不到？
+      btnVisable(){
+        this.visable = this.article.author.id == this.$store.state.id
+        console.log(this.visable)
       }
     },
     components: {

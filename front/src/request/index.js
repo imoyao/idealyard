@@ -27,7 +27,6 @@ service.interceptors.response.use(function (response) {
   return response.data
 }, function (error) {
   console.log(error,'error')
-
   // Do something with response error
   if (error.response) {
       console.log(error.response,'error.response')
@@ -41,12 +40,12 @@ service.interceptors.response.use(function (response) {
         }).catch(() => {
           console.log(error.response)
         })
-        // 跳转到登录页
-          Message({
-          type: 'warning',
-          showClose: true,
-          message: '认证失败或登录超时，请检查登录信息！'
-        })
+        // 跳转到登录页,对于登录用户直接跳，没有必要message
+        //   Message({
+        //   type: 'warning',
+        //   showClose: true,
+        //   message: '认证失败或登录超时，请检查登录信息！'
+        // })
         break
       case 403:
         console.log(error)
@@ -62,6 +61,8 @@ service.interceptors.response.use(function (response) {
           showClose: true,
           message: '404: Not Found'
         })
+        //TODO 页面跳转
+        window.location.href="/"
         break
 
       case 500:  // 根本拿不到 500 错误，因为 CORs 不会过来
@@ -83,7 +84,6 @@ service.interceptors.response.use(function (response) {
   } else {
     console.log('Error: ', error.message)
   }
-
   return Promise.reject(error)
 })
 

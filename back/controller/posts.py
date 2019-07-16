@@ -430,3 +430,37 @@ class PatchPostCtrl:
             post_obj.view_counts = counter.value
             db.session.commit()
             return counter.value
+
+
+class DelPostCtrl:
+    """
+    删除文章操作
+    """
+
+    @staticmethod
+    def delete_body(body_id):
+        body = ArticleBody.query.get(body_id)
+        db.session.delete(body)
+        db.session.commit()
+        return 0
+
+    def delete_post(self, post_id):
+        """
+        首先删除文章 body，然后删除文章
+        :param post_id:int,
+        :return:
+        """
+        post_obj = Article.query.filter(Article.post_id == post_id).one()
+        print(post_obj)
+        if post_obj:
+            body_id = post_obj.body_id
+            print(type(post_obj.tags))
+            for tag in post_obj.tags:       # TODO: 可能是有的标签是手动加的，没有走正常对应添加逻辑，导致表中数据出错。（待验证！）
+                post_obj.tags.remove(tag)
+                db.session.commit()
+            print('---------', post_obj.tags)
+            # post_obj.tags.clear()
+            db.session.delete(post_obj)
+            db.session.commit()
+            self.delete_body(body_id)
+            return post_id
