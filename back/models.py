@@ -105,6 +105,7 @@ class Article(db.Model):
     post_id = db.Column(db.Integer, primary_key=True, comment='主键')
     title = db.Column(db.String(64), comment='文章标题')
     identifier = db.Column(db.Integer, unique=True, comment='文章标识码')
+    slug = db.Column(db.String(128), unique=True, comment='文章索引字符')
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
     view_counts = db.Column(db.Integer, server_default='0', comment='文章阅读数')

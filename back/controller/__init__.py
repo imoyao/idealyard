@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:17
+import re
 from sqlalchemy import extract, and_
 
 from back.models import Article, ArticleBody, Category, Comment, Tag, User
-from back.utils import DateTime
+from back.utils.date import DateTime
+from back.utils.text import BaiduTrans
+from back import setting
 
 date_maker = DateTime()
 
@@ -327,3 +330,29 @@ class MakeupPost:
             query_info = unnecessary_every_time_dict.get(query_type)
             shown_info[str_query_id] = query_info
         return query_info
+
+
+class Slug:
+
+    def parse_trans_en2cn(self, q_key, from_lang='auto', to_lang='en'):
+        bd_trans = BaiduTrans(q_key, from_lang=from_lang, to_lang=to_lang)
+        '''
+        Please enter what your wanna to translate:你说我是错的，那么你最好证明自己是对的！
+        /api/trans/vip/translate?appid=20190716000318350&q=%E4%BD%A0%E8%AF%B4%E6%88%91%E6%98%AF%E9%94%99%E7%9A%84%EF%BC%8C%E9%82%A3%E4%B9%88%E4%BD%A0%E6%9C%80%E5%A5%BD%E8%AF%81%E6%98%8E%E8%87%AA%E5%B7%B1%E6%98%AF%E5%AF%B9%E7%9A%84%EF%BC%81&from=auto&to=en&salt=35004&sign=78d7b5eb93e66a9d0cf63b26d9222277
+        b'{"from":"zh","to":"en","trans_result":[{"src":"\\u4f60\\u8bf4\\u6211\\u662f\\u9519\\u7684\\uff0c\\u90a3\\u4e48\\u4f60\\u6700\\u597d\\u8bc1\\u660e\\u81ea\\u5df1\\u662f\\u5bf9\\u7684\\uff01","dst":"You said I was wrong, so you\'d better prove yourself right!"}]}'
+
+        '''
+        dst = ''
+        _ret = bd_trans.trans_response()
+        if _ret:
+            result = _ret.get('trans_result')
+            if result:
+                dst = result[0]['dst']
+        return dst
+
+    @staticmethod
+    def make_up_slug(raw_slug):
+        result = re.sub(setting.RE_SYMBOL, ' ', raw_slug)
+        hyphens_join = '-'.join(
+            [item.strip().lower() if not item.strip().islower() else item.strip() for item in result.split()])
+        return hyphens_join

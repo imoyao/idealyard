@@ -10,11 +10,12 @@ from back.api_1_0 import api, auth, posts, users, tags, archives, categories, co
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
+from back import api_1_0
 
-BLUEPRINTS = [
-    'mains:bp',  # add bp here
-    'api_1_0:api_bp',
-]
+# BLUEPRINTS = [
+#     # 'mains:bp',  # add bp here
+#     'api_1_0:api_bp',
+# ]
 
 cors = CORS(resources=r'/*')
 
@@ -54,9 +55,9 @@ def create_app(config_name):
     # api.init_app需要写在add_api()之后
     api.init_app(app)
     # Load blueprints
-    for bp_name in BLUEPRINTS:
-        bp = import_string(bp_name)
-        app.register_blueprint(bp)
+    # for bp_name in BLUEPRINTS:
+    #     bp = import_string(bp_name)
+    #     app.register_blueprint(bp)
     return app
 
 

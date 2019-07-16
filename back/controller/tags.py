@@ -4,7 +4,7 @@
 
 from back.controller import MakeupPost
 from back.models import Tag, db
-from back.utils import DateTime
+from back.utils.date import DateTime
 
 date_maker = DateTime()
 

@@ -11,7 +11,7 @@ from back import setting
 from back.controller import QueryComponent, MakeupPost, MakeQuery, assert_new_tag_in_tags
 from back.controller import categories, tags
 from back.models import ArticleBody, Article, Tag, db
-from back.utils import DateTime
+from back.utils.date import DateTime
 
 date_maker = DateTime()
 category_poster = categories.PostCategoryCtrl()
@@ -169,6 +169,21 @@ class PostArticleCtrl:
         else:
             post_identifier = setting.INITIAL_POST_IDENTIFIER
         return post_identifier
+
+    @staticmethod
+    def resolve_conflict_slug(origin_slug):
+        """
+        生成新的 slug,通过给slug后面拼接递加数字字符实现
+        :param origin_slug:
+        :return:
+        """
+        count = 0
+        while True:
+            count = count + 1
+            slug_title = '-'.join([origin_slug, str(count)])
+            post = Article.query.filter(Article.slug == slug_title).one_or_none()
+            if not post:
+                return slug_title
 
     def new_post_action(self, category_id, all_tags_for_new_post, title, body_id, weight=0):
         """
