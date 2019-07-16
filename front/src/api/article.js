@@ -132,3 +132,13 @@ export function patchCount(id) {
     }
   })
 }
+
+export function reqArticleSlug(title) {
+  return request({
+    url: `/slugs`,
+    method: 'get',
+    params: {
+      title: title
+    }
+  })
+}

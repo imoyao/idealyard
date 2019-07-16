@@ -35,6 +35,12 @@
                  :close-on-click-modal=false
                  custom-class="me-dialog">
         <el-form :model="articleForm" ref="articleForm" :rules="rules">
+          <el-autocomplete
+            v-model="state"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="请输入内容"
+            @select="handleSelect"
+          ></el-autocomplete>
           <el-form-item prop="summary">
             <el-input type="textarea"
                       v-model="articleForm.summary"
@@ -109,18 +115,17 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, reqArticleById,updateArticle} from '@/api/article'
+  import {publishArticle, reqArticleById,updateArticle,reqArticleSlug} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
   import {reqMostTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
     mounted() {
-
+      this.restaurants = this.loadSlug();
       if(this.$route.params.id){
         this.getArticleById(this.$route.params.id)
       }
-
       this.getCategorysAndTags()
       this.editorToolBarToFixedWrapper = this.$_.throttle(this.editorToolBarToFixed, 200)
       window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false);
@@ -130,6 +135,10 @@
     },
     data() {
       return {
+        postTitle: '',
+        restaurants: [],
+        state: '',
+        timeout:  null,
         options: [{
           value: 'HTML',
           label: 'HTML'
@@ -203,8 +212,23 @@
         return '写文章 - For Fun'
       }
     },
-
     methods: {
+      querySearchAsync(queryString, cb) {
+        let restaurants = this.restaurants
+        let results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          cb(results);
+        }, 3000 * Math.random())
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        }
+      },
+      handleSelect(item) {
+        console.log(item)
+      },
       handleClose(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
       },
@@ -237,7 +261,6 @@
       this.inputValue = '';
       },
       getArticleById(id) {
-        console.log('-------getArticleById-----',id)
         let that = this
         reqArticleById(id).then(data => {
           Object.assign(that.articleForm, data.data)
@@ -260,8 +283,11 @@
         })
       },
       publishShow() {
+        this.postTitle = this.articleForm.title
+        console.log(this.postTitle,'-----------------')
         console.log(this.articleForm.tags)
         console.log(this.dynamicTags)
+        console.log(this.articleForm.title)
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
@@ -279,10 +305,27 @@
 
         this.publishVisible = true;
       },
+      loadSlug () {
+        alert('postTitle----111----')
+        console.log('postTitle--------',this.postTitle)
+        console.log('postTitle----this.articleForm.title----',this.articleForm.title)
+        return [
+          { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
+          { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
+        ];
+        // console.log('postTitle',this.articleForm.title)
+      //   reqArticleSlug(this.postTitle).then(data => {
+      //     // let slugl = data.data
+      //     // console.log('---------', slugl)
+      //     // return [{'value':'Hello,World!'}]
+      //     return [
+      //     { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
+      //     { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
+      //   ];
+      // })
+      },
       publish(articleForm) {
-
         let that = this
-
         this.$refs[articleForm].validate((valid) => {
           if (valid) {
             // TODO:重复
@@ -325,7 +368,6 @@
                 // that.$message({message: error, type: 'error', showClose: true});
               }
             })
-
             }else {
               publishArticle(article).then((data) => {
                 loading.close();
