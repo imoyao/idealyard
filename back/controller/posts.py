@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:18
+import re
+import json
 import random
 from multiprocessing import Value
 
@@ -8,6 +10,7 @@ from flask import g
 from sqlalchemy import func
 
 from back import setting
+from back.utils.text import BaiduTrans
 from back.controller import QueryComponent, MakeupPost, MakeQuery, assert_new_tag_in_tags
 from back.controller import categories, tags
 from back.models import ArticleBody, Article, Tag, db
@@ -171,7 +174,39 @@ class PostArticleCtrl:
         return post_identifier
 
     @staticmethod
-    def resolve_conflict_slug(origin_slug):
+    def parse_trans_en2cn(q_key, from_lang='auto', to_lang='en'):
+        """
+        根据用户输入关键字翻译，返回对应的英文字符串
+        :param q_key: str,
+        :param from_lang: str,default:auto
+        :param to_lang: str,en
+        :return: str, 中文所对应的的英文翻译
+        """
+        bd_trans = BaiduTrans(q_key, from_lang=from_lang, to_lang=to_lang)
+        dst = ''
+        _ret = bd_trans.trans_response()
+        if _ret:
+            # bytes >> str >> dict
+            dict_ret = json.loads(_ret.decode())
+            result = dict_ret.get('trans_result')
+            if result:
+                dst = result[0]['dst']
+        return dst
+
+    @staticmethod
+    def make_up_slug(raw_slug):
+        """
+        in:You look great today!
+        out:you-look-great-today
+        :param raw_slug:
+        :return:
+        """
+        result = re.sub(setting.RE_SYMBOL, ' ', raw_slug)
+        hyphens_join = '-'.join(
+            [item.strip().lower() if not item.strip().islower() else item.strip() for item in result.split()])
+        return hyphens_join
+
+    def resolve_conflict_slug(self, origin_slug):
         """
         生成新的 slug,通过给slug后面拼接递加数字字符实现
         :param origin_slug:
@@ -181,23 +216,41 @@ class PostArticleCtrl:
         while True:
             count = count + 1
             slug_title = '-'.join([origin_slug, str(count)])
-            post = Article.query.filter(Article.slug == slug_title).one_or_none()
+            post = self.no_duplicate_slug(slug_title)
             if not post:
                 return slug_title
 
-    def new_post_action(self, category_id, all_tags_for_new_post, title, body_id, weight=0):
+    @staticmethod
+    def has_duplicate_slug(slug_title):
+        """
+        判断没有重复的
+        有:返回obj，没有:返回None
+        :return:
+        """
+        post_obj = Article.query.filter(Article.slug == slug_title).one_or_none()
+        return post_obj
+
+    def new_post_action(self, category_id, all_tags_for_new_post, title, raw_slug, body_id, weight=0):
         """
         添加一篇博文
         :param category_id: int,
         :param all_tags_for_new_post: list
         :param title: str,
+        :param raw_slug: str,
         :param body_id: int
         :param weight:
         :return:
         """
         new_identifier = self.gen_post_identifier()
+        processed_slug = self.make_up_slug(raw_slug)
+        try:
+            assert not self.has_duplicate_slug(processed_slug)
+        except AssertionError:
+            processed_slug = self.resolve_conflict_slug(processed_slug)
+        print(processed_slug, '------------------------')
         author_id = '1'  # TODO: just for test
-        post = Article(title=title, identifier=new_identifier, author_id=author_id, body_id=body_id,
+        post = Article(title=title, slug=processed_slug, identifier=new_identifier, author_id=author_id,
+                       body_id=body_id,
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
         need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
@@ -213,7 +266,7 @@ class PostArticleCtrl:
         post_id = post.post_id
         return post_id
 
-    def new_post(self, category_name, summary, content_html, content, title, weight=0,
+    def new_post(self, category_name, summary, content_html, content, title, slug, weight=0,
                  post_tags=None):
         """
         POST 博文，需要先看是否要 POST category、tag；然后 POST body；最后操作 Article 表
@@ -222,6 +275,7 @@ class PostArticleCtrl:
         :param content_html:str,
         :param content:str,
         :param title:str,
+        :param slug:str,
         :param weight:int #TODO:bool? int?
         :param post_tags:list,
         :return:int,new_post_id
@@ -237,7 +291,7 @@ class PostArticleCtrl:
 
         body_id = self.new_post_body(summary, content_html, content)
 
-        new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, body_id, weight=weight)
+        new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, slug, body_id, weight=weight)
 
         return new_post_id
 

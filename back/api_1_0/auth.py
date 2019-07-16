@@ -19,7 +19,7 @@ from . import api_bp
 from .errors import unauthorized, forbidden
 from .utils import jsonify_with_args
 
-# TODO:代码需要整理
+# TODO:代码需要整理,auth模块放入controller中
 # 基础认证
 basic_auth = HTTPBasicAuth()
 # token认证
@@ -142,6 +142,7 @@ class ResetPassword(Resource):
     """
     重置密码
     """
+
     # TODO:需要测试可用性
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}

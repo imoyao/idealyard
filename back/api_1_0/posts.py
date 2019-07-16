@@ -9,7 +9,7 @@ from flask import g, jsonify, request
 from flask import current_app
 from flask_restful import Resource
 
-from back.controller import MakeupPost,SlugMaker
+from back.controller import MakeupPost
 from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl
 from back.models import Article
 from . import api
@@ -21,7 +21,6 @@ post_getter = GetPostCtrl()
 post_maker = MakeupPost()
 article_poster = PostArticleCtrl()
 post_updater = PutPostCtrl()
-slug_trans = SlugMaker()
 
 
 def abort_if_not_exist(post_id):
@@ -147,6 +146,7 @@ class PostApi(Resource):
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
+        raw_slug = json_data.get('slug')
         post_weight = json_data.get('weight') or 0
         # visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
@@ -160,7 +160,7 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
+            post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
                                               weight=post_weight, post_tags=post_tags)
             data = {'articleId': post_id}
             self.response_obj['data'] = data
@@ -215,6 +215,7 @@ class PostDetail(Resource):
         """
         post = abort_if_not_exist(post_id)
         json_data = request.json
+        print('---json_data', json_data)
         current_user_id = json_data.get('authorId')
         if g.user.id != current_user_id:  # or  g.current_user.can(Permission.ADMINISTER):
             return forbidden('Insufficient permissions')
@@ -296,7 +297,7 @@ class SlugApi(Resource):
             self.response_obj['msg'] = 'Args title is required.'
             return jsonify_with_args(self.response_obj, 412)
         data = dict()
-        slug = slug_trans.parse_trans_en2cn(title)
+        slug = article_poster.parse_trans_en2cn(title)
         data['slug'] = slug
         self.response_obj['data'] = slug
         return jsonify(self.response_obj)

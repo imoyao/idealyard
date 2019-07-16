@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:17
-import re
-import json
+
 
 from sqlalchemy import extract, and_
 
 from back.models import Article, ArticleBody, Category, Comment, Tag, User
 from back.utils.date import DateTime
-from back.utils.text import BaiduTrans
-from back import setting
 
 date_maker = DateTime()
 
@@ -333,32 +330,4 @@ class MakeupPost:
             shown_info[str_query_id] = query_info
         return query_info
 
-
-class SlugMaker:
-
-    @staticmethod
-    def parse_trans_en2cn(q_key, from_lang='auto', to_lang='en'):
-        """
-        根据用户输入关键字翻译，返回对应的英文字符串
-        :param q_key: str,
-        :param from_lang: str,default:auto
-        :param to_lang: str,en
-        :return: str, 中文所对应的的英文翻译
-        """
-        bd_trans = BaiduTrans(q_key, from_lang=from_lang, to_lang=to_lang)
-        dst = ''
-        _ret = bd_trans.trans_response()
-        if _ret:
-            # bytes >> str >> dict
-            dict_ret = json.loads(_ret.decode())
-            result = dict_ret.get('trans_result')
-            if result:
-                dst = result[0]['dst']
-        return dst
-
-    @staticmethod
-    def make_up_slug(raw_slug):
-        result = re.sub(setting.RE_SYMBOL, ' ', raw_slug)
-        hyphens_join = '-'.join(
-            [item.strip().lower() if not item.strip().islower() else item.strip() for item in result.split()])
-        return hyphens_join
+# class SlugMaker:

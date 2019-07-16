@@ -30,22 +30,18 @@
         </el-main>
       </el-container>
 
-      <el-dialog title="摘要 分类 标签"
+      <el-dialog title="摘要 | 分类 | 链接 | 标签"
                  :visible.sync="publishVisible"
                  :close-on-click-modal=false
                  custom-class="me-dialog">
         <el-form :model="articleForm" ref="articleForm" :rules="rules">
-          <el-autocomplete
-            v-model="state"
-            :fetch-suggestions="querySearchAsync"
-            placeholder="请输入内容"
-            @select="handleSelect"
-          ></el-autocomplete>
-          <el-form-item prop="summary">
-            <el-input type="textarea"
-                      v-model="articleForm.summary"
-                      :rows="6"
-                      placeholder="请输入摘要">
+          <el-form-item label="文章摘要" prop="summary" class="iy-slug-ipt">
+            <el-input
+              type="textarea"
+              v-model="articleForm.summary"
+              style="display:flex !important;width:85%;"
+              :autosize="{ minRows: 2, maxRows: 8}"
+              placeholder="请输入摘要">
             </el-input>
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
@@ -68,6 +64,23 @@
 
             </el-select>
             <el-tooltip class="item" effect="dark" content="你可以点击选择已有分类或者为文章创建新分类" placement="right">
+              <i class="iconfont icon-question-circle"></i>
+            </el-tooltip>
+          </el-form-item>
+          <!--TODO:更新时此输入框应为不可见-->
+          <el-form-item label="英文链接" prop="slug">
+            <el-autocomplete
+              class="iy-slug-ipt"
+              v-model="articleForm.slug"
+              autosize
+              :maxlength="60"
+              show-word-limit
+              :fetch-suggestions="querySearchAsync"
+              placeholder="请输入英文标题"
+              @select="handleSelect">
+              <el-button slot="append" icon="iconfont icon-translate"></el-button>
+            </el-autocomplete>
+            <el-tooltip class="item" effect="dark" content="你可以为文章自定义一个简短优雅的英文标题以创建链接" placement="right">
               <i class="iconfont icon-question-circle"></i>
             </el-tooltip>
           </el-form-item>
@@ -98,9 +111,6 @@
             </el-input>
             <!--TODO:添加清空所有的按钮-->
             <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 创建标签</el-button>
-            <!--<el-checkbox-group v-model="articleForm.tags">-->
-              <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
-            <!--</el-checkbox-group>-->
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -122,7 +132,6 @@
   export default {
     name: 'BlogWrite',
     mounted() {
-      this.restaurants = this.loadSlug();
       if(this.$route.params.id){
         this.getArticleById(this.$route.params.id)
       }
@@ -160,6 +169,7 @@
           title: '',
           summary: '',
           category: '',
+          slug: '',
           tags: [],
           editor: {
             value: '',
@@ -213,18 +223,14 @@
       }
     },
     methods: {
+      // https://blog.csdn.net/qq_37746973/article/details/78402812
       querySearchAsync(queryString, cb) {
-        let restaurants = this.restaurants
-        let results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          cb(results);
-        }, 3000 * Math.random())
-      },
-      createStateFilter(queryString) {
-        return (state) => {
-          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        }
+        console.log(this.postTitle)
+        reqArticleSlug(this.postTitle).then(data => {
+          let slug = data.data
+          let slugList = [{"value":slug}]
+          cb(slugList)
+        })
       },
       handleSelect(item) {
         console.log(item)
@@ -267,6 +273,7 @@
           that.articleForm.editor.value = data.data.body.content
           that.articleForm.summary = data.data.body.summary
           that.articleForm.category = data.data.category.categoryname
+          that.articleForm.slug = data.data.slug
           let postTags = this.articleForm.tags.map(function (item) {
             // postTags.push(item.tagname)
             return item.tagname;
@@ -284,9 +291,6 @@
       },
       publishShow() {
         this.postTitle = this.articleForm.title
-        console.log(this.postTitle,'-----------------')
-        console.log(this.articleForm.tags)
-        console.log(this.dynamicTags)
         console.log(this.articleForm.title)
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
@@ -305,25 +309,6 @@
 
         this.publishVisible = true;
       },
-      loadSlug () {
-        alert('postTitle----111----')
-        console.log('postTitle--------',this.postTitle)
-        console.log('postTitle----this.articleForm.title----',this.articleForm.title)
-        return [
-          { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
-          { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
-        ];
-        // console.log('postTitle',this.articleForm.title)
-      //   reqArticleSlug(this.postTitle).then(data => {
-      //     // let slugl = data.data
-      //     // console.log('---------', slugl)
-      //     // return [{'value':'Hello,World!'}]
-      //     return [
-      //     { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
-      //     { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
-      //   ];
-      // })
-      },
       publish(articleForm) {
         let that = this
         this.$refs[articleForm].validate((valid) => {
@@ -339,6 +324,7 @@
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               category: this.articleForm.category,
+              slug: this.articleForm.slug,
               dynamicTags: this.dynamicTags,
               tags: this.articleForm.tags,
               body: {
@@ -462,7 +448,9 @@
     min-width: 100%;
     box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
   }
-
+  .iy-slug-ipt{
+    width: 80%;
+  }
   .me-write-info {
     line-height: 60px;
     font-size: 18px;

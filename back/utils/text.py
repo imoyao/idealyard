@@ -54,7 +54,10 @@ class BaiduTrans:
         2、对字符串1做md5，得到32位小写的sign。
         :return:
         """
-        join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
+        try:
+            join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
+        except TypeError:
+            print('Check you env for baidu translate API.')
         _m1 = hashlib.md5()
         _m1.update(join_sign.encode())
         _sign = _m1.hexdigest()
