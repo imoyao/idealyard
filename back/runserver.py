@@ -8,5 +8,4 @@ app = create_app(os.getenv('FLASK_CONFIG', 'default'))
 init_db(app)
 
 if __name__ == '__main__':
-    host = os.getenv('HOST', '0.0.0.0')
-    app.run(host=host)
+    app.run(host='0.0.0.0')

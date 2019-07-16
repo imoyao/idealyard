@@ -13,10 +13,10 @@ from .api_1_0.books import Books, Test
 from .models import db
 from back import api_1_0
 
-# BLUEPRINTS = [
-#     # 'mains:bp',  # add bp here
-#     'api_1_0:api_bp',
-# ]
+BLUEPRINTS = [
+    'mains:bp',  # add bp here
+    'api_1_0:api_bp',
+]
 
 cors = CORS(resources=r'/*')
 
@@ -31,6 +31,7 @@ def add_api():
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(posts.PostApi, '/api/articles')
     api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')
+    api.add_resource(posts.SlugApi, '/api/slugs')
     api.add_resource(tags.TagApi, '/api/tags', '/api/tags/<int:tag_id>')
     api.add_resource(categories.CategoryApi, '/api/categories', '/api/categories/<int:category_id>')
     # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
@@ -40,7 +41,7 @@ def add_api():
     api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
     api.add_resource(uploads.UploadImage, '/api/images')
 
-    # api.add_resource(Setpwd, '/api/setpwd', )
+    # api.add_resource(Setpwd, '/api/password', )
 
 
 def create_app(config_name):
@@ -57,9 +58,9 @@ def create_app(config_name):
     # api.init_app需要写在add_api()之后
     api.init_app(app)
     # Load blueprints
-    # for bp_name in BLUEPRINTS:
-    #     bp = import_string(bp_name)
-    #     app.register_blueprint(bp)
+    for bp_name in BLUEPRINTS:
+        bp = import_string(bp_name)
+        app.register_blueprint(bp)
     return app
 
 

@@ -9,7 +9,7 @@ from flask import g, jsonify, request
 from flask import current_app
 from flask_restful import Resource
 
-from back.controller import MakeupPost
+from back.controller import MakeupPost,SlugMaker
 from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl
 from back.models import Article
 from . import api
@@ -21,6 +21,7 @@ post_getter = GetPostCtrl()
 post_maker = MakeupPost()
 article_poster = PostArticleCtrl()
 post_updater = PutPostCtrl()
+slug_trans = SlugMaker()
 
 
 def abort_if_not_exist(post_id):
@@ -273,3 +274,29 @@ class PostDetail(Resource):
             return forbidden('Insufficient permissions')
         pass
         return jsonify(post.to_json())
+
+
+class SlugApi(Resource):
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        """
+        根据输入的中文标题返回英文翻译（调用百度翻译API）
+        :return:
+        """
+        args = request.args
+        print(args)
+        title = args.get('title')
+        try:
+            assert title
+        except AssertionError:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Args title is required.'
+            return jsonify_with_args(self.response_obj, 412)
+        data = dict()
+        slug = slug_trans.parse_trans_en2cn(title)
+        data['slug'] = slug
+        self.response_obj['data'] = slug
+        return jsonify(self.response_obj)

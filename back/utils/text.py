@@ -79,7 +79,6 @@ class BaiduTrans:
         :return:
         """
         _trans_url = self.trans_url()
-        print(_trans_url)
         http_client = None
         try:
             http_client = http.client.HTTPConnection('api.fanyi.baidu.com')

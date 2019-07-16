@@ -6,9 +6,8 @@
 定义所有跟评论相关的api接口
 """
 
-from flask import jsonify,request
+from flask import jsonify, request
 from flask_restful import Resource
-
 
 
 class Comments(Resource):
@@ -19,7 +18,7 @@ class Comments(Resource):
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
-    def get(self,comment_id=None):
+    def get(self, comment_id=None):
         # 请求数据
         if comment_id:
             pass
@@ -36,9 +35,3 @@ class Comments(Resource):
                 self.response_obj['success'] = False
                 self.response_obj['msg'] = 'Args required.'
         return jsonify(self.response_obj)
-
-
-
-class ArchivesDetail(Resource):
-    pass
-
