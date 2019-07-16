@@ -4,6 +4,7 @@
 from flask import Flask
 from flask_cors import CORS
 from werkzeug.utils import import_string
+from flask_migrate import Migrate
 from flask_uploads import configure_uploads, patch_request_class
 
 from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads
@@ -49,6 +50,7 @@ def create_app(config_name):
     # Load extensions
     cors.init_app(app)
     db.init_app(app)
+    migrate = Migrate(app, db)  # 在db对象创建之后调用！
     configure_uploads(app, uploads.image_upload)  # configure_uploads(app, [files, photos])
     patch_request_class(app, size=None)     # 防止用户上传过大文件导致服务器空间不足，加此自动引发HTTP错误。
     add_api()

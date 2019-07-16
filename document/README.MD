@@ -109,3 +109,12 @@ imoyao@local:~/iyblog$ tree -L 3 -I "node_modules|*.pyc"
 ├── README.md
 
 ```
+## 数据库迁移
+```bash
+cd back
+flask db init       # 第一次初始化时执行一次
+flask db migrate -m 'add iy_article slug'       # 生成迁移脚本
+flask db upgrade        # 执行迁移，更新数据库  降级回滚使用 flask db downgrade
+
+```
+
