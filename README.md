@@ -21,13 +21,35 @@ CREATE DATABASE iyblog_dev CHARSET=UTF8;
 ```
 
 也可以通过修改配置之后自行定义。
+
+1. 进入当前目录之后，先通过pip安装pipenv管理包
+```bash
+pip install pipenv [--user]
+```
+2. 安装Python依赖
+```bash
+pipenv install 
+```
+3. 配置环境变量
+```bash
+cd back
+vi .flaskenv
+```
+4. 配置个人敏感信息
+如百度翻译API秘钥，密码等
+```bash
+vi .env
+```
+
+
+
 # 前端
 
 借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。
 [预览地址](http://shiminghui.top:8000/)
 
 # 后端
-## bugs:
+## BUGS:
 - [x] 首页摘要信息获取错误
 - [x] 概览页（index）显示
 - [x] 更新文章，对原有标签删除时，不成功，但新加正常。
