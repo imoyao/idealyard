@@ -126,7 +126,6 @@
     position: fixed;
     z-index: 1024;
     min-width: 100%;
-    background-color: rgba(0, 0, 0, 0);
     /*box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);*/
   }
   .userinfo {
