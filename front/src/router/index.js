@@ -90,7 +90,6 @@ router.beforeEach((to, from, next) => {
         console.log(data.data)
         next()
       }).catch(() => {
-        console.log(response.status)
         next({path: '/signin'})
       })
       } else {

@@ -1,94 +1,66 @@
 <template>
   <el-header class="me-area">
-    <el-row >
-  <el-col :span="4">
-    <router-link to="/" class="me-title">
-    <img src="../assets/img/logo.png"/>
-    </router-link>
-  </el-col>
-  <el-col :span="16">
-    <el-menu :default-active="$route.path" :router=true menu-trigger="click" active-text-color="#5FB878"
-                 mode="horizontal">
-      <el-menu-item index="/">首页</el-menu-item>
-      <el-menu-item index="/category">分类</el-menu-item>
-      <el-menu-item index="/tag">标签</el-menu-item>
-      <el-menu-item index="/archives">归档</el-menu-item>
-      <el-menu-item index="/log">日志</el-menu-item>
-      <el-menu-item index="/about">关于</el-menu-item>
-      <!--<el-menu-item index="/messageBoard">反馈</el-menu-item>-->
+    <el-row class="me-header">
 
-      <el-col :span="4" :offset="4">
-        <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
+      <el-col :span="4" class="me-header-left">
+        <router-link to="/" class="me-title">
+          <img src="../assets/img/logo.png"/>
+        </router-link>
       </el-col>
 
-    </el-menu>
+      <el-col v-if="!simple" :span="12" :offset="2">
+        <el-menu :router=true menu-trigger="click" active-text-color="#5FB878" :default-active="$route.path"
+                 mode="horizontal">
+          <el-menu-item index="/">首页</el-menu-item>
+          <el-menu-item index="/category">分类</el-menu-item>
+          <el-menu-item index="/tag">标签</el-menu-item>
+          <el-menu-item index="/archives">归档</el-menu-item>
+          <el-menu-item index="/log">日志</el-menu-item>
+          <el-menu-item index="/about">关于</el-menu-item>
+          <!--<el-menu-item index="/messageBoard">反馈</el-menu-item>-->
 
-  </el-col>
-  <el-col :span="4"><div class="grid-content bg-purple"></div></el-col>
-</el-row>
-    <!--<el-row class="me-header">-->
+          <el-col :span="2" :offset="6">
+            <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
+          </el-col>
 
-      <!--<el-col :span="4" class="me-header-left">-->
-        <!--<router-link to="/" class="me-title">-->
-          <!--<img src="../assets/img/logo.png"/>-->
-        <!--</router-link>-->
-      <!--</el-col>-->
+        </el-menu>
+      </el-col>
 
-      <!--<el-col v-if="!simple" :span="16">-->
-        <!--<el-menu :default-active="$route.path" :router=true menu-trigger="click" active-text-color="#5FB878"-->
-                 <!--mode="horizontal">-->
-          <!--<el-menu-item index="/">首页</el-menu-item>-->
-          <!--<el-menu-item index="/category">分类</el-menu-item>-->
-          <!--<el-menu-item index="/tag">标签</el-menu-item>-->
-          <!--<el-menu-item index="/archives">归档</el-menu-item>-->
-          <!--<el-menu-item index="/log">日志</el-menu-item>-->
-          <!--<el-menu-item index="/about">关于</el-menu-item>-->
-          <!--&lt;!&ndash;<el-menu-item index="/messageBoard">反馈</el-menu-item>&ndash;&gt;-->
+      <template v-else>
+        <slot></slot>
+      </template>
 
-          <!--<el-col :span="4" :offset="4">-->
-            <!--<el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>-->
-          <!--</el-col>-->
+      <el-col :span="4">
+        <el-menu class="transparent-header-side" :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878">
 
-        <!--</el-menu>-->
-      <!--</el-col>-->
+          <template v-if="!user.login">
+            <el-menu-item index="/signin">
+              <el-button type="text">登录</el-button>
+            </el-menu-item>
+            <el-menu-item index="/register">
+              <el-button type="text">注册</el-button>
+            </el-menu-item>
+          </template>
 
-      <!--<template v-else>-->
-        <!--<slot></slot>-->
-      <!--</template>-->
-
-      <!--<el-col :span="4" :offset="8">-->
-        <!--<el-menu :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878">-->
-
-          <!--<template v-if="!user.login">-->
-            <!--<el-button-group>-->
-              <!--<el-button size="small"  @click="signin">登录</el-button>-->
-              <!--<el-button size="small"  @click="register">注册</el-button>-->
-            <!--</el-button-group>-->
-            <!--&lt;!&ndash;<el-menu-item index="/signin">&ndash;&gt;-->
-              <!--&lt;!&ndash;<el-button type="text">登录</el-button>&ndash;&gt;-->
-            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
-            <!--&lt;!&ndash;<el-menu-item index="/register">&ndash;&gt;-->
-              <!--&lt;!&ndash;<el-button type="text">注册</el-button>&ndash;&gt;-->
-            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
-          <!--</template>-->
-
-          <!--<template v-else>-->
-            <!--<el-col :span="4" :offset="12" class="userinfo">-->
-              <!--<el-dropdown trigger="click">-->
-                <!--<img class="me-header-picture" :src="user.avatar" />-->
-                <!--&lt;!&ndash;<span class="el-dropdown-link userinfo-inner"><img class="me-header-picture" :src="user.avatar" /></span>&ndash;&gt;-->
-                <!--<el-dropdown-menu slot="dropdown">-->
+          <template v-else>
+            <el-col :span="4" class="userinfo">
+              <el-dropdown trigger="click">
+                <div style="padding-left: 20px;">
+                  <el-avatar :size="60" @error="errorHandler"></el-avatar>
+                  <img class="me-header-picture" :src="user.avatar" />
+                </div>
+                <el-dropdown-menu slot="dropdown">
                   <!--<el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>-->
-                  <!--<el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>-->
-                  <!--<el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>-->
-                <!--</el-dropdown-menu>-->
-              <!--</el-dropdown>-->
-            <!--</el-col>-->
-          <!--</template>-->
-        <!--</el-menu>-->
-      <!--</el-col>-->
+                  <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
+                  <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </el-col>
+          </template>
+        </el-menu>
+      </el-col>
 
-    <!--</el-row>-->
+    </el-row>
   </el-header>
 </template>
 
@@ -111,14 +83,15 @@
         let login = this.$store.state.account.length !== 0
         // let login = getToken()
         let avatar = this.$store.state.avatar
-        // TODO: 暂时写死，应该是动态获取的
-        // let avatar = '../../static/user/admin.png'
         return {
           login, avatar
         }
       }
     },
     methods: {
+      errorHandler() {
+        return true
+      },
       // logout() {
       //   let that = this
       //   this.$store.dispatch('logout').then(() => {
@@ -146,14 +119,17 @@
 </script>
 
 <style>
-
+  .transparent-header-side{
+    background-color: rgba(0, 0, 0, 0);
+  }
   .el-header {
     position: fixed;
     z-index: 1024;
     min-width: 100%;
+    background-color: rgba(0, 0, 0, 0);
     /*box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);*/
   }
-  userinfo {
+  .userinfo {
     text-align: right;
     padding-right: 35px;
     float: right;

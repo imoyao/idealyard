@@ -2,24 +2,14 @@
   <div id="write" v-title :data-title="title">
     <el-container>
       <base-header :simple=true>
-        <el-col :span="4" :offset="2">
+        <el-col :span="6" :offset="2">
           <div class="me-write-info">写文章</div>
         </el-col>
-        <el-col :span="4" :offset="2">
+        <el-col :span="4" :offset="3">
           <el-button-group class="me-write-btn">
-            <el-button size="small" round @click="publishShow">发布</el-button>
-            <el-button size="small" round @click="cancel">取消</el-button>
+            <el-button icon="el-icon-upload" size="small" round :autofocus="true" @click="publishShow">发布</el-button>
+            <el-button icon="el-icon-delete" size="small" round @click="cancel">取消</el-button>
           </el-button-group>
-          <!--<div class="me-write-btn">-->
-            <!--<el-button round @click="publishShow">发布</el-button>-->
-            <!--<el-button round @click="cancel">取消</el-button>-->
-            <!--&lt;!&ndash;<el-menu-item >&ndash;&gt;-->
-              <!--&lt;!&ndash;<el-button round @click="publishShow">发布</el-button>&ndash;&gt;-->
-            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
-            <!--&lt;!&ndash;<el-menu-item >&ndash;&gt;-->
-              <!--&lt;!&ndash;<el-button round @click="cancel">取消</el-button>&ndash;&gt;-->
-            <!--&lt;!&ndash;</el-menu-item>&ndash;&gt;-->
-          <!--</div>-->
         </el-col>
       </base-header>
 
@@ -124,8 +114,10 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="publishVisible = false">取 消</el-button>
-          <el-button type="primary" @click="publish('articleForm')">发布</el-button>
+          <el-button-group>
+            <el-button type="primary" @click="publish('articleForm')" icon="el-icon-upload">发布</el-button>
+            <el-button @click="publishVisible = false" icon="el-icon-delete">取 消</el-button>
+          </el-button-group>
         </div>
       </el-dialog>
     </el-container>
@@ -411,7 +403,6 @@
               // 保存用户可见tags
               this.userVisableTags.push(tag.tagname)
             })
-            console.log('-------reqAllTags------1111-----',this.dynamicTags)
           }).catch(error => {
             if (error !== 'error') {
               that.$message({type: 'error', message: '标签加载失败', showClose: true})
@@ -465,7 +456,7 @@
   }
 
   .me-write-btn {
-    margin-top: 10px;
+    margin-top: 14px;
     display: flex;
   }
 
