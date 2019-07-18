@@ -13,7 +13,7 @@ from back.controller import MakeupPost
 from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl, DelPostCtrl
 from back.models import Article
 from . import api
-from .auth import token_auth
+from back.controller.authctrl import token_auth
 from .errors import forbidden
 from .utils import jsonify_with_args
 

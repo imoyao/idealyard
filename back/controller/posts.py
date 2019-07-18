@@ -216,7 +216,7 @@ class PostArticleCtrl:
         while True:
             count = count + 1
             slug_title = '-'.join([origin_slug, str(count)])
-            post = self.no_duplicate_slug(slug_title)
+            post = self.has_duplicate_slug(slug_title)
             if not post:
                 return slug_title
 

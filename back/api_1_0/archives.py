@@ -5,7 +5,7 @@
 定义所有跟归档相关的api接口
 """
 
-from flask import jsonify,request
+from flask import jsonify, request
 from flask_restful import Resource
 
 from back.controller.archives import GetArchiveCtrl

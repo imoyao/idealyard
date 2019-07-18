@@ -7,79 +7,15 @@ http://www.pythondoc.com/flask-restful/third.html
 https://www.ctolib.com/docs/sfile/head-first-flask/chapter03/section3.05.html
 """
 
-from flask import g, jsonify, request, current_app
-from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
+from flask import g, jsonify, request
+
 from flask_restful import Resource
-from sqlalchemy import or_
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
 
 from back.models import User
 from . import api_bp
 from .errors import unauthorized, forbidden
 from .utils import jsonify_with_args
-
-# TODO:代码需要整理,auth模块放入controller中
-# 基础认证
-basic_auth = HTTPBasicAuth()
-# token认证
-token_auth = HTTPTokenAuth()
-# 混合认证（一个满足即可）
-multi_auth = MultiAuth(basic_auth, token_auth)
-
-
-@basic_auth.verify_password
-def verify_password(account, password):
-    """
-    基础认证回调函数，验证用户名和密码，if -> True，else False
-    :param account:账号（用户名|邮箱）
-    :param password:密码
-    :return:
-    """
-    if not all((account, password)):
-        return False
-    else:
-        user = User.query.filter(or_(User.username == account, User.email == account)).first()
-        if not user or not user.verify_user_password(password):
-            return False
-        # user对像会被存储到Flask的g对象中
-        g.user = user
-        return True
-
-
-def generate_auth_token(user_id, expiration=600):  # TODO:与models-User重复
-    """
-    生成含有user_id的token，有效时间10min  >> 10*60
-    :param user_id:
-    :param expiration:
-    :return:
-    """
-    s = Serializer(current_app.config['SECRET_KEY'], expiration)
-    token = s.dumps({'id': user_id}).decode('ascii')
-    return token
-
-
-@token_auth.verify_token
-def verify_token(token):
-    """
-    token认证
-    :param token:
-    :return:
-    """
-    g.user = None
-    s = Serializer(current_app.config['SECRET_KEY'])
-    try:
-        data = s.loads(token)
-    except SignatureExpired:
-        return None  # valid token, but expired
-    except BadSignature:
-        return None  # invalid token
-    user_id = data.get('id')
-    if data and user_id:
-        user = User.query.get(user_id)
-        g.user = user
-        return True
-    return False
+from back.controller.authctrl import basic_auth, multi_auth, generate_auth_token
 
 
 @basic_auth.error_handler
@@ -111,7 +47,7 @@ class Auth(Resource):
 
     def post(self):
         user_id = g.user.id
-        token = generate_auth_token(user_id)
+        token = generate_auth_token(user_id, expiration=60 * 120)
         if token:
             data = dict()
             username = g.user.username
