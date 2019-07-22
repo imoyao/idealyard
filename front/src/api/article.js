@@ -1,7 +1,5 @@
 import request from '@/request'
 
-// TODO: 里面很多api都是可以精简的
-
 export function reqArticles(query, page) {
   let queryId = '', queryType = '', queryYear = '', queryMonth = ''
   if (query.tagId) {

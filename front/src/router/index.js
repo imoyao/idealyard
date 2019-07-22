@@ -65,13 +65,17 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/blog/Tag')), 'tag')
         },
         {
-          //TODO: tag & categroy 公用，后期可能给拆分开？
-          path: '/:type',
+          path: '/category',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogAllCategoryTag')), 'blogallcategorytag')
         },
         {
           path: '/:type/:id',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogCategoryTag')), 'blogcategorytag')
+        },
+        {
+          path: '*',
+          name: 'NotFound',
+          component: r => require.ensure([], () => r(require('@/views/NotFound')), '404')
         }
       ]
     }
@@ -85,11 +89,9 @@ const router = new VueRouter({
 // 注册全局钩子拦截导航
 router.beforeEach((to, from, next) => {
   if (getToken()) {
-    console.log('1111111111')
     if (to.path === '/signin') {
       next({path: '/'})
     } else if (store.state.account.length === 0) {
-      console.log('444444')
       store.dispatch('getUserInfo').then(data => { //获取用户信息
         console.log(data.data)
         next()
@@ -110,7 +112,6 @@ router.beforeEach((to, from, next) => {
       next('/signin')
     }
     else {
-      console.log('33333333333333')
       next();
     }
   }
