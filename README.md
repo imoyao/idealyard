@@ -70,10 +70,11 @@ vi .env
 - [x] 博客作者自己删除
 - [ ] slug选项在更新文章时应该是不可见的（url确定之后不可修改！）
 - [ ] 链接由id变成数字和slug的组合
-- [ ] 标签云
-参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)
-参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)
-- [ ] 本次/上次提交中header样式需要调整！！！
+- [x] 标签云
+~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~
+~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~
+~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
+- [x] 本次/上次提交中header样式需要调整！！！
 - [ ] 标签管理员手动添加
 - [ ] 分类管理员手动添加
 ---

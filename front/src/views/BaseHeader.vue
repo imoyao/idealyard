@@ -15,7 +15,7 @@
           <el-menu-item index="/category">分类</el-menu-item>
           <el-menu-item index="/tag">标签</el-menu-item>
           <el-menu-item index="/archives">归档</el-menu-item>
-          <el-menu-item index="/log">日志</el-menu-item>
+          <!--<el-menu-item index="/log">日志</el-menu-item>-->
           <el-menu-item index="/about">关于</el-menu-item>
           <!--<el-menu-item index="/messageBoard">反馈</el-menu-item>-->
 

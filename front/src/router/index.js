@@ -61,6 +61,10 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {
+          path: '/tag',
+          component: r => require.ensure([], () => r(require('@/views/blog/Tag')), 'tag')
+        },
+        {
           //TODO: tag & categroy 公用，后期可能给拆分开？
           path: '/:type',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogAllCategoryTag')), 'blogallcategorytag')
@@ -98,7 +102,6 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
     if (to.matched.some(r => r.meta.requireLogin)) {
-      console.log('22222222')
       Message({
         type: 'warning',
         showClose: true,
