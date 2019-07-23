@@ -2,3 +2,4 @@ front/static/* linguist-vendored
 front/test/* linguist-vendored
 *.html linguist-vendored
 *.sql linguist-vendored
+*.css linguist-vendored
