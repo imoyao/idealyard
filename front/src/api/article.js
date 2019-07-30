@@ -53,6 +53,16 @@ export function reqHotArtices() {
   })
 }
 
+export function reqPostid(identifier) {
+  return request({
+    url: '/identifiers',
+    method: 'get',
+    params: {
+      identifier: identifier
+    }
+  })
+}
+
 export function reqNewArtices() {
   return request({
     url: '/articles',
@@ -68,6 +78,24 @@ export function viewArticle(id) {
   return request({
     url: `/articles/${id}`,
     method: 'get'
+  })
+}
+
+// 注意：此处和上边api走的后台逻辑基本一致，只是为了url好看
+export function identiferArticle(identifierId) {
+  return request({
+    url: `/identifiers/${identifierId}`,
+    method: 'get'
+  })
+}
+
+export function identiferCount(identifierId) {
+  return request({
+    url: `/identifiers/${identifierId}`,
+    method: 'patch',
+    params: {
+      field: 'count'
+    }
   })
 }
 

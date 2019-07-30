@@ -36,13 +36,17 @@
             标签：
             <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
 
-            <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags" :key="t.id" round plain>{{t.tagname}}</el-button>
+            <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags"
+                       :key="t.id" round plain>{{t.tagname}}
+            </el-button>
           </div>
 
           <div class="me-view-tag">
             分类：
             <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
-            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>{{article.category.categoryname}}</el-button>
+            <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>
+              {{article.category.categoryname}}
+            </el-button>
           </div>
           <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
             <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
@@ -103,16 +107,22 @@
 <script>
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import CommmentItem from '@/components/comment/CommentItem'
-  import {viewArticle,patchCount,deleteArticle} from '@/api/article'
+  import {viewArticle, identiferArticle, patchCount, identiferCount, deleteArticle, reqPostid} from '@/api/article'
   import {reqCommentsByArticle, publishComment} from '@/api/comment'
 
   import default_avatar from '@/assets/img/default_avatar.png'
 
   export default {
     name: 'BlogView',
+    // beforeCreate(){
+    //   this.getPostId()
+    // },
+    // TODO: created 中的函数使用then异步执行应该也可以
     created() {
+      this.getPostId().then(
+        this.getArticle()
+      )
       this.addReadCount()
-      this.getArticle()
       this.btnVisable()
     },
     watch: {
@@ -120,18 +130,20 @@
     },
     data() {
       return {
-        visable:Boolean,
+        visable: Boolean,
         viewCount: 0,
+        postId: '',
         article: {
           id: String,
           identifier: String,
+          slug: String,
           title: '',
           commentCounts: 0,
           viewCounts: 0,
           summary: '',
           author: {},
           tags: [],
-          category:{},
+          category: {},
           createDate: '',
           editor: {
             value: '',
@@ -161,11 +173,37 @@
       }
     },
     methods: {
-      addReadCount(){
-        let postId = this.$route.params.id
-        patchCount(postId).then(data => {
-          this.viewCount = data.data.count
+      // getPostId(){
+      //   let identifier = this.$route.params.identifier
+      //   reqPostid(identifier).then(data => {
+      //     this.postId = data.data.postId
+      //     console.log(this.postId,'----------this.postId')
+      //   })
+      // },
+      getPostId() {
+        return new Promise((resolve, reject) => {
+          let identifier = this.$route.params.identifier
+          reqPostid(identifier).then((data) => {
+            this.postId = data.data.postId
+            resolve()
+          }).catch((error) => {
+            reject(error)
+          })
         })
+      },
+      addReadCount: function() {
+        let that = this
+        if (this.postId){
+          patchCount(this.postId).then(data => {
+            this.viewCount = data.data.count
+          })
+        }else{
+          let postIdentifier = that.$route.params.identifier
+          identiferCount(postIdentifier).then(data => {
+            this.viewCount = data.data.count
+          })
+        }
+
       },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
@@ -181,14 +219,13 @@
         }).then(() => {
           let postId = this.article.id
           let authorId = this.article.author.id
-          deleteArticle(postId,authorId).then(data => {
+          deleteArticle(postId, authorId).then(data => {
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
             this.$router.push({path: '/'})
           }).catch(error => {
-            console.log(error,'in delete')
             if (error !== 'error') {
               this.$message({type: 'error', message: '文章删除失败', showClose: true})
             }
@@ -200,22 +237,43 @@
           });
         });
       },
-      getArticle() {
+      getArticle () {
         let that = this
-        console.log('this.$store.state.id--111-',that.$route.params)
-        viewArticle(that.$route.params.id).then(data => {
-          Object.assign(that.article, data.data)
-          that.article.editor.value = data.data.body.content
-          that.article.editor.value = data.data.body.content
-          that.article.author.id = data.data.author.id
-          console.log(that.article.author.id)
-
-          that.getCommentsByArticle()
-        }).catch(error => {
-          if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
-          }
-        })
+        this.postId = that.$route.params.id
+        let postIdentifier = that.$route.params.identifier
+        // 此处为了url更好看，将identifier传到后台拿回id，因为params的值在用户刷新页面后会丢失，
+        // 而query方式传参会导致url看起来像get请求，不够优雅，没有好的办法，只能暂时这样处理
+        if (this.postId) {
+          viewArticle(this.postId).then(data => {
+            Object.assign(that.article, data.data)
+            if (!this.postId) {
+              this.postId = data.data.id
+            }
+            that.article.editor.value = data.data.body.content
+            that.article.editor.value = data.data.body.content
+            that.article.author.id = data.data.author.id
+            that.getCommentsByArticle()
+          }).catch(error => {
+            if (error !== 'error') {
+              that.$message({type: 'error', message: '文章加载失败', showClose: true})
+            }
+          })
+        } else {
+          identiferArticle(postIdentifier).then(data => {
+            Object.assign(that.article, data.data)
+            if (!this.postId) {
+              this.postId = data.data.id
+            }
+            that.article.editor.value = data.data.body.content
+            that.article.editor.value = data.data.body.content
+            that.article.author.id = data.data.author.id
+            that.getCommentsByArticle()
+          }).catch(error => {
+            if (error !== 'error') {
+              that.$message({type: 'error', message: '文章加载失败', showClose: true})
+            }
+          })
+        }
       },
       publishComment() {
         let that = this
@@ -249,9 +307,8 @@
         this.article.commentCounts += 1
       },
       // TODO: 获取不到？
-      btnVisable(){
-        this.visable = this.article.author.id == this.$store.state.id
-        console.log(this.visable)
+      btnVisable() {
+        this.visable = this.article.author.id === this.$store.state.id
       }
     },
     components: {
@@ -358,15 +415,16 @@
   .v-note-wrapper .v-note-panel .v-note-show .v-show-content, .v-note-wrapper .v-note-panel .v-note-show .v-show-content-html {
     background: #fff !important;
   }
+
   blockquote {
-    margin: 1rem 10px!important;
-    padding: .5em 10px!important;
+    margin: 1rem 10px !important;
+    padding: .5em 10px !important;
     background: inherit;
     color: #cc2a41 !important;
-    quotes: "\201C" "\201D" "\2018" "\2019"!important;
+    quotes: "\201C" "\201D" "\2018" "\2019" !important;
     font-weight: bold;
     font-size: 14px;
-    font-family: 'Open Sans',"Helvetica Neue", "Helvetica","Microsoft YaHei", "WenQuanYi Micro Hei",Arial, sans-serif
+    font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
 
   }
 

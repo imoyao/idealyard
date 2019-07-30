@@ -297,6 +297,7 @@ class MakeupPost:
                 "createDate": str_date,
                 "id": post_item.post_id,
                 "identifier": post_item.identifier,
+                "slug": post_item.slug,
                 "summary": summary,
                 "tags": tags,
                 "category": category_info,

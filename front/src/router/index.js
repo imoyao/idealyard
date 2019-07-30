@@ -56,8 +56,9 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/MessageBoard')), 'messageboard')
         },
         {
-          // hint: 关于route传值 https://www.cnblogs.com/beka/p/8583924.html
-          path: '/view/:id',
+          // see also: 关于route传值 https://www.cnblogs.com/beka/p/8583924.html
+          path: '/posts/:identifier/:slug?',
+          name: 'blogview',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {

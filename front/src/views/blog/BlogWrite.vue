@@ -277,8 +277,6 @@
             // postTags.push(item.tagname)
             return item.tagname;
           })
-          console.log('-----------',this.articleForm.tags)
-          console.log('-----------',postTags)
           this.articleForm.tags = postTags
           this.dynamicTags = postTags
 
@@ -344,7 +342,7 @@
               updateArticle(article).then((data) => {
               loading.close();
               that.$message({message: '更新成功啦', type: 'success', showClose: true})
-              that.$router.push({path: `/view/${data.data.articleId}`})
+              that.$router.push({path: `/posts/${data.data.articleId}`})
 
             }).catch((error) => {
               loading.close();

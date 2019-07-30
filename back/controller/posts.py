@@ -82,6 +82,7 @@ class GetPostCtrl:
         category_id = post_info.category_id
         post_id = post_info.post_id
         post_identifier = post_info.identifier
+        post_slug = post_info.slug
         create_date = post_info.create_date
         user_info = QueryComponent.author_info_for_post(user_id)
         body_info = QueryComponent.content_for_post(body_id)
@@ -99,6 +100,7 @@ class GetPostCtrl:
             "createDate": str_date,
             "id": post_id,
             "identifier": post_identifier,
+            "slug": post_slug,
             # "summary": "本节将介绍如何在项目中使用 Element。",
             "tags": tags_info,
             "title": post_info.title,
@@ -155,6 +157,11 @@ class PostArticleCtrl:
         db.session.add(body)
         db.session.commit()
         return body.id
+
+    @staticmethod
+    def get_post_id_by_identifier(identifier):
+        post = Article.query.filter_by(identifier=identifier).one_or_none()
+        return post.post_id
 
     @staticmethod
     def gen_post_identifier():
@@ -394,7 +401,6 @@ class PutPostCtrl:
             category_id = category_poster.new_or_query_category(category_name)
 
         add_tags_for_the_post = self.update_tag_for_post(post_id, post_tags)
-        print(add_tags_for_the_post)
         post_obj = Article.query.get(post_id)
         if post_obj:
             body_id = post_obj.body_id
@@ -455,7 +461,7 @@ class DelPostCtrl:
         if post_obj:
             body_id = post_obj.body_id
             print(type(post_obj.tags))
-            for tag in post_obj.tags:       # TODO: 可能是有的标签是手动加的，没有走正常对应添加逻辑，导致表中数据出错。（待验证！）
+            for tag in post_obj.tags:  # TODO: 可能是有的标签是手动加的，没有走正常对应添加逻辑，导致表中数据出错。（待验证！）
                 post_obj.tags.remove(tag)
                 db.session.commit()
             print('---------', post_obj.tags)

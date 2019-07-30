@@ -2,7 +2,7 @@
   <el-card class="me-area" :body-style="{ padding: '16px' }">
     <div class="me-article-header">
 
-      <a @click="view(id,identifier)" class="me-article-title">{{title}}</a>
+      <a @click="view(id,identifier,slug)" class="me-article-title">{{title}}</a>
       <!--<el-button v-if="weight > 0" class="me-article-icon" type="text">置顶</el-button>-->
       <span v-if="weight > 0" class="me-article-icon" type="text">
         <i class="iconfont icon-pushpin"></i>
@@ -47,6 +47,7 @@
     props: {
       id: Number,
       identifier: Number,
+      slug: String,
       weight: Number,
       title: String,
       commentCounts: Number,
@@ -61,8 +62,8 @@
       return {}
     },
     methods: {
-      view(postId,identifier) {
-        this.$router.push({path: `/view/${postId}`, params:{id:postId,identifier:identifier}})
+      view(postId,identifier,slug) {
+        this.$router.push({path: `/posts/${identifier}/${slug}`, name: 'blogview', params:{id:postId,identifier:identifier,slug:slug}})
       }
     }
   }

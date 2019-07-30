@@ -72,7 +72,7 @@ class PostApi(Resource):
     def get(self):
         # 请求数据
         args = request.args
-        print('[_ for _ in args]', args)
+        print([_ for _ in args], args)
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             # ?new=true
@@ -187,6 +187,46 @@ class PostApi(Resource):
         return prev_page, next_page, data
 
 
+class IdentifyPostDetail(Resource):
+    """
+    单个文章处理的 API
+    """
+
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self, identifier):
+        """
+        获得指定 identifier 对应的文章
+        :param identifier: int,
+        :return: json,
+        """
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        post = abort_if_not_exist(post_id)
+        post_info = post_getter.post_detail(post)
+        self.response_obj['data'] = post_info
+        return jsonify(self.response_obj)
+
+    def patch(self, identifier):
+        """
+        更新文章阅读数操作
+        :param identifier:
+        :return:
+        """
+        data = None
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        post = abort_if_not_exist(post_id)
+        args = request.args
+        patch_count = args.get('field')
+        if patch_count == 'count':
+            new_count = PatchPostCtrl.add_view_count(post_id)
+            if new_count:
+                data = {'count': new_count}
+
+        self.response_obj['data'] = data
+        return jsonify(self.response_obj)
+
+
 class PostDetail(Resource):
     """
     单个文章处理的 API
@@ -199,6 +239,7 @@ class PostDetail(Resource):
         """
         获得指定ID对应的文章
         :param post_id: int,
+        :param identifier: int,
         :return: json,
         """
         post = abort_if_not_exist(post_id)
@@ -214,7 +255,7 @@ class PostDetail(Resource):
         :param post_id:
         :return:
         """
-        post = abort_if_not_exist(post_id)
+        abort_if_not_exist(post_id)
         json_data = request.json
         print('---json_data', json_data)
         current_user_id = json_data.get('authorId')
@@ -256,7 +297,7 @@ class PostDetail(Resource):
         post = abort_if_not_exist(post_id)
         args = request.args
         patch_count = args.get('field')
-        if patch_count:
+        if patch_count == 'count':
             new_count = PatchPostCtrl.add_view_count(post_id)
             if new_count:
                 data = {'count': new_count}
@@ -293,7 +334,6 @@ class SlugApi(Resource):
         :return:
         """
         args = request.args
-        print(args)
         title = args.get('title')
         try:
             assert title
@@ -302,8 +342,31 @@ class SlugApi(Resource):
             self.response_obj['success'] = False
             self.response_obj['msg'] = 'Args title is required.'
             return jsonify_with_args(self.response_obj, 412)
-        data = dict()
         slug = article_poster.parse_trans_en2cn(title)
-        data['slug'] = slug
         self.response_obj['data'] = slug
+        return jsonify(self.response_obj)
+
+
+class IdApi(Resource):
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        """
+        根据输入的中文标题返回英文翻译（调用百度翻译API）
+        :return:
+        """
+        args = request.args
+        identifier = args.get('identifier')
+        try:
+            assert identifier
+        except AssertionError:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Args identifier is required.'
+            return jsonify_with_args(self.response_obj, 412)
+        data = dict()
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        data['postId'] = post_id
+        self.response_obj['data'] = data
         return jsonify(self.response_obj)
