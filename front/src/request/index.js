@@ -35,7 +35,6 @@ service.interceptors.response.use(function (response) {
       case 401:
         // 清除 Token 及 已认证 等状态
         store.dispatch('fedLogOut').then(data => { //获取用户信息
-          console.log(data.data)
           next()
         }).catch(() => {
           console.log(error.response)

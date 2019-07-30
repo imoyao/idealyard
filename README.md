@@ -70,13 +70,14 @@ vi .env
   编辑时需要对新的和旧的标签对比，正常不走add逻辑  
   编辑时应该是post请求，将用户提交的全量更新，没有的置空
 - [x] 博客作者自己删除
-- [ ] slug选项在更新文章时应该是不可见的（url确定之后不可修改！）
-- [ ] 链接由id变成数字和slug的组合
+- [x] slug选项在更新文章时应该是不可见的（url确定之后不可修改！）
+- [x] 链接由id变成数字和slug的组合
 - [x] 标签云
 ~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~
 ~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~
 ~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
-- [x] 本次/上次提交中header样式需要调整！！！
+- [x] 本次/上次提交中header样式需要调整
+- [ ] 使aside侧边栏固定，不会随鼠标滚动消失
 - [ ] 标签管理员手动添加
 - [ ] 分类管理员手动添加
 ---

@@ -19,6 +19,8 @@
 
         <card-article cardHeader="最新文章" :articles="newArticles"></card-article>
 
+        <card-footer ></card-footer>
+
       </el-aside>
 
     </el-container>
@@ -30,6 +32,7 @@
   import CardArticle from '@/components/card/CardArticle'
   import CardArchive from '@/components/card/CardArchive'
   import CardTag from '@/components/card/CardTag'
+  import CardFooter from '@/components/card/CardFooter'
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
 
   import {reqArticles, reqHotArtices, reqNewArtices} from '@/api/article'
@@ -103,6 +106,7 @@
       'card-me': CardMe,
       'card-article': CardArticle,
       'card-tag': CardTag,
+      'card-footer': CardFooter,
       ArticleScrollPage,
       CardArchive
     }

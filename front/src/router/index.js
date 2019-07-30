@@ -94,7 +94,6 @@ router.beforeEach((to, from, next) => {
       next({path: '/'})
     } else if (store.state.account.length === 0) {
       store.dispatch('getUserInfo').then(data => { //获取用户信息
-        console.log(data.data)
         next()
       }).catch(() => {
         next({path: '/signin'})
