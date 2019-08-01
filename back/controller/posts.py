@@ -326,9 +326,9 @@ class PutPostCtrl:
         post_obj = Article.query.filter(Article.post_id == post_id).one()
         if all_tags_for_new_post:
             need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
-            for tag_name in all_tags_for_new_post:
-                tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
-                post_obj.tags.append(tag_obj)
+            # for tag_name in all_tags_for_new_post:
+            #     tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+            #     post_obj.tags.append(tag_obj)
         if need_add_tags:
             tag_poster.new_multi_tags(need_add_tags)
         post_obj.title = title
@@ -407,8 +407,8 @@ class PutPostCtrl:
             update_body_id = self.update_body(body_id, content_html, content, summary)
             assert update_body_id == body_id
         update_post_obj = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
-                                                 category_id,
-                                                 weight=weight)
+                                                  category_id,
+                                                  weight=weight)
 
         return update_post_obj
 
@@ -464,8 +464,6 @@ class DelPostCtrl:
             for tag in post_obj.tags:  # TODO: 可能是有的标签是手动加的，没有走正常对应添加逻辑，导致表中数据出错。（待验证！）
                 post_obj.tags.remove(tag)
                 db.session.commit()
-            print('---------', post_obj.tags)
-            # post_obj.tags.clear()
             db.session.delete(post_obj)
             db.session.commit()
             self.delete_body(body_id)

@@ -92,7 +92,8 @@ class User(db.Model):
 # 标签和文章为多对多关系，创建中间表
 posts_tags_table = db.Table('iy_post_tags', db.Model.metadata,
                             db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
-                            db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
+                            db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id')),
+                            db.PrimaryKeyConstraint('tag_id', 'post_id')
                             )
 
 
@@ -160,9 +161,6 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     tag_name = db.Column(db.String(24), comment='标签名称')
 
-    # articles = db.relationship('Article', secondary=posts_tags_table,
-    #                            back_populates='tags')
-
     def __repr__(self):
         return '<Tag %r>' % self.tag_name
 
@@ -182,7 +180,8 @@ class ArticleBody(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     content_html = db.Column(db.Text, comment='文章的html')
     content = db.Column(db.Text, comment='文章内容')
-    summary = db.Column(db.String(1000), server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。', comment='文章摘要')
+    summary = db.Column(db.String(1000), server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。',
+                        comment='文章摘要')
 
     def __repr__(self):
         return '<ArticleBody %r>' % self.id

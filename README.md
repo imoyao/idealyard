@@ -54,12 +54,32 @@ vi .env
 - [x] 概览页（index）显示
 - [x] 更新文章，对原有标签删除时，不成功，但新加正常
 - [x] 首页点击查看全部进入空白页
-- [ ] 编辑文章报错
-- [ ] 新建文章报错
+- [ ] 编辑文章时已经存在的标签会二次添加（查询中间表可以看到写了两次！！！）
+    1. 新建标签失败
+    2. 标题无法修改（目前有该入口，正常来说应该是可以更新的<除非代码没有这块逻辑，如果没有，则不添加，文章新建之后就不要改变链接了>）
+- [x] 新建文章报错
 - [ ] 首页无限滚动时：Duplicate keys detected: 'xxxx'. This may cause an update error.
 - [ ] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
 - [ ] 访问已删除文章时，不会跳转到首页！
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
+- [ ] 数据库迁移报错
+    ```bash
+    werkzeug.utils.ImportStringError: import_string() failed for 'mains.bp'. Possible reasons are:
+    
+    - missing __init__.py in a package;
+    - package or module path not included in sys.path;
+    - duplicated package or module name taking precedence in sys.path;
+    - missing module, class, function or variable;
+    
+    Debugged import:
+    
+    - 'mains' not found.
+    
+    Original exception:
+    
+    ModuleNotFoundError: No module named 'mains'
+    
+    ```
 
 ## TODO:
 

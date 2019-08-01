@@ -12,9 +12,13 @@ date_maker = DateTime()
 
 
 def assert_new_tag_in_tags(tags_for_new_post):
+    """
+    判断新标签在标签集合中，如果在，说明不需要添加了，否则需要添加
+    :param tags_for_new_post:
+    :return:
+    """
     tags = Tag.query.all()
     tags = set([tag.tag_name for tag in tags])
-    print(tags_for_new_post, tags)
     if not isinstance(tags_for_new_post, set):
         tags_for_new_post = set(tags_for_new_post)
     try:

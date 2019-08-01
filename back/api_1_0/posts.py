@@ -282,9 +282,9 @@ class PostDetail(Resource):
             return jsonify_with_args(self.response_obj, 400)
         else:
             post_obj = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
-                                               content,
-                                               post_title,
-                                               weight=post_weight, post_tags=post_tags)
+                                                content,
+                                                post_title,
+                                                weight=post_weight, post_tags=post_tags)
             post_id = post_obj.post_id
             identifier = post_obj.identifier
             slug = post_obj.slug
