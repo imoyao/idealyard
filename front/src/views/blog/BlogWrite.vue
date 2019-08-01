@@ -47,7 +47,7 @@
           <el-form-item label="文章分类" prop="category">
             <!--https://element.eleme.cn/#/zh-CN/component/select#chuang-jian-tiao-mu-->
             <!--<el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">-->
-              <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
+            <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
             <!--</el-select>-->
             <el-select
               v-model="articleForm.category"
@@ -127,14 +127,14 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, reqArticleById,updateArticle,reqArticleSlug} from '@/api/article'
+  import {publishArticle, reqArticleById, updateArticle, reqArticleSlug} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
   import {reqMostTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
     mounted() {
-      if(this.$route.params.id){
+      if (this.$route.params.id) {
         this.getArticleById(this.$route.params.id)
       }
       this.getCategorysAndTags()
@@ -217,7 +217,7 @@
       }
     },
     computed: {
-      title (){
+      title() {
         return '写文章  - 别院牧志'
       }
     },
@@ -227,7 +227,7 @@
         console.log(this.postTitle)
         reqArticleSlug(this.postTitle).then(data => {
           let slug = data.data
-          let slugList = [{"value":slug}]
+          let slugList = [{"value": slug}]
           cb(slugList)
         })
       },
@@ -248,22 +248,22 @@
         let inputValue = this.inputValue;
         if (inputValue) {
           // 对用户输入值进行切分
-          let values = inputValue.split(/[,， \n]/).filter(item=>{
-            return item!='' && item!=undefined
+          let values = inputValue.split(/[,， \n]/).filter(item => {
+            return item !== '' && item !== undefined
           })
           // 对列表索引，没有找到则push
           values.forEach(element => {
-            let index = this.dynamicTags.findIndex(i=>{
-            return i === element
-          })
-          if(index<0){
-           this.dynamicTags.push(element);
-          }
-        });
-      }
-      // 添加完成自动消失
-      this.inputVisible = false;
-      this.inputValue = '';
+            let index = this.dynamicTags.findIndex(i => {
+              return i === element
+            })
+            if (index < 0) {
+              this.dynamicTags.push(element);
+            }
+          });
+        }
+        // 添加完成自动消失
+        this.inputVisible = false;
+        this.inputValue = '';
       },
       getArticleById(id) {
         let that = this
@@ -288,7 +288,6 @@
       },
       publishShow() {
         this.postTitle = this.articleForm.title
-        console.log(this.articleForm.title)
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
@@ -316,7 +315,7 @@
             });
             let article = {
               // 带上用户信息
-              authorId:this.$store.state.id,
+              authorId: this.$store.state.id,
               id: this.articleForm.id,
               title: this.articleForm.title,
               summary: this.articleForm.summary,
@@ -332,37 +331,41 @@
             }
             // 关闭发布框
             this.publishVisible = false;
-            console.log('this.articleForm.id',this.articleForm.id)
+            console.log('this.articleForm.id', this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
             })
             let postId = article.id
-            if (postId){
+            // 编辑文章
+            if (postId) {
               updateArticle(article).then((data) => {
-              loading.close();
-              that.$message({message: '更新成功啦', type: 'success', showClose: true})
-              that.$router.push({path: `/posts/${data.data.articleId}`})
-
-            }).catch((error) => {
-              loading.close();
-              if (error !== 'error') {
-                console.log(error)
-                // that.$message({message: error, type: 'error', showClose: true});
-              }
-            })
-            }else {
+                loading.close();
+                that.$message({message: '文章更新成功', type: 'success', showClose: true})
+                let identifier = data.data.identifier
+                let slug = data.data.slug
+                that.$router.push({path: `/posts/${identifier}/${slug}`})
+              }).catch((error) => {
+                loading.close();
+                if (error !== 'error') {
+                  console.log(error)
+                  // that.$message({message: error, type: 'error', showClose: true});
+                }
+              })
+            } else {    // 发表文章
               publishArticle(article).then((data) => {
                 loading.close();
                 that.$message({message: '发布成功啦', type: 'success', showClose: true})
-                that.$router.push({path: `/view/${data.data.articleId}`})
-                }).catch((error) => {
-                  loading.close();
-                  if (error !== 'error') {
-                    that.$message({message: error, type: 'error', showClose: true});
-                  }
-                } )
-              }
+                let identifier = data.data.identifier
+                let slug = data.data.slug
+                that.$router.push({path: `/posts/${identifier}/${slug}`})
+              }).catch((error) => {
+                loading.close();
+                if (error !== 'error') {
+                  that.$message({message: error, type: 'error', showClose: true});
+                }
+              })
+            }
           } else {
             return false;
           }
@@ -386,16 +389,15 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-        console.log('edit-or-new',this.$route.params.id)
+        console.log('edit-or-new', this.$route.params.id)
         let postId = this.$route.params.id
         let tagData = Object()
         // 有id时上面已经获取到了
-        if(!postId){
+        if (!postId) {
           // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
           tagData = reqMostTags().then(data => {
             that.tags = data.data
             that.tags.forEach(tag => {
-              console.log('$$$$$$$$$$$',tag)
               // 保存用户最终添加的tags
               this.dynamicTags.push(tag.tagname)
               // 保存用户可见tags
@@ -444,9 +446,11 @@
     min-width: 100%;
     box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
   }
-  .iy-slug-ipt{
+
+  .iy-slug-ipt {
     width: 80%;
   }
+
   .me-write-info {
     line-height: 60px;
     font-size: 18px;
@@ -507,12 +511,15 @@
   .auto-textarea-input, .auto-textarea-block {
     font-size: 18px !important;
   }
-  .el-tag{
+
+  .el-tag {
     margin-right: 10px;
   }
+
   .el-tag + .el-tag {
     margin-left: 10px;
   }
+
   .button-new-tag {
     margin-left: 10px;
     height: 32px;
@@ -520,10 +527,11 @@
     padding-top: 0;
     padding-bottom: 0;
   }
+
   .input-new-tag {
     /*width: 90px;*/
     width: 60%;
-    display:block;
+    display: block;
     vertical-align: bottom;
   }
 </style>

@@ -161,9 +161,12 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
-                                              weight=post_weight, post_tags=post_tags)
-            data = {'articleId': post_id}
+            new_post = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
+                                               weight=post_weight, post_tags=post_tags)
+            post_id = new_post.post_id
+            identifier = new_post.identifier
+            slug = new_post.slug
+            data = {'articleId': post_id, 'identifier': identifier, 'slug': slug}
             self.response_obj['data'] = data
             # 服务器为新资源指派URL，并在响应的Location首部中返回
             return jsonify_with_args(self.response_obj, 201, {
@@ -278,11 +281,14 @@ class PostDetail(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_id = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
+            post_obj = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
                                                content,
                                                post_title,
                                                weight=post_weight, post_tags=post_tags)
-            data = {'articleId': post_id}
+            post_id = post_obj.post_id
+            identifier = post_obj.identifier
+            slug = post_obj.slug
+            data = {'articleId': post_id, 'identifier': identifier, 'slug': slug}
             self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj, 200, {
                 'Location': api.url_for(PostDetail, post_id=post_id, _external=True)})

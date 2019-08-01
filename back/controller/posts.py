@@ -239,14 +239,14 @@ class PostArticleCtrl:
 
     def new_post_action(self, category_id, all_tags_for_new_post, title, raw_slug, body_id, weight=0):
         """
-        添加一篇博文
+        添加博文
         :param category_id: int,
         :param all_tags_for_new_post: list
         :param title: str,
         :param raw_slug: str,
         :param body_id: int
         :param weight:
-        :return:
+        :return: post对象
         """
         new_identifier = self.gen_post_identifier()
         processed_slug = self.make_up_slug(raw_slug)
@@ -270,8 +270,8 @@ class PostArticleCtrl:
 
         db.session.add(post)
         db.session.commit()
-        post_id = post.post_id
-        return post_id
+        # post_id = post.post_id
+        return post
 
     def new_post(self, category_name, summary, content_html, content, title, slug, weight=0,
                  post_tags=None):
@@ -298,9 +298,9 @@ class PostArticleCtrl:
 
         body_id = self.new_post_body(summary, content_html, content)
 
-        new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, slug, body_id, weight=weight)
+        new_post = self.new_post_action(category_id, all_tags_for_new_post, title, slug, body_id, weight=weight)
 
-        return new_post_id
+        return new_post
 
 
 class PutPostCtrl:
@@ -340,7 +340,7 @@ class PutPostCtrl:
         post_obj.create_date = post_obj.create_date
         db.session.add(post_obj)
         db.session.commit()
-        return post_id
+        return post_obj
 
     @staticmethod
     def update_body(body_id, content_html, content, summary):
@@ -406,11 +406,11 @@ class PutPostCtrl:
             body_id = post_obj.body_id
             update_body_id = self.update_body(body_id, content_html, content, summary)
             assert update_body_id == body_id
-        update_post_id = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
+        update_post_obj = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
                                                  category_id,
                                                  weight=weight)
 
-        return update_post_id
+        return update_post_obj
 
 
 class PatchPostCtrl:
