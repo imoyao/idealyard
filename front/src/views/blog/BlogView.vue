@@ -48,6 +48,10 @@
               {{article.category.categoryname}}
             </el-button>
           </div>
+          <div class="me-view-tag">
+            更新于：
+            <el-tag type="warning">{{article.updateDate | format}}</el-tag>
+          </div>
           <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
             <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
             <!--<el-button @click="btnVisable()" size="mini" type="primary" icon="el-icon-share" plain></el-button>-->

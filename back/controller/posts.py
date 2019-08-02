@@ -84,13 +84,16 @@ class GetPostCtrl:
         post_identifier = post_info.identifier
         post_slug = post_info.slug
         create_date = post_info.create_date
+        update_date = post_info.update_date
         user_info = QueryComponent.author_info_for_post(user_id)
         body_info = QueryComponent.content_for_post(body_id)
         category_info = QueryComponent.category_for_post(category_id)
         tags_info = QueryComponent.tags_for_post(post_id)['tags_info']
-        str_date = ''
+        str_date, str_ut = ('',) * 2
         if create_date:
             str_date = date_maker.make_strftime(create_date)
+        if update_date:
+            str_ut = date_maker.make_strftime(update_date)
         json_post = {
             "author": user_info,
             "body": body_info,
@@ -98,6 +101,7 @@ class GetPostCtrl:
             # TODO:后期添加
             "commentCounts": 0,
             "createDate": str_date,
+            "updateDate": str_ut,
             "id": post_id,
             "identifier": post_identifier,
             "slug": post_slug,

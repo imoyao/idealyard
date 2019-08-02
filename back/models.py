@@ -113,10 +113,9 @@ class Article(db.Model):
     weight = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
-    update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+    # 注意，此处默认是标准时区，东八区需要修改配置，不修改的话显示会有差异
+    update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),      # 注意，此处默认是标准时区，东八区需要修改配置，不修改的话显示会有差距
                             comment='文章更新时间')
-    # tags = db.relationship('Tag', secondary=posts_tags_table,
-    #                        back_populates='articles')
     '''
     # https://stackoverflow.com/questions/36225736/flask-sqlalchemy-paginate-over-objects-in-a-relationship
     # http://www.pythondoc.com/flask-sqlalchemy/models.html#one-to-many

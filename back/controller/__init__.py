@@ -276,10 +276,13 @@ class MakeupPost:
 
         for post_item in posts:
             user_id = post_item.author_id
-            str_date = ''
+            str_ct, str_ut = ('',) * 2
             create_date = post_item.create_date
             if create_date:
-                str_date = date_maker.make_strftime(create_date)
+                str_ct = date_maker.make_strftime(create_date)
+            update_date = post_item.update_date
+            if update_date:
+                str_ut = date_maker.make_strftime(update_date)
 
             category_id = post_item.category_id
             post_id = post_item.post_id
@@ -300,7 +303,8 @@ class MakeupPost:
                 },
                 # TODO: 继续开发
                 "commentCounts": 0,
-                "createDate": str_date,
+                "createDate": str_ct,
+                "updateDate": str_ut,
                 "id": post_item.post_id,
                 "identifier": post_item.identifier,
                 "slug": post_item.slug,
