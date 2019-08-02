@@ -88,8 +88,10 @@ class QueryComponent:
         :param post_id: int,
         :return: dict,
         """
+        tags_data = None
         article_obj = Article.query.filter(Article.post_id == post_id).first()
-        tags_data = article_obj.tags
+        if article_obj:
+            tags_data = article_obj.tags
         tags_info = []
         if tags_data:
             # 标签信息列表

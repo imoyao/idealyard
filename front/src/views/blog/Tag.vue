@@ -41,7 +41,6 @@
       tagInfo(){
         reqAllTags().then(data => {
           let tagObjs = data.data
-          console.log(tagObjs)
           for(let tag in tagObjs){
             let tagItem = []
             tagItem.push(tagObjs[tag].tagname)

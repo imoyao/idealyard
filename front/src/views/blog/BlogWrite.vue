@@ -68,7 +68,7 @@
             </el-tooltip>
           </el-form-item>
           <!--TODO:更新时此输入框应为不可见-->
-          <el-form-item label="英文链接" prop="slug">
+          <el-form-item label="英文链接" prop="slug" v-if="newPost">
             <el-autocomplete
               class="iy-slug-ipt"
               v-model="articleForm.slug"
@@ -146,6 +146,7 @@
     },
     data() {
       return {
+        newPost: true,
         postTitle: '',
         options: [{
           value: 'HTML',
@@ -274,7 +275,6 @@
           that.articleForm.category = data.data.category.categoryname
           that.articleForm.slug = data.data.slug
           let postTags = this.articleForm.tags.map(function (item) {
-            // postTags.push(item.tagname)
             return item.tagname;
           })
           this.articleForm.tags = postTags
@@ -288,6 +288,8 @@
       },
       publishShow() {
         this.postTitle = this.articleForm.title
+        // 更新文章时，添加英文标题的一行不可见
+        this.newPost = !this.articleForm.id
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return

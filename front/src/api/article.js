@@ -170,7 +170,6 @@ export function reqArticleSlug(title) {
 }
 
 export function deleteArticle(id,authorId) {
-  console.log(authorId)
   const params = {
     authorId:authorId
   }

@@ -281,7 +281,6 @@
           return;
         }
         that.comment.article.id = that.article.id
-
         publishComment(that.comment).then(data => {
           that.$message({type: 'success', message: '评论成功', showClose: true})
           that.comments.unshift(data.data)

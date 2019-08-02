@@ -6,7 +6,7 @@ import json
 import random
 from multiprocessing import Value
 
-from flask import g
+from flask import abort, g
 from sqlalchemy import func
 
 from back import setting
@@ -159,9 +159,17 @@ class PostArticleCtrl:
         return body.id
 
     @staticmethod
-    def get_post_id_by_identifier(identifier):
+    def get_post_id_by_identifier(identifier, description=None):
+        """
+        如果有，则返回，如果没有，直接404
+        :param identifier:
+        :param description:
+        :return:
+        """
         post = Article.query.filter_by(identifier=identifier).one_or_none()
-        return post.post_id
+        if post is not None:
+            return post.post_id
+        abort(404, description=description)
 
     @staticmethod
     def gen_post_identifier():
@@ -383,6 +391,10 @@ class PutPostCtrl:
         need_add_tags = set(post_tags) - old_tags
         if need_add_tags:  # 用户手动新增的
             new_add_tags = tag_poster.new_multi_tags(need_add_tags)
+            for tag_name in need_add_tags:  # 给文章新加指定标签
+                tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+                post_obj.tags.append(tag_obj)
+
         if need_del_tags:  # 删除用户移除的标签
             for tag in need_del_tags:
                 tag_obj = Tag.query.filter_by(tag_name=tag).one()
@@ -461,7 +473,7 @@ class DelPostCtrl:
         if post_obj:
             body_id = post_obj.body_id
             print(type(post_obj.tags))
-            for tag in post_obj.tags:  # TODO: 可能是有的标签是手动加的，没有走正常对应添加逻辑，导致表中数据出错。（待验证！）
+            for tag in post_obj.tags:
                 post_obj.tags.remove(tag)
                 db.session.commit()
             db.session.delete(post_obj)

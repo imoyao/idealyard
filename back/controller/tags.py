@@ -112,8 +112,6 @@ class GetTagCtrl:
     def get_tag_detail_by_args(self, query_key, query_by='tag_id', order_by='id', hot=False, order_by_desc=True,
                                limit_count=0):
         """
-
-
         根据各种条件查询标签
         :param query_key: str/int,具体的name或者id
         :param query_by: str,查询字段:tag_id <default> ,tag_name(查单个)
@@ -138,13 +136,13 @@ class PostTagCtrl:
     @staticmethod
     def new_tag(tag_name):
         """
-        添加单个tag
+        给tag表添加单个tag
         :param tag_name: str,
         :return:str,tag_name
         """
         assert tag_name
         new_tag = Tag.query.filter_by(tag_name=tag_name).one_or_none()
-        if new_tag is None:     # 没有的话再去添加
+        if new_tag is None:  # 没有的话再去添加
             tag = Tag(tag_name=tag_name)
             db.session.add(tag)
             db.session.commit()
