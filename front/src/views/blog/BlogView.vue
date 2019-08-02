@@ -22,14 +22,9 @@
           <div class="me-view-content">
             <markdown-editor :editor=article.editor></markdown-editor>
           </div>
-          <!--TODO:此处使用分割线不成功-->
-          <div class="me-view-end">
-            <el-alert
-              title="文章End..."
-              type="success"
-              center
-              :closable="false">
-            </el-alert>
+
+          <div>
+            <el-divider><span>正文结束</span></el-divider>
           </div>
 
           <div class="me-view-tag">
@@ -181,7 +176,6 @@
       //   let identifier = this.$route.params.identifier
       //   reqPostid(identifier).then(data => {
       //     this.postId = data.data.postId
-      //     console.log(this.postId,'----------this.postId')
       //   })
       // },
       getPostId() {
@@ -428,7 +422,32 @@
     font-weight: bold;
     font-size: 14px;
     font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
+  }
 
+  .el-divider--horizontal {
+    display: block;
+    height: 1px;
+    width: 100%;
+    margin: 24px 0;
+  }
+
+  .el-divider {
+      background-color: #dcdfe6;
+      position: relative;
+  }
+
+  .el-divider__text.is-center {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  .el-divider__text {
+      position: absolute;
+      background-color: #fff;
+      padding: 0 20px;
+      font-weight: 500;
+      color: #cc2a41;
+      font-size: 14px;
   }
 
 </style>
