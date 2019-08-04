@@ -6,8 +6,8 @@ import json
 import random
 from multiprocessing import Value
 
-from flask import abort, g
-from sqlalchemy import func
+from flask import abort
+from sqlalchemy import func, case
 
 from back import setting
 from back.utils.text import BaiduTrans
@@ -26,10 +26,15 @@ class GetPostCtrl:
 
     @staticmethod
     def posts_order_by_date(desc=True):
+        """
+        按照日期排序（weight为**置顶**功能<因为目前`weight`只是bool(1,0)型，所以desc是无用的，即置顶文章也是按照`create_date`排序的；但是如果需要的话，可以给每篇文章加权重，从而使文章置顶>）
+        :param desc:
+        :return:
+        """
         if desc:
-            posts_query = Article.query.order_by(Article.create_date.desc())
+            posts_query = Article.query.order_by(Article.weight.desc(), Article.create_date.desc())
         else:
-            posts_query = Article.query.order_by(Article.create_date)
+            posts_query = Article.query.order_by(Article.weight.desc(), Article.create_date)
         return posts_query
 
     @staticmethod
