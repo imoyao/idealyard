@@ -156,6 +156,7 @@
     },
     data() {
       return {
+        postSaved: false,
         newPost: true,
         postTitle: '',
         options: [{
@@ -342,7 +343,8 @@
 
             }
             // 关闭发布框
-            this.publishVisible = false;
+            this.publishVisible = false
+            this.postSaved = true
             console.log('this.articleForm.id', this.articleForm.id)
             let loading = this.$loading({
               lock: true,
@@ -366,15 +368,15 @@
               })
             } else {    // 发表文章
               publishArticle(article).then((data) => {
-                loading.close();
+                loading.close()
                 that.$message({message: '发布成功啦', type: 'success', showClose: true})
                 let identifier = data.data.identifier
                 let slug = data.data.slug
                 that.$router.push({path: `/posts/${identifier}/${slug}`})
               }).catch((error) => {
-                loading.close();
+                loading.close()
                 if (error !== 'error') {
-                  that.$message({message: error, type: 'error', showClose: true});
+                  that.$message({message: error, type: 'error', showClose: true})
                 }
               })
             }
@@ -448,7 +450,7 @@
     // https://juejin.im/entry/5bebc4b3e51d4575125a39bb
     beforeRouteLeave(to, from, next) {
       let userEnter = this.articleForm.title || this.articleForm.editor.value
-      if (!userEnter) {
+      if (!userEnter || this.postSaved) {
         next()
         return true
       }
