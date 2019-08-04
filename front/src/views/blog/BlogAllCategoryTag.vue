@@ -74,11 +74,9 @@
         }
       },
       categoryTagTitle (){
-        console.log(this.currentActiveName)
         if(this.currentActiveName === 'category' || this.currentActiveName === '0'){
           return '文章分类  - 别院牧志'
         }
-        console.info('dddd')
         return '标签  - 别院牧志'
       }
     },
