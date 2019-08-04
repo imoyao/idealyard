@@ -64,6 +64,9 @@
     computed: {
       activeName: {
         get() {
+          if(!this.$route.params.type){
+            return (this.currentActiveName = 'category')
+          }
           return (this.currentActiveName = this.$route.params.type)
         },
         set(newValue) {
@@ -71,7 +74,8 @@
         }
       },
       categoryTagTitle (){
-        if(this.currentActiveName == 'category'){
+        console.log(this.currentActiveName)
+        if(this.currentActiveName === 'category' || this.currentActiveName === '0'){
           return '文章分类  - 别院牧志'
         }
         console.info('dddd')
