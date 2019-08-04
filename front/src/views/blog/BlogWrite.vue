@@ -389,6 +389,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          window.onbeforeunload = null
           this.$router.push('/')
         })
       },
@@ -446,20 +447,17 @@
     // see also: https://www.haorooms.com/post/single_page_refrashtips
     // https://juejin.im/entry/5bebc4b3e51d4575125a39bb
     beforeRouteLeave(to, from, next) {
-      const answer = window.confirm('当前页面数据未保存，确定要离开？')
-      console.log(answer)
+      let userEnter = this.articleForm.title || this.articleForm.editor.value
+      if (!userEnter) {
+        next()
+        return true
+      }
+      let answer = window.confirm('当前页面数据未保存，确定要离开？')
       if (answer) {
-        this.$confirm('您还未保存页面内容，确定需要提出吗?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-          }).then(() => {
-              // 选择确定
-            window.document.body.style.backgroundColor = '#f5f5f5';
-            next()
-          })
+        window.document.body.style.backgroundColor = '#f5f5f5'
+        next()
       } else {
-          next(false)
+        next(false)
       }
     },
     destroyed() {
