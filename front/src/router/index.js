@@ -109,7 +109,7 @@ router.beforeEach((to, from, next) => {
         showClose: true,
         message: '登录后才可以进行该操作哦~'
       })
-      next('/signin')
+      next('/')
     }
     else {
       next();

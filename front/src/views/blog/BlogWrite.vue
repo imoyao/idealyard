@@ -139,7 +139,17 @@
       }
       this.getCategorysAndTags()
       this.editorToolBarToFixedWrapper = this.$_.throttle(this.editorToolBarToFixed, 200)
-      window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false);
+      window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false)
+      // 弹窗提示
+      window.onbeforeunload = function (e) {
+        e = e || window.event
+        // 兼容IE8和Firefox 4之前的版本
+        if (e) {
+            e.returnValue = '关闭提示'
+        }
+        // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+        return '关闭提示'
+      }
     },
     beforeDestroy() {
       window.removeEventListener('scroll', this.editorToolBarToFixedWrapper, false)
@@ -413,7 +423,6 @@
         }
       },
       editorToolBarToFixed() {
-
         let toolbar = document.querySelector('.v-note-op');
         let curHeight = document.documentElement.scrollTop || document.body.scrollTop;
         if (curHeight >= 160) {
@@ -434,9 +443,27 @@
       window.document.body.style.backgroundColor = '#fff';
       next();
     },
+    // see also: https://www.haorooms.com/post/single_page_refrashtips
+    // https://juejin.im/entry/5bebc4b3e51d4575125a39bb
     beforeRouteLeave(to, from, next) {
-      window.document.body.style.backgroundColor = '#f5f5f5';
-      next();
+      const answer = window.confirm('当前页面数据未保存，确定要离开？')
+      console.log(answer)
+      if (answer) {
+        this.$confirm('您还未保存页面内容，确定需要提出吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+          }).then(() => {
+              // 选择确定
+            window.document.body.style.backgroundColor = '#f5f5f5';
+            next()
+          })
+      } else {
+          next(false)
+      }
+    },
+    destroyed() {
+      window.onbeforeunload = null
     }
   }
 </script>
