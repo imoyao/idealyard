@@ -39,12 +39,6 @@ service.interceptors.response.use(function (response) {
         }).catch(() => {
           console.log(error.response)
         })
-        // 跳转到登录页,对于登录用户直接跳，没有必要message
-        //   Message({
-        //   type: 'warning',
-        //   showClose: true,
-        //   message: '认证失败或登录超时，请检查登录信息！'
-        // })
         break
       case 403:
         console.log(error)
@@ -73,11 +67,12 @@ service.interceptors.response.use(function (response) {
         break
     }
   } else if (error.request) {
-    Message({
-          type: 'warning',
-          showClose: true,
-          message: '不好意思，我挂了。😕'
-        })
+    console.log('不好意思，我挂了。😕')
+    // Message({
+    //       type: 'warning',
+    //       showClose: true,
+    //       message: '不好意思，我挂了。😕'
+    //     })
 
     // Vue.toasted.error('The request has not been sent to Flask API，because OPTIONS get error', { icon: 'fingerprint' })
   } else {

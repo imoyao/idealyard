@@ -48,6 +48,10 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/About')), 'about')
         },
         {
+          path: '/links',
+          component: r => require.ensure([], () => r(require('@/views/Link')), 'link')
+        },
+        {
           path: '/archives/:year?/:month?',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogArchive')), 'archives')
         },
