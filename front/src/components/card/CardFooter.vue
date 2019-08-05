@@ -23,6 +23,9 @@
         </li>
       </ul>
       <ul class="more-list">
+        <li class="item"><span>就命运而言，休论公道。</span></li>
+      </ul>
+      <ul class="more-list">
         <li class="item"><a name="beianLink" href="http://beian.miit.gov.cn"
                             target="_blank">京ICP备666xxx666号</a></li>
       </ul>

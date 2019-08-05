@@ -39,6 +39,8 @@ CREATE TABLE `me_article` (
   CONSTRAINT `FKrd11pjsmueckfrh9gs7bc6374` FOREIGN KEY (`body_id`) REFERENCES `me_article_body` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
+
+
 -- ----------------------------
 --  Table structure for `me_article_body`
 -- ----------------------------
