@@ -58,9 +58,10 @@ vi .env
     ~~1. 新建标签失败~~
     ~~2. 标题无法修改（目前有该入口，正常来说应该是可以更新的<除非代码没有这块逻辑，如果没有，则不添加，文章新建之后就不要改变链接了>）~~
 - [x] 新建文章报错
-- [ ] 首页无限滚动时：Duplicate keys detected: 'xxxx'. This may cause an update error.
+- [x] 首页无限滚动时：Duplicate keys detected: 'xxxx'. This may cause an update error.
 - [ ] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
-- [x] 访问已删除文章时，不会跳转到首页！
+~~- [] 访问已删除文章时，不会跳转到首页！~~
+    目前可以跳转，但是由于abort函数，导致会有报错闪现。
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
 - [ ] 数据库迁移报错
     ```bash
