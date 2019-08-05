@@ -1,7 +1,7 @@
 <template>
   <el-card>
     <div class="me-author-name">
-      <h1 >{{ profile.username }}</h1>
+      <h1>{{ profile.username }}</h1>
       <p class="slogan-declare" align="center">
         <span style="font-size:16px"><i class="iconfont icon-heart-fill icon-m-right"></i>{{ profile.slogan }}</span>
       </p>
@@ -28,6 +28,7 @@
 
 <script>
   import {isUrl} from '@/utils/regexr'
+
   export default {
     name: 'CardMe',
     data() {
@@ -64,17 +65,16 @@
         const testStr = testData.message
         if (isUrl(testStr)) {
           window.open(testStr)
-        }
-        else{
+        } else {
           const _title = testData.title
           this.$message({
-          title: _title,
-          position:'top-right',
-          dangerouslyUseHTMLString: true,
-          message: '<strong>' + testStr + '</strong>',
-          duration: 2000,
-          offset: 150
-        });
+            title: _title,
+            position: 'top-right',
+            dangerouslyUseHTMLString: true,
+            message: '<strong>' + testStr + '</strong>',
+            duration: 2000,
+            offset: 150
+          });
         }
       }
     }
@@ -85,7 +85,11 @@
   .me-author-name {
     text-align: center;
     font-size: 30px;
-    border-bottom: 1px solid #5FB878;
+    /*border-bottom: 1px solid #5FB878;*/
+  }
+
+  .el-divider {
+    background-color: #5FB878;
   }
 
   .profile-detail {
@@ -94,7 +98,7 @@
     font-size: 15px;
   }
 
-  .profile-detail>i {
+  .profile-detail > i {
     cursor: pointer;
     padding: 4px 10px;
     font-size: 20px;

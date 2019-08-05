@@ -11,7 +11,7 @@ from back.api_1_0 import api, auth, posts, users, tags, archives, categories, co
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
-from back import api_1_0
+from back import api_1_0, mains
 
 BLUEPRINTS = [
     'mains:bp',  # add bp here
