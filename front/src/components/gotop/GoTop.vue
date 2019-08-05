@@ -1,8 +1,15 @@
 <template>
   <!--<transition name="el-zoom-in-center">-->
-  <transition>
-    <div @click="toTop" v-show="topShow" class="me-to-top"><i class="iconfont icon-arrowup"></i></div>
-  </transition>
+  <div>
+    <transition-group>
+      <div v-bind:key="1" @click="toTop" v-show="topShow" class="float-btn me-to-top"><i class="iconfont icon-arrowup"></i></div>
+      <div v-bind:key="2" v-show="feedback" class="float-btn me-feed-back">
+        <a href="https://support.qq.com/product/67072" target="_blank">
+          <i class="iconfont icon-message"></i>
+        </a>
+      </div>
+    </transition-group>
+  </div>
 </template>
 
 <script>
@@ -10,7 +17,8 @@
     name: 'GoTop',
     data() {
       return {
-        topShow: false
+        topShow: false,
+        feedback: true,
       }
     },
     methods: {
@@ -41,12 +49,11 @@
   }
 </script>
 
-<style>
-  .me-to-top {
+<style scoped>
+  .float-btn {
     background-color: #fff;
     position: fixed;
     right: 100px;
-    bottom: 150px;
     width: 40px;
     height: 40px;
     border-radius: 20px;
@@ -54,6 +61,22 @@
     transition: .3s;
     box-shadow: 0 0 6px rgba(0, 0, 0, .12);
     z-index: 5;
+  }
+
+  .me-to-top {
+    bottom: 150px;
+  }
+
+  .me-feed-back {
+    bottom: 90px;
+  }
+
+  .me-feed-back i {
+    color: #00d1b2;
+    display: block;
+    line-height: 40px;
+    text-align: center;
+    font-size: 20px;
   }
 
   .me-to-top i {

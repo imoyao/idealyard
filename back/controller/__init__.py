@@ -1,18 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:17
+
+
 from sqlalchemy import extract, and_
 
 from back.models import Article, ArticleBody, Category, Comment, Tag, User
-from back.utils import DateTime
+from back.utils.date import DateTime
 
 date_maker = DateTime()
 
 
 def assert_new_tag_in_tags(tags_for_new_post):
+    """
+    判断新标签在标签集合中，如果在，说明不需要添加了，否则需要添加
+    :param tags_for_new_post:
+    :return:
+    """
     tags = Tag.query.all()
     tags = set([tag.tag_name for tag in tags])
-    print(tags_for_new_post, tags)
     if not isinstance(tags_for_new_post, set):
         tags_for_new_post = set(tags_for_new_post)
     try:
@@ -82,8 +88,10 @@ class QueryComponent:
         :param post_id: int,
         :return: dict,
         """
+        tags_data = None
         article_obj = Article.query.filter(Article.post_id == post_id).first()
-        tags_data = article_obj.tags
+        if article_obj:
+            tags_data = article_obj.tags
         tags_info = []
         if tags_data:
             # 标签信息列表
@@ -268,10 +276,13 @@ class MakeupPost:
 
         for post_item in posts:
             user_id = post_item.author_id
-            str_date = ''
+            str_ct, str_ut = ('',) * 2
             create_date = post_item.create_date
             if create_date:
-                str_date = date_maker.make_strftime(create_date)
+                str_ct = date_maker.make_strftime(create_date)
+            update_date = post_item.update_date
+            if update_date:
+                str_ut = date_maker.make_strftime(update_date)
 
             category_id = post_item.category_id
             post_id = post_item.post_id
@@ -292,9 +303,11 @@ class MakeupPost:
                 },
                 # TODO: 继续开发
                 "commentCounts": 0,
-                "createDate": str_date,
+                "createDate": str_ct,
+                "updateDate": str_ut,
                 "id": post_item.post_id,
                 "identifier": post_item.identifier,
+                "slug": post_item.slug,
                 "summary": summary,
                 "tags": tags,
                 "category": category_info,
@@ -327,3 +340,5 @@ class MakeupPost:
             query_info = unnecessary_every_time_dict.get(query_type)
             shown_info[str_query_id] = query_info
         return query_info
+
+# class SlugMaker:

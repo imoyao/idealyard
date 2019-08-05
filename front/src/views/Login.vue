@@ -1,5 +1,5 @@
 <template>
-  <div id="login" v-title data-title="登录 - For Fun">
+  <div id="login" v-title data-title="登录  - 别院牧志">
 
     <div class="me-login-box me-login-box-radius">
       <h1>别院牧志 登录</h1>

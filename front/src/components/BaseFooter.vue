@@ -3,7 +3,7 @@
     <div class="me-footer">
       <p>Designed by
         <strong>
-          <router-link to="/" class="me-login-design-color">IMOYAO</router-link>
+          <router-link to="/" class="me-login-design-color">iMOYAO</router-link>
         </strong>
       </p>
     </div>
@@ -27,7 +27,7 @@
 <style>
 
   .el-footer {
-    min-width: 100%;
+    width: 100%;
     box-shadow: 0 -2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
     position: absolute;
     bottom: 0;

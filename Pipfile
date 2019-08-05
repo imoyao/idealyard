@@ -25,6 +25,7 @@ MarkupSafe = "==1.1.1"
 PyMySQL = "==0.9.3"
 SQLAlchemy = "==1.3.4"
 Werkzeug = "==0.15.4"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.7"

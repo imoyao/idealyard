@@ -19,6 +19,8 @@
 
         <card-article cardHeader="最新文章" :articles="newArticles"></card-article>
 
+        <card-footer ></card-footer>
+
       </el-aside>
 
     </el-container>
@@ -30,6 +32,7 @@
   import CardArticle from '@/components/card/CardArticle'
   import CardArchive from '@/components/card/CardArchive'
   import CardTag from '@/components/card/CardTag'
+  import CardFooter from '@/components/card/CardFooter'
   import ArticleScrollPage from '@/views/common/ArticleScrollPage'
 
   import {reqArticles, reqHotArtices, reqNewArtices} from '@/api/article'
@@ -59,11 +62,10 @@
           that.hotArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '最热文章加载失败!', showClose: true})
+            console.log(error)
+            // that.$message({type: 'error', message: '最热文章加载失败!', showClose: true})
           }
-
         })
-
       },
       getNewArtices() {
         let that = this
@@ -71,11 +73,10 @@
           that.newArticles = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '最新文章加载失败!', showClose: true})
+            console.log(error)
+            // that.$message({type: 'error', message: '最新文章加载失败!', showClose: true})
           }
-
         })
-
       },
       getHotTags() {
         let that = this
@@ -83,9 +84,9 @@
           that.hotTags = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '最热标签加载失败!', showClose: true})
+            console.log(error)
+            // that.$message({type: 'error', message: '最热标签加载失败!', showClose: true})
           }
-
         })
       },
       listArchives() {
@@ -93,16 +94,17 @@
           this.archives = data.data
         })).catch(error => {
           if (error !== 'error') {
-            this.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
+            console.log(error)
+            // this.$message({type: 'error', message: '文章归档加载失败!', showClose: true})
           }
         })
       }
-
     },
     components: {
       'card-me': CardMe,
       'card-article': CardArticle,
       'card-tag': CardTag,
+      'card-footer': CardFooter,
       ArticleScrollPage,
       CardArchive
     }

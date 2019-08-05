@@ -64,6 +64,9 @@
     computed: {
       activeName: {
         get() {
+          if(!this.$route.params.type){
+            return (this.currentActiveName = 'category')
+          }
           return (this.currentActiveName = this.$route.params.type)
         },
         set(newValue) {
@@ -71,11 +74,10 @@
         }
       },
       categoryTagTitle (){
-        if(this.currentActiveName == 'category'){
-          return '文章分类 - For Fun'
+        if(this.currentActiveName === 'category' || this.currentActiveName === '0'){
+          return '文章分类  - 别院牧志'
         }
-        console.info('dddd')
-        return '标签 - For Fun'
+        return '标签  - 别院牧志'
       }
     },
     methods: {

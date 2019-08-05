@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/4 15:11
 
-from flask import jsonify, request,g
+from flask import jsonify, request, g
 from flask_restful import Resource
 
-from back.controller import posts, tags
-from .auth import basic_auth,token_auth,multi_auth
+from back.controller import tags
+from back.controller.authctrl import basic_auth, multi_auth
 
 BOOKS = [
     {

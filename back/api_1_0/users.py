@@ -8,7 +8,7 @@ from flask_restful import Resource
 from back.models import User
 from back.models import db
 from .utils import jsonify_with_args
-from .auth import token_auth
+from back.controller.authctrl import token_auth
 
 
 def abort_if_not_exist(user_id):

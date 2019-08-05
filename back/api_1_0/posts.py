@@ -10,10 +10,10 @@ from flask import current_app
 from flask_restful import Resource
 
 from back.controller import MakeupPost
-from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl
+from back.controller.posts import GetPostCtrl, PostArticleCtrl, PatchPostCtrl, PutPostCtrl, DelPostCtrl
 from back.models import Article
 from . import api
-from .auth import token_auth
+from back.controller.authctrl import token_auth
 from .errors import forbidden
 from .utils import jsonify_with_args
 
@@ -21,6 +21,7 @@ post_getter = GetPostCtrl()
 post_maker = MakeupPost()
 article_poster = PostArticleCtrl()
 post_updater = PutPostCtrl()
+post_deleter = DelPostCtrl()
 
 
 def abort_if_not_exist(post_id):
@@ -71,7 +72,7 @@ class PostApi(Resource):
     def get(self):
         # 请求数据
         args = request.args
-        print('[_ for _ in args]', args)
+        print([_ for _ in args], args)
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             # ?new=true
@@ -146,6 +147,7 @@ class PostApi(Resource):
         # TODO: 默认抓取前200个字符
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
+        raw_slug = json_data.get('slug')
         post_weight = json_data.get('weight') or 0
         # visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
@@ -159,9 +161,12 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_id = article_poster.new_post(category_name, post_summary, content_html, content, post_title,
-                                              weight=post_weight, post_tags=post_tags)
-            data = {'articleId': post_id}
+            new_post = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
+                                               weight=post_weight, post_tags=post_tags)
+            post_id = new_post.post_id
+            identifier = new_post.identifier
+            slug = new_post.slug
+            data = {'articleId': post_id, 'identifier': identifier, 'slug': slug}
             self.response_obj['data'] = data
             # 服务器为新资源指派URL，并在响应的Location首部中返回
             return jsonify_with_args(self.response_obj, 201, {
@@ -185,6 +190,46 @@ class PostApi(Resource):
         return prev_page, next_page, data
 
 
+class IdentifyPostDetail(Resource):
+    """
+    单个文章处理的 API
+    """
+
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self, identifier):
+        """
+        获得指定 identifier 对应的文章
+        :param identifier: int,
+        :return: json,
+        """
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        post = abort_if_not_exist(post_id)
+        post_info = post_getter.post_detail(post)
+        self.response_obj['data'] = post_info
+        return jsonify(self.response_obj)
+
+    def patch(self, identifier):
+        """
+        更新文章阅读数操作
+        :param identifier:
+        :return:
+        """
+        data = None
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        post = abort_if_not_exist(post_id)
+        args = request.args
+        patch_count = args.get('field')
+        if patch_count == 'count':
+            new_count = PatchPostCtrl.add_view_count(post_id)
+            if new_count:
+                data = {'count': new_count}
+
+        self.response_obj['data'] = data
+        return jsonify(self.response_obj)
+
+
 class PostDetail(Resource):
     """
     单个文章处理的 API
@@ -197,6 +242,7 @@ class PostDetail(Resource):
         """
         获得指定ID对应的文章
         :param post_id: int,
+        :param identifier: int,
         :return: json,
         """
         post = abort_if_not_exist(post_id)
@@ -212,8 +258,9 @@ class PostDetail(Resource):
         :param post_id:
         :return:
         """
-        post = abort_if_not_exist(post_id)
+        abort_if_not_exist(post_id)
         json_data = request.json
+        print('---json_data', json_data)
         current_user_id = json_data.get('authorId')
         if g.user.id != current_user_id:  # or  g.current_user.can(Permission.ADMINISTER):
             return forbidden('Insufficient permissions')
@@ -234,11 +281,14 @@ class PostDetail(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            post_id = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
-                                               content,
-                                               post_title,
-                                               weight=post_weight, post_tags=post_tags)
-            data = {'articleId': post_id}
+            post_obj = post_updater.update_post(post_id, current_user_id, category_name, post_summary, content_html,
+                                                content,
+                                                post_title,
+                                                weight=post_weight, post_tags=post_tags)
+            post_id = post_obj.post_id
+            identifier = post_obj.identifier
+            slug = post_obj.slug
+            data = {'articleId': post_id, 'identifier': identifier, 'slug': slug}
             self.response_obj['data'] = data
             return jsonify_with_args(self.response_obj, 200, {
                 'Location': api.url_for(PostDetail, post_id=post_id, _external=True)})
@@ -253,7 +303,7 @@ class PostDetail(Resource):
         post = abort_if_not_exist(post_id)
         args = request.args
         patch_count = args.get('field')
-        if patch_count:
+        if patch_count == 'count':
             new_count = PatchPostCtrl.add_view_count(post_id)
             if new_count:
                 data = {'count': new_count}
@@ -261,15 +311,68 @@ class PostDetail(Resource):
         self.response_obj['data'] = data
         return jsonify(self.response_obj)
 
+    @token_auth.login_required
     def delete(self, post_id):
         """
         删除指定文章
         :param post_id: int
+        :return:json
+        """
+        abort_if_not_exist(post_id)
+        json_data = request.json
+        author_id = json_data.get('authorId')
+        # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
+        if g.user.id != author_id:  # TODO:对于普通用户来说，删除应该是数据库deleted字段置1，除了用户本人，管理员应该也可以删除
+            return forbidden('Insufficient permissions')
+        else:
+            post_id = post_deleter.delete_post(post_id)
+            self.response_obj['msg'] = f'Delete post {post_id} success.'
+        return jsonify_with_args(self.response_obj, 204)
+
+
+class SlugApi(Resource):
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        """
+        根据输入的中文标题返回英文翻译（调用百度翻译API）
         :return:
         """
-        post = abort_if_not_exist(post_id)
-        # if g.current_user != post.author and not g.current_user.can(Permission.ADMINISTER):
-        if g.current_user != post.author_id:  # TODO:此处必须保证唯一？除了用户本人，管理员应该也可以删除
-            return forbidden('Insufficient permissions')
-        pass
-        return jsonify(post.to_json())
+        args = request.args
+        title = args.get('title')
+        try:
+            assert title
+        except AssertionError:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Args title is required.'
+            return jsonify_with_args(self.response_obj, 412)
+        slug = article_poster.parse_trans_en2cn(title)
+        self.response_obj['data'] = slug
+        return jsonify(self.response_obj)
+
+
+class IdApi(Resource):
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        """
+        根据输入的中文标题返回英文翻译（调用百度翻译API）
+        :return:
+        """
+        args = request.args
+        identifier = args.get('identifier')
+        try:
+            assert identifier
+        except AssertionError:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Args identifier is required.'
+            return jsonify_with_args(self.response_obj, 412)
+        data = dict()
+        post_id = article_poster.get_post_id_by_identifier(identifier)
+        data['postId'] = post_id
+        self.response_obj['data'] = data
+        return jsonify(self.response_obj)

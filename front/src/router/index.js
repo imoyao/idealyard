@@ -48,6 +48,10 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/About')), 'about')
         },
         {
+          path: '/links',
+          component: r => require.ensure([], () => r(require('@/views/Link')), 'link')
+        },
+        {
           path: '/archives/:year?/:month?',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogArchive')), 'archives')
         },
@@ -56,18 +60,27 @@ const router = new VueRouter({
           component: r => require.ensure([], () => r(require('@/views/MessageBoard')), 'messageboard')
         },
         {
-          // hint: 关于route传值 https://www.cnblogs.com/beka/p/8583924.html
-          path: '/view/:id',
+          // see also: 关于route传值 https://www.cnblogs.com/beka/p/8583924.html
+          path: '/posts/:identifier/:slug?',
+          name: 'blogview',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogView')), 'blogview')
         },
         {
-          //TODO: tag & categroy 公用，后期可能给拆分开？
-          path: '/:type',
+          path: '/tag',
+          component: r => require.ensure([], () => r(require('@/views/blog/Tag')), 'tag')
+        },
+        {
+          path: '/category',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogAllCategoryTag')), 'blogallcategorytag')
         },
         {
           path: '/:type/:id',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogCategoryTag')), 'blogcategorytag')
+        },
+        {
+          path: '*',
+          name: 'NotFound',
+          component: r => require.ensure([], () => r(require('@/views/NotFound')), '404')
         }
       ]
     }
@@ -84,12 +97,11 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/signin') {
       next({path: '/'})
     } else if (store.state.account.length === 0) {
-        store.dispatch('getUserInfo').then(data => { //获取用户信息
-          console.log(data.data)
-          next()
-        }).catch(() => {
-          next({path: '/signin'})
-        })
+      store.dispatch('getUserInfo').then(data => { //获取用户信息
+        next()
+      }).catch(() => {
+        next({path: '/signin'})
+      })
       } else {
         next()
       }
@@ -101,7 +113,7 @@ router.beforeEach((to, from, next) => {
         showClose: true,
         message: '登录后才可以进行该操作哦~'
       })
-      next('/signin')
+      next('/')
     }
     else {
       next();

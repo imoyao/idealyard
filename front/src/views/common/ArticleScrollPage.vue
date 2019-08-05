@@ -69,8 +69,8 @@
       load() {
         this.getArticles()
       },
-      view(postId,identifier) {
-        this.$router.push({name: 'post', params:{id:postId,identifier:identifier}})
+      view(identifier,slug) {
+        this.$router.push({name: 'posts', params:{slug:slug,identifier:identifier}})
       },
       reachEndLine() {
         this.$notify({

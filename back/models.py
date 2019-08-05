@@ -92,7 +92,8 @@ class User(db.Model):
 # 标签和文章为多对多关系，创建中间表
 posts_tags_table = db.Table('iy_post_tags', db.Model.metadata,
                             db.Column('post_id', db.Integer, db.ForeignKey('iy_article.post_id')),
-                            db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id'))
+                            db.Column('tag_id', db.Integer, db.ForeignKey('iy_tag.id')),
+                            db.PrimaryKeyConstraint('tag_id', 'post_id')
                             )
 
 
@@ -105,16 +106,16 @@ class Article(db.Model):
     post_id = db.Column(db.Integer, primary_key=True, comment='主键')
     title = db.Column(db.String(64), comment='文章标题')
     identifier = db.Column(db.Integer, unique=True, comment='文章标识码')
+    slug = db.Column(db.String(128), unique=True, comment='文章索引字符')
     author_id = db.Column(db.Integer, db.ForeignKey('iy_user.id'), comment='作者id')
     body_id = db.Column(db.Integer, db.ForeignKey('iy_article_body.id'), unique=True, comment='文章结构体id')
     view_counts = db.Column(db.Integer, server_default='0', comment='文章阅读数')
     weight = db.Column(db.Integer, comment='置顶功能')
     category_id = db.Column(db.Integer, db.ForeignKey('iy_category.id'), comment='分类')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='文章创建时间')
-    update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+    # 注意，此处默认是标准时区，东八区需要修改配置，不修改的话显示会有差异
+    update_date = db.Column(db.TIMESTAMP, server_default=db.text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),      # 注意，此处默认是标准时区，东八区需要修改配置，不修改的话显示会有差距
                             comment='文章更新时间')
-    # tags = db.relationship('Tag', secondary=posts_tags_table,
-    #                        back_populates='articles')
     '''
     # https://stackoverflow.com/questions/36225736/flask-sqlalchemy-paginate-over-objects-in-a-relationship
     # http://www.pythondoc.com/flask-sqlalchemy/models.html#one-to-many
@@ -159,9 +160,6 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     tag_name = db.Column(db.String(24), comment='标签名称')
 
-    # articles = db.relationship('Article', secondary=posts_tags_table,
-    #                            back_populates='tags')
-
     def __repr__(self):
         return '<Tag %r>' % self.tag_name
 
@@ -181,7 +179,8 @@ class ArticleBody(db.Model):
     id = db.Column(db.Integer, primary_key=True, comment='主键')
     content_html = db.Column(db.Text, comment='文章的html')
     content = db.Column(db.Text, comment='文章内容')
-    summary = db.Column(db.String(1000), server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。', comment='文章摘要')
+    summary = db.Column(db.String(1000), server_default='你如今的气质里，藏着你走过的路、读过的书和爱过的人。',
+                        comment='文章摘要')
 
     def __repr__(self):
         return '<ArticleBody %r>' % self.id

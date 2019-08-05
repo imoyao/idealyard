@@ -11,7 +11,7 @@ from sqlalchemy import func
 
 from back.controller import MakeQuery
 from back.models import db, Article
-from back.utils import DateTime
+from back.utils.date import DateTime
 
 date_maker = DateTime()
 query_maker = MakeQuery()

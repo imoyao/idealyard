@@ -61,7 +61,7 @@
     },
     computed: {
       title (){
-        return this.currentArchive + ' - 文章归档 - For Fun'
+        return this.currentArchive + ' - 文章归档  - 别院牧志'
         // # TODO 组装成的！！！
       },
       currentArchive (){

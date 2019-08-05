@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by Administrator at 2019/6/29 15:18
+import re
+import json
 import random
 from multiprocessing import Value
 
-from flask import g
-from sqlalchemy import func
+from flask import abort
+from sqlalchemy import func, case
 
 from back import setting
+from back.utils.text import BaiduTrans
 from back.controller import QueryComponent, MakeupPost, MakeQuery, assert_new_tag_in_tags
 from back.controller import categories, tags
 from back.models import ArticleBody, Article, Tag, db
-from back.utils import DateTime
+from back.utils.date import DateTime
 
 date_maker = DateTime()
 category_poster = categories.PostCategoryCtrl()
@@ -23,10 +26,15 @@ class GetPostCtrl:
 
     @staticmethod
     def posts_order_by_date(desc=True):
+        """
+        按照日期排序（weight为**置顶**功能<因为目前`weight`只是bool(1,0)型，所以desc是无用的，即置顶文章也是按照`create_date`排序的；但是如果需要的话，可以给每篇文章加权重，从而使文章置顶>）
+        :param desc:
+        :return:
+        """
         if desc:
-            posts_query = Article.query.order_by(Article.create_date.desc())
+            posts_query = Article.query.order_by(Article.weight.desc(), Article.create_date.desc())
         else:
-            posts_query = Article.query.order_by(Article.create_date)
+            posts_query = Article.query.order_by(Article.weight.desc(), Article.create_date)
         return posts_query
 
     @staticmethod
@@ -79,14 +87,18 @@ class GetPostCtrl:
         category_id = post_info.category_id
         post_id = post_info.post_id
         post_identifier = post_info.identifier
+        post_slug = post_info.slug
         create_date = post_info.create_date
+        update_date = post_info.update_date
         user_info = QueryComponent.author_info_for_post(user_id)
         body_info = QueryComponent.content_for_post(body_id)
         category_info = QueryComponent.category_for_post(category_id)
         tags_info = QueryComponent.tags_for_post(post_id)['tags_info']
-        str_date = ''
+        str_date, str_ut = ('',) * 2
         if create_date:
             str_date = date_maker.make_strftime(create_date)
+        if update_date:
+            str_ut = date_maker.make_strftime(update_date)
         json_post = {
             "author": user_info,
             "body": body_info,
@@ -94,8 +106,10 @@ class GetPostCtrl:
             # TODO:后期添加
             "commentCounts": 0,
             "createDate": str_date,
+            "updateDate": str_ut,
             "id": post_id,
             "identifier": post_identifier,
+            "slug": post_slug,
             # "summary": "本节将介绍如何在项目中使用 Element。",
             "tags": tags_info,
             "title": post_info.title,
@@ -154,6 +168,19 @@ class PostArticleCtrl:
         return body.id
 
     @staticmethod
+    def get_post_id_by_identifier(identifier, description=None):
+        """
+        如果有，则返回，如果没有，直接404
+        :param identifier:
+        :param description:
+        :return:
+        """
+        post = Article.query.filter_by(identifier=identifier).one_or_none()
+        if post is not None:
+            return post.post_id
+        abort(404, description=description)
+
+    @staticmethod
     def gen_post_identifier():
         """
         生成新的文章标识码
@@ -170,19 +197,84 @@ class PostArticleCtrl:
             post_identifier = setting.INITIAL_POST_IDENTIFIER
         return post_identifier
 
-    def new_post_action(self, category_id, all_tags_for_new_post, title, body_id, weight=0):
+    @staticmethod
+    def parse_trans_en2cn(q_key, from_lang='auto', to_lang='en'):
         """
-        添加一篇博文
+        根据用户输入关键字翻译，返回对应的英文字符串
+        :param q_key: str,
+        :param from_lang: str,default:auto
+        :param to_lang: str,en
+        :return: str, 中文所对应的的英文翻译
+        """
+        bd_trans = BaiduTrans(q_key, from_lang=from_lang, to_lang=to_lang)
+        dst = ''
+        _ret = bd_trans.trans_response()
+        if _ret:
+            # bytes >> str >> dict
+            dict_ret = json.loads(_ret.decode())
+            result = dict_ret.get('trans_result')
+            if result:
+                dst = result[0]['dst']
+        return dst
+
+    @staticmethod
+    def make_up_slug(raw_slug):
+        """
+        in:You look great today!
+        out:you-look-great-today
+        :param raw_slug:
+        :return:
+        """
+        result = re.sub(setting.RE_SYMBOL, ' ', raw_slug)
+        hyphens_join = '-'.join(
+            [item.strip().lower() if not item.strip().islower() else item.strip() for item in result.split()])
+        return hyphens_join
+
+    def resolve_conflict_slug(self, origin_slug):
+        """
+        生成新的 slug,通过给slug后面拼接递加数字字符实现
+        :param origin_slug:
+        :return:
+        """
+        count = 0
+        while True:
+            count = count + 1
+            slug_title = '-'.join([origin_slug, str(count)])
+            post = self.has_duplicate_slug(slug_title)
+            if not post:
+                return slug_title
+
+    @staticmethod
+    def has_duplicate_slug(slug_title):
+        """
+        判断没有重复的
+        有:返回obj，没有:返回None
+        :return:
+        """
+        post_obj = Article.query.filter(Article.slug == slug_title).one_or_none()
+        return post_obj
+
+    def new_post_action(self, category_id, all_tags_for_new_post, title, raw_slug, body_id, weight=0):
+        """
+        添加博文
         :param category_id: int,
         :param all_tags_for_new_post: list
         :param title: str,
+        :param raw_slug: str,
         :param body_id: int
         :param weight:
-        :return:
+        :return: post对象
         """
         new_identifier = self.gen_post_identifier()
+        processed_slug = self.make_up_slug(raw_slug)
+        try:
+            assert not self.has_duplicate_slug(processed_slug)
+        except AssertionError:
+            processed_slug = self.resolve_conflict_slug(processed_slug)
+        print(processed_slug, '------------------------')
         author_id = '1'  # TODO: just for test
-        post = Article(title=title, identifier=new_identifier, author_id=author_id, body_id=body_id,
+        post = Article(title=title, slug=processed_slug, identifier=new_identifier, author_id=author_id,
+                       body_id=body_id,
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
         need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
@@ -195,10 +287,10 @@ class PostArticleCtrl:
 
         db.session.add(post)
         db.session.commit()
-        post_id = post.post_id
-        return post_id
+        # post_id = post.post_id
+        return post
 
-    def new_post(self, category_name, summary, content_html, content, title, weight=0,
+    def new_post(self, category_name, summary, content_html, content, title, slug, weight=0,
                  post_tags=None):
         """
         POST 博文，需要先看是否要 POST category、tag；然后 POST body；最后操作 Article 表
@@ -207,6 +299,7 @@ class PostArticleCtrl:
         :param content_html:str,
         :param content:str,
         :param title:str,
+        :param slug:str,
         :param weight:int #TODO:bool? int?
         :param post_tags:list,
         :return:int,new_post_id
@@ -222,9 +315,9 @@ class PostArticleCtrl:
 
         body_id = self.new_post_body(summary, content_html, content)
 
-        new_post_id = self.new_post_action(category_id, all_tags_for_new_post, title, body_id, weight=weight)
+        new_post = self.new_post_action(category_id, all_tags_for_new_post, title, slug, body_id, weight=weight)
 
-        return new_post_id
+        return new_post
 
 
 class PutPostCtrl:
@@ -250,9 +343,9 @@ class PutPostCtrl:
         post_obj = Article.query.filter(Article.post_id == post_id).one()
         if all_tags_for_new_post:
             need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
-            for tag_name in all_tags_for_new_post:
-                tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
-                post_obj.tags.append(tag_obj)
+            # for tag_name in all_tags_for_new_post:
+            #     tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+            #     post_obj.tags.append(tag_obj)
         if need_add_tags:
             tag_poster.new_multi_tags(need_add_tags)
         post_obj.title = title
@@ -264,7 +357,7 @@ class PutPostCtrl:
         post_obj.create_date = post_obj.create_date
         db.session.add(post_obj)
         db.session.commit()
-        return post_id
+        return post_obj
 
     @staticmethod
     def update_body(body_id, content_html, content, summary):
@@ -307,6 +400,10 @@ class PutPostCtrl:
         need_add_tags = set(post_tags) - old_tags
         if need_add_tags:  # 用户手动新增的
             new_add_tags = tag_poster.new_multi_tags(need_add_tags)
+            for tag_name in need_add_tags:  # 给文章新加指定标签
+                tag_obj = Tag.query.filter_by(tag_name=tag_name).one()
+                post_obj.tags.append(tag_obj)
+
         if need_del_tags:  # 删除用户移除的标签
             for tag in need_del_tags:
                 tag_obj = Tag.query.filter_by(tag_name=tag).one()
@@ -325,17 +422,16 @@ class PutPostCtrl:
             category_id = category_poster.new_or_query_category(category_name)
 
         add_tags_for_the_post = self.update_tag_for_post(post_id, post_tags)
-        print(add_tags_for_the_post)
         post_obj = Article.query.get(post_id)
         if post_obj:
             body_id = post_obj.body_id
             update_body_id = self.update_body(body_id, content_html, content, summary)
             assert update_body_id == body_id
-        update_post_id = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
-                                                 category_id,
-                                                 weight=weight)
+        update_post_obj = self.update_post_action(post_id, post_tags, title, current_user_id, update_body_id,
+                                                  category_id,
+                                                  weight=weight)
 
-        return update_post_id
+        return update_post_obj
 
 
 class PatchPostCtrl:
@@ -362,3 +458,35 @@ class PatchPostCtrl:
             post_obj.view_counts = counter.value
             db.session.commit()
             return counter.value
+
+
+class DelPostCtrl:
+    """
+    删除文章操作
+    """
+
+    @staticmethod
+    def delete_body(body_id):
+        body = ArticleBody.query.get(body_id)
+        db.session.delete(body)
+        db.session.commit()
+        return 0
+
+    def delete_post(self, post_id):
+        """
+        首先删除文章 body，然后删除文章
+        :param post_id:int,
+        :return:
+        """
+        post_obj = Article.query.filter(Article.post_id == post_id).one()
+        print(post_obj)
+        if post_obj:
+            body_id = post_obj.body_id
+            print(type(post_obj.tags))
+            for tag in post_obj.tags:
+                post_obj.tags.remove(tag)
+                db.session.commit()
+            db.session.delete(post_obj)
+            db.session.commit()
+            self.delete_body(body_id)
+            return post_id

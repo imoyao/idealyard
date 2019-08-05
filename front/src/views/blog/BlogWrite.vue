@@ -2,14 +2,14 @@
   <div id="write" v-title :data-title="title">
     <el-container>
       <base-header :simple=true>
-        <el-col :span="4" :offset="2">
+        <el-col :span="6" :offset="2">
           <div class="me-write-info">写文章</div>
         </el-col>
-        <el-col :span="4" :offset="6">
-          <div class="me-write-btn">
-            <el-button round @click="publishShow">发布</el-button>
-            <el-button round @click="cancel">取消</el-button>
-          </div>
+        <el-col :span="4" :offset="3">
+          <el-button-group class="me-write-btn">
+            <el-button icon="el-icon-upload" size="small" round :autofocus="true" @click="publishShow">发布</el-button>
+            <el-button icon="el-icon-delete" size="small" round @click="cancel">取消</el-button>
+          </el-button-group>
         </el-col>
       </base-header>
 
@@ -30,22 +30,24 @@
         </el-main>
       </el-container>
 
-      <el-dialog title="摘要 分类 标签"
+      <el-dialog title="摘要 | 分类 | 链接 | 标签"
                  :visible.sync="publishVisible"
                  :close-on-click-modal=false
                  custom-class="me-dialog">
         <el-form :model="articleForm" ref="articleForm" :rules="rules">
-          <el-form-item prop="summary">
-            <el-input type="textarea"
-                      v-model="articleForm.summary"
-                      :rows="6"
-                      placeholder="请输入摘要">
+          <el-form-item label="文章摘要" prop="summary" class="iy-slug-ipt">
+            <el-input
+              type="textarea"
+              v-model="articleForm.summary"
+              style="display:flex !important;width:85%;"
+              :autosize="{ minRows: 2, maxRows: 8}"
+              placeholder="请输入摘要">
             </el-input>
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
             <!--https://element.eleme.cn/#/zh-CN/component/select#chuang-jian-tiao-mu-->
             <!--<el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">-->
-              <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
+            <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
             <!--</el-select>-->
             <el-select
               v-model="articleForm.category"
@@ -62,6 +64,23 @@
 
             </el-select>
             <el-tooltip class="item" effect="dark" content="你可以点击选择已有分类或者为文章创建新分类" placement="right">
+              <i class="iconfont icon-question-circle"></i>
+            </el-tooltip>
+          </el-form-item>
+          <!--TODO:更新时此输入框应为不可见-->
+          <el-form-item label="英文链接" prop="slug" v-if="newPost">
+            <el-autocomplete
+              class="iy-slug-ipt"
+              v-model="articleForm.slug"
+              autosize
+              :maxlength="60"
+              show-word-limit
+              :fetch-suggestions="querySearchAsync"
+              placeholder="请输入英文标题"
+              @select="handleSelect">
+              <el-button slot="append" icon="iconfont icon-translate"></el-button>
+            </el-autocomplete>
+            <el-tooltip class="item" effect="dark" content="你可以为文章自定义一个简短优雅的英文标题以创建链接" placement="right">
               <i class="iconfont icon-question-circle"></i>
             </el-tooltip>
           </el-form-item>
@@ -92,14 +111,13 @@
             </el-input>
             <!--TODO:添加清空所有的按钮-->
             <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 创建标签</el-button>
-            <!--<el-checkbox-group v-model="articleForm.tags">-->
-              <!--<el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags">{{t.tagname}}</el-checkbox>-->
-            <!--</el-checkbox-group>-->
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="publishVisible = false">取 消</el-button>
-          <el-button type="primary" @click="publish('articleForm')">发布</el-button>
+          <el-button-group>
+            <el-button type="primary" @click="publish('articleForm')" icon="el-icon-upload">发布</el-button>
+            <el-button @click="publishVisible = false" icon="el-icon-delete">取 消</el-button>
+          </el-button-group>
         </div>
       </el-dialog>
     </el-container>
@@ -109,27 +127,38 @@
 <script>
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
-  import {publishArticle, reqArticleById,updateArticle} from '@/api/article'
+  import {publishArticle, reqArticleById, updateArticle, reqArticleSlug} from '@/api/article'
   import {reqAllCategories} from '@/api/category'
   import {reqMostTags} from '@/api/tag'
 
   export default {
     name: 'BlogWrite',
     mounted() {
-
-      if(this.$route.params.id){
+      if (this.$route.params.id) {
         this.getArticleById(this.$route.params.id)
       }
-
       this.getCategorysAndTags()
       this.editorToolBarToFixedWrapper = this.$_.throttle(this.editorToolBarToFixed, 200)
-      window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false);
+      window.addEventListener('scroll', this.editorToolBarToFixedWrapper, false)
+      // 弹窗提示
+      window.onbeforeunload = function (e) {
+        e = e || window.event
+        // 兼容IE8和Firefox 4之前的版本
+        if (e) {
+            e.returnValue = '关闭提示'
+        }
+        // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+        return '关闭提示'
+      }
     },
     beforeDestroy() {
       window.removeEventListener('scroll', this.editorToolBarToFixedWrapper, false)
     },
     data() {
       return {
+        postSaved: false,
+        newPost: true,
+        postTitle: '',
         options: [{
           value: 'HTML',
           label: 'HTML'
@@ -151,6 +180,7 @@
           title: '',
           summary: '',
           category: '',
+          slug: '',
           tags: [],
           editor: {
             value: '',
@@ -199,12 +229,23 @@
       }
     },
     computed: {
-      title (){
-        return '写文章 - For Fun'
+      title() {
+        return '写文章  - 别院牧志'
       }
     },
-
     methods: {
+      // https://blog.csdn.net/qq_37746973/article/details/78402812
+      querySearchAsync(queryString, cb) {
+        console.log(this.postTitle)
+        reqArticleSlug(this.postTitle).then(data => {
+          let slug = data.data
+          let slugList = [{"value": slug}]
+          cb(slugList)
+        })
+      },
+      handleSelect(item) {
+        console.log(item)
+      },
       handleClose(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
       },
@@ -219,37 +260,34 @@
         let inputValue = this.inputValue;
         if (inputValue) {
           // 对用户输入值进行切分
-          let values = inputValue.split(/[,， \n]/).filter(item=>{
-            return item!='' && item!=undefined
+          let values = inputValue.split(/[,， \n]/).filter(item => {
+            return item !== '' && item !== undefined
           })
           // 对列表索引，没有找到则push
           values.forEach(element => {
-            let index = this.dynamicTags.findIndex(i=>{
-            return i === element
-          })
-          if(index<0){
-           this.dynamicTags.push(element);
-          }
-        });
-      }
-      // 添加完成自动消失
-      this.inputVisible = false;
-      this.inputValue = '';
+            let index = this.dynamicTags.findIndex(i => {
+              return i === element
+            })
+            if (index < 0) {
+              this.dynamicTags.push(element);
+            }
+          });
+        }
+        // 添加完成自动消失
+        this.inputVisible = false;
+        this.inputValue = '';
       },
       getArticleById(id) {
-        console.log('-------getArticleById-----',id)
         let that = this
         reqArticleById(id).then(data => {
           Object.assign(that.articleForm, data.data)
           that.articleForm.editor.value = data.data.body.content
           that.articleForm.summary = data.data.body.summary
           that.articleForm.category = data.data.category.categoryname
+          that.articleForm.slug = data.data.slug
           let postTags = this.articleForm.tags.map(function (item) {
-            // postTags.push(item.tagname)
             return item.tagname;
           })
-          console.log('-----------',this.articleForm.tags)
-          console.log('-----------',postTags)
           this.articleForm.tags = postTags
           this.dynamicTags = postTags
 
@@ -260,8 +298,9 @@
         })
       },
       publishShow() {
-        console.log(this.articleForm.tags)
-        console.log(this.dynamicTags)
+        this.postTitle = this.articleForm.title
+        // 更新文章时，添加英文标题的一行不可见
+        this.newPost = !this.articleForm.id
         if (!this.articleForm.title) {
           this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
           return
@@ -280,9 +319,7 @@
         this.publishVisible = true;
       },
       publish(articleForm) {
-
         let that = this
-
         this.$refs[articleForm].validate((valid) => {
           if (valid) {
             // TODO:重复
@@ -291,11 +328,12 @@
             });
             let article = {
               // 带上用户信息
-              authorId:this.$store.state.id,
+              authorId: this.$store.state.id,
               id: this.articleForm.id,
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               category: this.articleForm.category,
+              slug: this.articleForm.slug,
               dynamicTags: this.dynamicTags,
               tags: this.articleForm.tags,
               body: {
@@ -305,39 +343,43 @@
 
             }
             // 关闭发布框
-            this.publishVisible = false;
-            console.log('this.articleForm.id',this.articleForm.id)
+            this.publishVisible = false
+            this.postSaved = true
+            console.log('this.articleForm.id', this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
             })
             let postId = article.id
-            if (postId){
+            // 编辑文章
+            if (postId) {
               updateArticle(article).then((data) => {
-              loading.close();
-              that.$message({message: '更新成功啦', type: 'success', showClose: true})
-              that.$router.push({path: `/view/${data.data.articleId}`})
-
-            }).catch((error) => {
-              loading.close();
-              if (error !== 'error') {
-                console.log(error)
-                // that.$message({message: error, type: 'error', showClose: true});
-              }
-            })
-
-            }else {
-              publishArticle(article).then((data) => {
                 loading.close();
+                that.$message({message: '文章更新成功', type: 'success', showClose: true})
+                let identifier = data.data.identifier
+                let slug = data.data.slug
+                that.$router.push({path: `/posts/${identifier}/${slug}`})
+              }).catch((error) => {
+                loading.close();
+                if (error !== 'error') {
+                  console.log(error)
+                  // that.$message({message: error, type: 'error', showClose: true});
+                }
+              })
+            } else {    // 发表文章
+              publishArticle(article).then((data) => {
+                loading.close()
                 that.$message({message: '发布成功啦', type: 'success', showClose: true})
-                that.$router.push({path: `/view/${data.data.articleId}`})
-                }).catch((error) => {
-                  loading.close();
-                  if (error !== 'error') {
-                    that.$message({message: error, type: 'error', showClose: true});
-                  }
-                } )
-              }
+                let identifier = data.data.identifier
+                let slug = data.data.slug
+                that.$router.push({path: `/posts/${identifier}/${slug}`})
+              }).catch((error) => {
+                loading.close()
+                if (error !== 'error') {
+                  that.$message({message: error, type: 'error', showClose: true})
+                }
+              })
+            }
           } else {
             return false;
           }
@@ -349,6 +391,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          window.onbeforeunload = null
           this.$router.push('/')
         })
       },
@@ -361,22 +404,20 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-        console.log('edit-or-new',this.$route.params.id)
+        console.log('edit-or-new', this.$route.params.id)
         let postId = this.$route.params.id
         let tagData = Object()
         // 有id时上面已经获取到了
-        if(!postId){
+        if (!postId) {
           // 只显示热门标签，没有必要把所有标签都列出来，让用户可以自主添加更好
           tagData = reqMostTags().then(data => {
             that.tags = data.data
             that.tags.forEach(tag => {
-              console.log('$$$$$$$$$$$',tag)
               // 保存用户最终添加的tags
               this.dynamicTags.push(tag.tagname)
               // 保存用户可见tags
               this.userVisableTags.push(tag.tagname)
             })
-            console.log('-------reqAllTags------1111-----',this.dynamicTags)
           }).catch(error => {
             if (error !== 'error') {
               that.$message({type: 'error', message: '标签加载失败', showClose: true})
@@ -385,7 +426,6 @@
         }
       },
       editorToolBarToFixed() {
-
         let toolbar = document.querySelector('.v-note-op');
         let curHeight = document.documentElement.scrollTop || document.body.scrollTop;
         if (curHeight >= 160) {
@@ -406,9 +446,24 @@
       window.document.body.style.backgroundColor = '#fff';
       next();
     },
+    // see also: https://www.haorooms.com/post/single_page_refrashtips
+    // https://juejin.im/entry/5bebc4b3e51d4575125a39bb
     beforeRouteLeave(to, from, next) {
-      window.document.body.style.backgroundColor = '#f5f5f5';
-      next();
+      let userEnter = this.articleForm.title || this.articleForm.editor.value
+      if (!userEnter || this.postSaved) {
+        next()
+        return true
+      }
+      let answer = window.confirm('当前页面数据未保存，确定要离开？')
+      if (answer) {
+        window.document.body.style.backgroundColor = '#f5f5f5'
+        next()
+      } else {
+        next(false)
+      }
+    },
+    destroyed() {
+      window.onbeforeunload = null
     }
   }
 </script>
@@ -421,6 +476,10 @@
     box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
   }
 
+  .iy-slug-ipt {
+    width: 80%;
+  }
+
   .me-write-info {
     line-height: 60px;
     font-size: 18px;
@@ -428,7 +487,8 @@
   }
 
   .me-write-btn {
-    margin-top: 10px;
+    margin-top: 14px;
+    display: flex;
   }
 
   .me-write-box {
@@ -469,7 +529,7 @@
 
   .me-write-toolbar-fixed {
     position: fixed;
-    width: 700px !important;
+    width: 900px !important;
     top: 60px;
   }
 
@@ -480,12 +540,15 @@
   .auto-textarea-input, .auto-textarea-block {
     font-size: 18px !important;
   }
-  .el-tag{
+
+  .el-tag {
     margin-right: 10px;
   }
+
   .el-tag + .el-tag {
     margin-left: 10px;
   }
+
   .button-new-tag {
     margin-left: 10px;
     height: 32px;
@@ -493,10 +556,11 @@
     padding-top: 0;
     padding-bottom: 0;
   }
+
   .input-new-tag {
     /*width: 90px;*/
     width: 60%;
-    display:block;
+    display: block;
     vertical-align: bottom;
   }
 </style>
