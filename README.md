@@ -78,7 +78,6 @@ vi .env
     Original exception:
     
     ModuleNotFoundError: No module named 'mains'
-    
     ```
 
 ## TODO:
@@ -98,6 +97,7 @@ vi .env
 ~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
 - [x] 本次/上次提交中header样式需要调整
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
+- [ ] 标签、分类页面，item数量为0时，点击事件 disable
 - [ ] 标签管理员手动添加
 - [ ] 分类管理员手动添加
 ---
