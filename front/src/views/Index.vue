@@ -19,7 +19,7 @@
 
         <card-article cardHeader="最新文章" :articles="newArticles"></card-article>
 
-        <card-footer ></card-footer>
+        <card-footer></card-footer>
 
       </el-aside>
 
