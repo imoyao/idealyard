@@ -30,7 +30,7 @@
         </el-main>
       </el-container>
 
-      <el-dialog title="摘要 | 分类 | 链接 | 标签"
+      <el-dialog title="摘要 | 分类 | 置顶 | 链接 | 标签"
                  :visible.sync="publishVisible"
                  :close-on-click-modal=false
                  custom-class="me-dialog">
@@ -46,9 +46,6 @@
           </el-form-item>
           <el-form-item label="文章分类" prop="category">
             <!--https://element.eleme.cn/#/zh-CN/component/select#chuang-jian-tiao-mu-->
-            <!--<el-select v-model="articleForm.category" value-key="id" placeholder="请选择文章分类">-->
-            <!--<el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>-->
-            <!--</el-select>-->
             <el-select
               v-model="articleForm.category"
               filterable
@@ -67,6 +64,11 @@
               <i class="iconfont icon-question-circle"></i>
             </el-tooltip>
           </el-form-item>
+          <el-form-item label="文章置顶" prop="weight">
+            <el-switch style="margin-left: 8px;" v-model="topPost">
+            </el-switch>
+          </el-form-item>
+
           <!--TODO:更新时此输入框应为不可见-->
           <el-form-item label="英文链接" prop="slug" v-if="newPost">
             <el-autocomplete
@@ -145,7 +147,7 @@
         e = e || window.event
         // 兼容IE8和Firefox 4之前的版本
         if (e) {
-            e.returnValue = '关闭提示'
+          e.returnValue = '关闭提示'
         }
         // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
         return '关闭提示'
@@ -156,6 +158,7 @@
     },
     data() {
       return {
+        topPost: false,
         postSaved: false,
         newPost: true,
         postTitle: '',
@@ -285,6 +288,7 @@
           that.articleForm.summary = data.data.body.summary
           that.articleForm.category = data.data.category.categoryname
           that.articleForm.slug = data.data.slug
+          that.topPost = data.data.weight === 1
           let postTags = this.articleForm.tags.map(function (item) {
             return item.tagname;
           })
@@ -336,6 +340,7 @@
               slug: this.articleForm.slug,
               dynamicTags: this.dynamicTags,
               tags: this.articleForm.tags,
+              weight: this.topPost,
               body: {
                 content: this.articleForm.editor.value,
                 contentHtml: this.articleForm.editor.ref.d_render
@@ -562,5 +567,22 @@
     width: 60%;
     display: block;
     vertical-align: bottom;
+  }
+
+  .el-switch__core:after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    border-radius: 100%;
+    transition: all .3s;
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+  }
+
+  .el-switch.is-checked .el-switch__core:after {
+    left: 100%;
+    margin-left: -17px;
   }
 </style>
