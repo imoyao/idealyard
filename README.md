@@ -45,5 +45,5 @@ vi .env
 pass
 
 ## 更多
-参见[更多文档](./document/)  
+开发模式配置及说明参见[更多文档](./document/)  
 TODO:此处需要持续更新。
