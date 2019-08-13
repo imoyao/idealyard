@@ -148,7 +148,7 @@ class PostApi(Resource):
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
         raw_slug = json_data.get('slug')
-        post_weight = json_data.get('weight') or 0
+        post_weight = int(json_data.get('weight')) or 0
         # visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
         content, content_html = (None,) * 2
@@ -268,7 +268,7 @@ class PostDetail(Resource):
         category_name = json_data.get('category')
         post_summary = json_data.get('summary')
         post_title = json_data.get('title')
-        post_weight = json_data.get('weight') or 0
+        post_weight = int(json_data.get('weight')) or 0
         # visable_tags = json_data.get('tags')
         post_body = json_data.get('body')
         content, content_html = (None,) * 2

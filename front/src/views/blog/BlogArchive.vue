@@ -16,10 +16,9 @@
         </el-aside>
 
       <el-main class="me-articles">
-        <div class="me-month-title">{{currentArchive}}</div>
+        <div class="me-month-title" v-if="currentArchive">{{currentArchive}}</div>
         <!--TODO:如果去掉注释me-area，此处表现怪异-->
         <!--没有的时候，应该在此处显示内容-->
-
         <article-scroll-page v-bind="article"></article-scroll-page>
 
       </el-main>
@@ -56,34 +55,28 @@
             year: this.$route.params.year
           }
         },
-        archives: []
+        archives: [],
       }
     },
     computed: {
-      title (){
+      title () {
         return this.currentArchive + ' - 文章归档  - 别院牧志'
-        // # TODO 组装成的！！！
       },
-      currentArchive (){
+      currentArchive () {
         // 获取为空
-        if (this.archives.length === 0){
+        if (this.archives.length === 0) {
           // TODO: 打开太快，它出来了
           return 'Oh no 😢'
-        } else if (this.article){
-          if(this.article.query.year && this.article.query.month){
-          return `${this.article.query.year}年${this.article.query.month}月`
-        }
-        return '全部'
+        } else if (this.article) {
+          if (this.article.query.year && this.article.query.month) {
+            return `${this.article.query.year}年${this.article.query.month}月`
+          }
+          return '全部'
         }
       }
     },
     methods: {
-
       changeArchive(year, month) {
-        console.log('---------','changeArchive')
-        // this.currentArchive = `${year}年${month}月`
-        // this.article.query.year = year
-        // this.article.query.month = month
         this.$router.push({path: `/archives/${year}/${month}`})
       },
       listArchives() {

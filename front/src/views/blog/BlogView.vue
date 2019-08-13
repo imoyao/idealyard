@@ -344,7 +344,6 @@
   }
 
   .me-view-author {
-    /*margin: 30px 0;*/
     margin-top: 30px;
     vertical-align: middle;
   }
@@ -424,30 +423,13 @@
     font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
   }
 
-  .el-divider--horizontal {
-    display: block;
-    height: 1px;
-    width: 100%;
-    margin: 24px 0;
-  }
-
-  .el-divider {
-      background-color: #dcdfe6;
-      position: relative;
-  }
-
-  .el-divider__text.is-center {
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-  }
-
   .el-divider__text {
-      position: absolute;
-      background-color: #fff;
-      padding: 0 20px;
-      font-weight: 500;
-      color: #cc2a41;
-      font-size: 14px;
+    position: absolute;
+    background-color: #fff;
+    padding: 0 20px;
+    font-weight: 500;
+    color: #cc2a41;
+    font-size: 14px;
   }
 
 </style>

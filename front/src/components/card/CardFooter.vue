@@ -19,15 +19,15 @@
               <span class="me-login-design-color">iMOYAO</span>
             </strong>
           </p>
-
         </li>
-      </ul>
-      <ul class="more-list">
-        <li class="item"><span>就命运而言，休论公道。</span></li>
       </ul>
       <ul class="more-list">
         <li class="item"><a name="beianLink" href="http://beian.miit.gov.cn"
                             target="_blank">京ICP备666xxx666号</a></li>
+      </ul>
+      <el-divider></el-divider>
+      <ul class="more-list">
+        <li class="item"><span><i class="iconfont icon-heart-fill icon-m-right declare"></i>你如今的气质里，藏着你走过的路、读过的书和爱过的人。</span></li>
       </ul>
     </section>
   </el-card>
@@ -48,20 +48,6 @@
     font-size: 1.1rem;
     box-shadow: none;
     border: 0;
-  }
-
-  .el-divider--vertical {
-    display: inline-block;
-    width: 1px;
-    height: 1em;
-    margin: 0 8px;
-    vertical-align: middle;
-    position: relative;
-  }
-
-  .el-divider {
-    background-color: #dcdfe6;
-    position: relative;
   }
 
   .more-section .more-list {
@@ -121,5 +107,9 @@
     color: #909090;
     font-size: 14px;
     box-shadow: none;
+  }
+
+  .declare{
+    color: #e11111;
   }
 </style>

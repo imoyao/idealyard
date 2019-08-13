@@ -46,9 +46,11 @@
     color: #e11111;
     display: block;
   }
-  .icon-m-right{
-    margin-right:6px;
+
+  .icon-m-right {
+    margin-right: 6px;
   }
+
   .no-enough {
     color: #e11111;
   }
@@ -67,5 +69,32 @@
 
   .me-pull-right {
     float: right;
+  }
+
+
+  .el-divider {
+    background-color: #dcdfe6;
+    position: relative;
+  }
+
+  .el-divider--horizontal {
+    display: block;
+    height: 1px;
+    width: 100%;
+    margin: 24px 0;
+  }
+
+  .el-divider--vertical {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin: 0 8px;
+    vertical-align: middle;
+    position: relative;
+  }
+
+  .el-divider__text.is-center {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
   }
 </style>
