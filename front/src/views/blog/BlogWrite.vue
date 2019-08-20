@@ -409,7 +409,7 @@
             that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
           }
         })
-        console.log('edit-or-new', this.$route.params.id)
+        // console.log('edit-or-new', this.$route.params.id)
         let postId = this.$route.params.id
         let tagData = Object()
         // 有id时上面已经获取到了

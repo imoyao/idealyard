@@ -1,8 +1,10 @@
 
 # 前端
 
-借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。
+借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。     
 [预览地址](http://shiminghui.top:8000/)
+- [ ] 记住密码
+- [ ] 用户注册页面
 
 # 后端
 ## BUGs:
