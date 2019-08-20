@@ -11,6 +11,7 @@ from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
 from back.api_1_0 import api_bp
+from back.main import main_bp
 from back.utils.flask_logger import register_logger
 
 cors = CORS(resources={r"/api/*": {"origins": "*"}})
@@ -48,10 +49,12 @@ def add_blueprints(app):
     :return:
     """
     app.register_blueprint(api_bp)
+    app.register_blueprint(main_bp)
 
 
 def create_app(config_name):
-    app = Flask(__name__, static_folder="../static", template_folder="..")
+    # app = Flask(__name__, static_folder="../static", template_folder="..")
+    app = Flask(__name__, static_folder="../dist/static", template_folder="../dist")
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     # Load extensions
