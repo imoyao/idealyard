@@ -8,8 +8,6 @@ import lodash from 'lodash'
 
 import ElementUI from 'element-ui'
 import '@/assets/theme/index.css'
-
-// import '@/assets/icon/iconfont.css'
 import '@/assets/iyicon/iconfont.css'
 
 import {formatTime} from "./utils/time";

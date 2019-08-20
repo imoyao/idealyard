@@ -3,7 +3,15 @@
 ```bash
 cd front
 ```
-2. build文件
+2. 设置`prod`环境`BASE_API`地址
+```javascript
+// /idealyard/front/config/prod.env.js
+module.exports = {
+  NODE_ENV: '"production"',
+  BASE_API: '"http://192.168.116.21:5000/api"'  // TODO:修改为真实API地址
+}
+```
+3. build文件
 ```bash
 npm run build
 ```
@@ -12,7 +20,7 @@ npm run build
 ```bash
 pipenv install
 ```
-or
+or  
 ```bash
 cd back
 pip install -r requirements.txt
@@ -31,7 +39,7 @@ sudo ufw status
 systemctl status nginx      # 查看状态
 ```
 ### 配置
-修改`confs/nginx/conf.d/app.conf`为你build之后dist目录所在路径。
+修改`confs/nginx/conf.d/app.conf`为你`build`之后`dist`目录所在路径。
 
 ```bash
 location / {

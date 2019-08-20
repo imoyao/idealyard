@@ -10,6 +10,7 @@ const service = axios.create({
 
 service.interceptors.request.use(function (config) {
   // Do something before request is sent
+  // console.log('----process.env.BASE_API---------', process.env.BASE_API)
   const token = getToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
