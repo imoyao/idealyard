@@ -109,4 +109,6 @@ node_modules/
 #TODO: ignore conf for dev
 front/src/api/index.js
 front/config/dev.env.js
+front/dist.zip
+
 
