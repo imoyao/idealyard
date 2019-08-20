@@ -27,11 +27,10 @@ class UserApi(Resource):
     创建或者获取用户信息
     """
 
-    decorators = [token_auth.login_required]
-
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
+    @token_auth.login_required
     def get(self, user_id=None):
         data = dict()
         if user_id:

@@ -3,7 +3,7 @@
 
 借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。     
 [预览地址](http://shiminghui.top:8000/)
-- [ ] 记住密码
+- [x] 记住密码
 - [ ] 用户注册页面
 
 # 后端
@@ -22,7 +22,7 @@
 ~~- [] 访问已删除文章时，不会跳转到首页！~~
     目前可以跳转，但是由于abort函数，导致会有报错闪现。
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
-- [ ] 数据库迁移报错
+- [x] 数据库迁移报错
     ```bash
     werkzeug.utils.ImportStringError: import_string() failed for 'mains.bp'. Possible reasons are:
     

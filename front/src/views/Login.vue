@@ -115,7 +115,6 @@
               that.$router.go(-1)
             }).catch((error) => {
               if (error !== 'error') {
-                // console.log('login', error)
                 // that.$message({message: error, type: 'error', showClose: true});
                 this.logining = false
               }

@@ -2,19 +2,27 @@
   <div id="register" v-title data-title="注册  - 别院牧志">
 
     <div class="me-login-box me-login-box-radius">
-      <h1>别院牧志 注册</h1>
+      <h1>注册</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
+        <el-form-item prop="email">
+          <el-input placeholder="邮箱地址" v-model="userForm.email"></el-input>
+        </el-form-item>
+
         <el-form-item prop="account">
           <el-input placeholder="用户名" v-model="userForm.account"></el-input>
         </el-form-item>
 
-        <el-form-item prop="nickname">
-          <el-input placeholder="昵称" v-model="userForm.nickname"></el-input>
-        </el-form-item>
+        <!--<el-form-item prop="nickname">-->
+        <!--<el-input placeholder="昵称" v-model="userForm.nickname"></el-input>-->
+        <!--</el-form-item>-->
 
         <el-form-item prop="password">
-          <el-input placeholder="密码" v-model="userForm.password"></el-input>
+          <el-input type="password" placeholder="密码" v-model="userForm.password"></el-input>
+        </el-form-item>
+
+        <el-form-item prop="rePassword">
+          <el-input type="password" placeholder="重复密码" v-model="userForm.rePassword"></el-input>
         </el-form-item>
 
         <el-form-item size="small" class="me-login-button">
@@ -40,13 +48,46 @@
   export default {
     name: 'Register',
     data() {
+      let pwEqual = (rule, value, callback) => {
+        if (!(this.userForm.password === this.userForm.rePassword)) {
+          callback('两次填写的密码不一致')
+        } else {
+          callback() // 没有此处验证通过也不执行
+        }
+      }
+      let prettyPw = (rule, value, callback) =>{
+        // - 6-16 characters
+        // - must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number
+        // - Can contain special characters
+        // let pattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
+        let pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,16}$/
+        if (!(pattern.test(value))) {
+          callback('必须包含数字、大小写字母')
+        } else {
+          callback()
+        }
+      }
       return {
         userForm: {
+          email: '',
           account: '',
           nickname: '',
-          password: ''
+          password: '',
+          rePassword: ''
         },
         rules: {
+          email: [
+            {
+              required: true, //是否必填
+              message: '请输入邮箱地址', //错误提示信息
+              trigger: 'blur' //检验方式（blur为鼠标点击其他地方，）
+            },
+            {
+              type: 'email',  //要检验的类型（number，email，date等）
+              message: '请输入正确的邮箱地址',
+              trigger: ['blur', 'change']   //change为检验的字符变化的时候
+            }
+          ],
           account: [
             {required: true, message: '请输入用户名', trigger: 'blur'},
             {max: 10, message: '不能大于10个字符', trigger: 'blur'}
@@ -57,7 +98,13 @@
           ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+            {max: 16, message: '不能大于 16 个字符', trigger: 'blur'},
+            {min: 6, message: '不能小于 6 个字符', trigger: 'blur'},
+            // {validator: prettyPw, trigger: 'blur'}
+          ],
+          rePassword: [
+            {required: true, message: '请输入确认密码', trigger: 'blur'},
+            {validator: pwEqual, trigger: 'blur'}
           ]
         }
 
