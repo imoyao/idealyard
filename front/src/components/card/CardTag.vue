@@ -50,7 +50,7 @@
       justShowTags: function () {
         if (this.tags){
           return this.tags.filter(function (tag) {
-            return tag.count > 0
+            return tag.count === 0
           })
         }
         return false
