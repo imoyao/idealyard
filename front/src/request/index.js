@@ -55,7 +55,7 @@ service.interceptors.response.use(function (response) {
           showClose: true,
           message: '404: Not Found'
         })
-        //TODO 页面跳转
+        // 页面跳转
         window.location.href="/"
         break
 

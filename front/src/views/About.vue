@@ -165,7 +165,7 @@
       }
     },
     methods: {
-      // TODO:统计+1
+      // 统计+1
       addReadCount(){
         let postId = 20
         patchCount(postId).then(data => {

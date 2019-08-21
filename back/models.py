@@ -31,7 +31,7 @@ class User(db.Model):
     password = db.Column(db.String(128), comment='密码，加密保存')
     email = db.Column(db.String(120), index=True, unique=True, comment='注册邮箱')
     location = db.Column(db.String(64), comment='居住地')
-    slogan = db.Column(db.String(64), server_default='唯有文字能担当此任，宣告生命曾经在场。', comment='Slogan')
+    slogan = db.Column(db.String(64), server_default='就命运而言，休论公道。', comment='Slogan')
     create_date = db.Column(db.DateTime(), default=datetime.utcnow, comment='用户创建时间')
     last_login = db.Column(db.DateTime(), default=datetime.utcnow, comment='最近登录时间')
     confirmed = db.Column(db.Boolean, default=False, comment='注册确认')

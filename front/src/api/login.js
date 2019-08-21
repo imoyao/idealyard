@@ -42,11 +42,16 @@ export function reqUserInfo() {
   })
 }
 
-export function register(account, nickname, password) {
+export function register(userInfo) {
+  let account = userInfo.account
+  let email = userInfo.email
+  let password = userInfo.password
+  let rePassword = userInfo.rePassword
   const data = {
     account,
-    nickname,
-    password
+    email,
+    password,
+    rePassword
   }
   return request({
     url: '/register',

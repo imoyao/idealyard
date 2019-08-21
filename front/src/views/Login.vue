@@ -11,7 +11,8 @@
         <el-form-item prop="password">
           <el-input placeholder="密码" type="password" v-model="userForm.password" clearable></el-input>
         </el-form-item>
-
+        <!--<span @click="clearCookie"-->
+              <!--style="cursor: pointer;color: #67c23a;font-size: 0.75rem;margin-left: 5px;float:right">重置</span>-->
         <el-checkbox v-model="checked" class="remember">记住密码</el-checkbox>
 
         <el-form-item size="small" class="me-login-button">
@@ -111,7 +112,7 @@
             // 触发vuex中的login
             that.$store.dispatch('login', that.userForm).then(() => {
               this.logining = false
-              // 从哪来到哪去：TODO:https://blog.csdn.net/Nalaluky/article/details/84201445
+              // 从哪来到哪去：see also :https://blog.csdn.net/Nalaluky/article/details/84201445
               that.$router.go(-1)
             }).catch((error) => {
               if (error !== 'error') {

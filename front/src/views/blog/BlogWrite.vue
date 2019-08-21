@@ -69,7 +69,7 @@
             </el-switch>
           </el-form-item>
 
-          <!--TODO:更新时此输入框应为不可见-->
+          <!-- 更新时此输入框应为不可见-->
           <el-form-item label="英文链接" prop="slug" v-if="newPost">
             <el-autocomplete
               class="iy-slug-ipt"

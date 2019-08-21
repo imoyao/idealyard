@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/6/25 14:34
 
-from flask import jsonify, request, abort, g
+from flask import jsonify, request, g
 from flask_restful import Resource
 
 from back.models import User
-from back.models import db
 from .utils import jsonify_with_args
-from back.controller.authctrl import token_auth
+from back.controller.authctrl import token_auth, PostUserCtrl,generate_auth_token
+
+user_ctrl = PostUserCtrl()
 
 
 def abort_if_not_exist(user_id):
@@ -56,14 +57,38 @@ class UserApi(Resource):
         :return:
         """
         json_data = request.json
-        username = json_data.get('username')
+        username = json_data.get('account')
         password = json_data.get('password')
-        if not all([username, password]):
-            abort(400)  # missing arguments
-        if User.query.filter_by(username=username).first() is not None:
-            abort(409)  # existing user
-        user = User(username=username)
-        user.hash_password(password)
-        db.session.add(user)
-        db.session.commit()
-        return jsonify_with_args({'username': user.username}, 201)
+        re_password = json_data.get('rePassword')
+        email = json_data.get('email')
+        if not all([username, password, email]):
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Missing arguments.'
+            return jsonify_with_args(self.response_obj, 400)
+        if password != re_password:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'Please confirm password has been set correctly.'
+            return jsonify_with_args(self.response_obj, 409)
+        if user_ctrl.email_exists(email):
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj[
+                'msg'] = 'Email address already exists,Please reset password or contact us to remove this account.'
+            return jsonify_with_args(self.response_obj, 409)
+        if user_ctrl.username_exists(username):
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            self.response_obj['msg'] = 'User name already exists,Please rename it.'
+            return jsonify_with_args(self.response_obj, 409)
+
+        data = dict()
+        user = user_ctrl.new_user(username, password, email)
+        user_id = user.id
+        username = user.username
+        token = generate_auth_token(user_id, expiration=60 * 120)
+        data['token'] = token
+        data['username'] = username
+        self.response_obj['data'] = data
+        return jsonify_with_args(self.response_obj, 201)

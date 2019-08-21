@@ -7,7 +7,7 @@ import random
 from multiprocessing import Value
 
 from flask import abort
-from sqlalchemy import func, case
+from sqlalchemy import func
 
 from back import setting
 from back.utils.text import BaiduTrans
@@ -278,7 +278,7 @@ class PostArticleCtrl:
                        view_counts=setting.INITIAL_VIEW_COUNTS,
                        weight=weight, category_id=category_id)
         need_add_tags = assert_new_tag_in_tags(all_tags_for_new_post)
-        # TODO:正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
+        # 正常函数不应该走到这里，因为前面已经添加了用户自主添加的，此处主要是刚开始写的代码不完善
         if need_add_tags:
             tag_poster.new_multi_tags(need_add_tags)
         for tag_name in all_tags_for_new_post:
@@ -300,7 +300,7 @@ class PostArticleCtrl:
         :param content:str,
         :param title:str,
         :param slug:str,
-        :param weight:int #TODO:bool? int?
+        :param weight:int, 1/0 表示是否置顶
         :param post_tags:list,
         :return:int,new_post_id
         """
