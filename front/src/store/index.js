@@ -50,7 +50,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         reqUserInfo().then(data => {
           if (data.data) {
-            commit('SET_ACCOUNT', data.data.account)
+            // TODO:此处需要整理或者更好处理
+            let account = data.data.account || data.data.nickname
+            commit('SET_ACCOUNT', account)
             commit('SET_NAME', data.data.nickname)
             commit('SET_AVATAR', data.data.avatar)
             commit('SET_ID', data.data.id)
