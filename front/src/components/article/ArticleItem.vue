@@ -92,7 +92,7 @@
   }
 
   .me-article-flag {
-    margin-left: 1px !important;
+    margin-left: 4px !important;
     font-size: 13px;
   }
 

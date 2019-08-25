@@ -480,10 +480,8 @@ class DelPostCtrl:
         :return:
         """
         post_obj = Article.query.filter(Article.post_id == post_id).one()
-        print(post_obj)
         if post_obj:
             body_id = post_obj.body_id
-            print(type(post_obj.tags))
             for tag in post_obj.tags:
                 post_obj.tags.remove(tag)
                 db.session.commit()

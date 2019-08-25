@@ -47,10 +47,11 @@
     
     ModuleNotFoundError: No module named 'mains'
     ```
-- [ ] 未注册用户登录（假用户）无提示，后台报错:
+- [x] 未注册用户登录（假用户）无提示，后台报错:
     ```bash
     TypeError: unauthorized() takes 0 positional arguments but 1 was given
     ```
+- [ ] 首页热门标签应该显示最热，而不是全部
 
 ## TODO:
 

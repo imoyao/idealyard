@@ -116,6 +116,10 @@
               that.$router.go(-1)
             }).catch((error) => {
               if (error !== 'error') {
+                // see also:https://blog.csdn.net/lsw789/article/details/88735001
+                that.$refs.userForm.fields[1].validateMessage = "请确认登录信息是否正确"
+                that.$refs.userForm.fields[1].validateState  = "error"
+                that.$refs.userForm.fields[0].validateState  = "error"
                 // that.$message({message: error, type: 'error', showClose: true});
                 this.logining = false
               }
