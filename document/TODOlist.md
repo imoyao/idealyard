@@ -51,7 +51,7 @@
     ```bash
     TypeError: unauthorized() takes 0 positional arguments but 1 was given
     ```
-- [ ] 首页热门标签应该显示最热，而不是全部
+- [x] 首页热门标签应该显示最热，而不是全部
 
 ## TODO:
 
