@@ -39,6 +39,9 @@
 
   .me-area {
     background-color: #fff;
+    border-right: none;
+    border-bottom: solid 1px #e6e6e6;
+    box-shadow: 0 1px 3px rgba(26,26,26,.1);
   }
 
   /*重要声明或slogan*/
