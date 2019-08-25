@@ -21,7 +21,7 @@
       </el-form>
 
       <div class="me-login-design">
-        <p>Designed by
+        <p>Powered by
           <strong>
             <router-link to="/" class="me-login-design-color">IMOYAO</router-link>
           </strong>

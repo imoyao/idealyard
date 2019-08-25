@@ -31,7 +31,7 @@
       </el-form>
 
       <div class="me-login-design">
-        <p>Designed by
+        <p>Powered by
           <strong>
             <router-link to="/" class="me-login-design-color">别院牧志</router-link>
           </strong>

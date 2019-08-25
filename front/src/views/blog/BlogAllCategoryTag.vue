@@ -3,7 +3,7 @@
     <el-container class="me-allct-container">
       <el-main>
         <el-tabs v-model="activeName">
-          <el-tab-pane label="文章分类" name="category">
+          <el-tab-pane label="分类" name="category">
             <ul class="me-allct-items">
               <li v-for="c in categories" @click="view(c.id)" :key="c.id" class="me-allct-item">
                 <div class="me-allct-content">
