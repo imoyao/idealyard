@@ -10,7 +10,7 @@
 - [x] 记住密码
 - [x] 用户注册页面
     - [x] 用户注册成功，但是跳转首页之后显示问题
-- [ ] 用户写文章时，作者不是当前登录用户
+- [x] 用户写文章时，作者不是当前登录用户
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
@@ -46,6 +46,10 @@
     Original exception:
     
     ModuleNotFoundError: No module named 'mains'
+    ```
+- [ ] 未注册用户登录（假用户）无提示，后台报错:
+    ```bash
+    TypeError: unauthorized() takes 0 positional arguments but 1 was given
     ```
 
 ## TODO:

@@ -254,9 +254,10 @@ class PostArticleCtrl:
         post_obj = Article.query.filter(Article.slug == slug_title).one_or_none()
         return post_obj
 
-    def new_post_action(self, category_id, all_tags_for_new_post, title, raw_slug, body_id, weight=0):
+    def new_post_action(self, author_id, category_id, all_tags_for_new_post, title, raw_slug, body_id, weight=0):
         """
         添加博文
+        :param author_id: int,
         :param category_id: int,
         :param all_tags_for_new_post: list
         :param title: str,
@@ -272,7 +273,6 @@ class PostArticleCtrl:
         except AssertionError:
             processed_slug = self.resolve_conflict_slug(processed_slug)
         print(processed_slug, '------------------------')
-        author_id = '1'  # TODO: just for test
         post = Article(title=title, slug=processed_slug, identifier=new_identifier, author_id=author_id,
                        body_id=body_id,
                        view_counts=setting.INITIAL_VIEW_COUNTS,
@@ -290,10 +290,11 @@ class PostArticleCtrl:
         # post_id = post.post_id
         return post
 
-    def new_post(self, category_name, summary, content_html, content, title, slug, weight=0,
+    def new_post(self, author_id, category_name, summary, content_html, content, title, slug, weight=0,
                  post_tags=None):
         """
         POST 博文，需要先看是否要 POST category、tag；然后 POST body；最后操作 Article 表
+        :param author_id:int,
         :param category_name:str,
         :param summary:str,
         :param content_html:str,
@@ -315,7 +316,8 @@ class PostArticleCtrl:
 
         body_id = self.new_post_body(summary, content_html, content)
 
-        new_post = self.new_post_action(category_id, all_tags_for_new_post, title, slug, body_id, weight=weight)
+        new_post = self.new_post_action(author_id, category_id, all_tags_for_new_post, title, slug, body_id,
+                                        weight=weight)
 
         return new_post
 

@@ -144,8 +144,9 @@ class PostApi(Resource):
         category_name = json_data.get('category')
 
         print('------data = request.json--------', json_data)
-        # TODO: 默认抓取前200个字符
+        # TODO: 默认取前200个字符?
         post_summary = json_data.get('summary')
+        author_id = json_data.get('authorId')
         post_title = json_data.get('title')
         raw_slug = json_data.get('slug')
         post_weight = int(json_data.get('weight')) or 0
@@ -161,8 +162,8 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            new_post = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
-                                               weight=post_weight, post_tags=post_tags)
+            new_post = article_poster.new_post(author_id, category_name, post_summary, content_html, content,
+                                               post_title, raw_slug, weight=post_weight, post_tags=post_tags)
             post_id = new_post.post_id
             identifier = new_post.identifier
             slug = new_post.slug
