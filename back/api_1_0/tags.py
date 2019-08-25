@@ -36,13 +36,12 @@ class TagApi(Resource):
         if args.get('limit') and args['limit']:
             limit_count = int(args.get('limit'))
         hot = args.get('hot', False, type=bool)
-        print(hot,'--------------------')
         if tag_id:  # 查单个
             # /api/tags/id
             query_key = tag_id
             query_by = 'tag_id'     # 只传id时给默认值
 
-        if not hot:
+        elif not hot:
             # TODO:默认按照id排，后续可以添加按照名字排（index >> name）
             order_by = args.get('order_by', 'id', type=str)
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！

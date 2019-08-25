@@ -52,7 +52,7 @@
     TypeError: unauthorized() takes 0 positional arguments but 1 was given
     ```
 - [x] 首页热门标签应该显示最热，而不是全部
-- [ ] 首页点标签名称，进去之后的名称 title 不对
+- [x] 首页点标签名称，进去之后的名称 title 不对
 - [x] 文章详情页header下划线显示异常
 
 ## TODO:
