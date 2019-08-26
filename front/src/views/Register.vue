@@ -25,6 +25,21 @@
           <el-input type="password" placeholder="重复密码" v-model="userForm.rePassword"></el-input>
         </el-form-item>
 
+        <!--<div>-->
+        <!--<router-link to="/signin" @click.native="click" style="color: #67c23a;font-size: 0.75rem;margin-left: 5px;margin-bottom: 15px;float:right">-->
+        <!---->
+        <!--</router-link>-->
+        <!--</div>-->
+        <div class="form-text">
+          <p>&nbsp;
+            <!--<span @click="toResetPw"-->
+            <!--class="flr-link"><strong>找回密码   </strong></span>-->
+            <!--&nbsp;&nbsp;&nbsp;-->
+            <span @click="toSignin"
+                  class="flr-link">已有账号？<strong>立即登录</strong></span>
+          </p>
+        </div>
+
         <el-form-item size="small" class="me-login-button">
           <el-button type="primary" @click.native.prevent="register('userForm')">注册</el-button>
         </el-form-item>
@@ -33,7 +48,7 @@
       <div class="me-login-design">
         <p>Powered by
           <strong>
-            <router-link to="/" class="me-login-design-color">别院牧志</router-link>
+            <router-link to="/" class="me-login-design-color">IMOYAO</router-link>
           </strong>
         </p>
       </div>
@@ -55,7 +70,7 @@
           callback() // 没有此处验证通过也不执行
         }
       }
-      let prettyPw = (rule, value, callback) =>{
+      let prettyPw = (rule, value, callback) => {
         // - 6-16 characters
         // - must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number
         // - Can contain special characters
@@ -111,6 +126,9 @@
       }
     },
     methods: {
+      toSignin() {
+        this.$router.push('/signin')
+      },
       register(formName) {
         let that = this
         this.$refs[formName].validate((valid) => {
@@ -136,6 +154,18 @@
 </script>
 
 <style scoped>
+  .form-text {
+    color: #67c23a;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    margin-bottom: 15px;
+  }
+
+  .flr-link {
+    cursor: pointer;
+    float: right;
+  }
+
   #login {
     min-width: 100%;
     min-height: 100%;
@@ -156,7 +186,7 @@
   .me-login-box {
     position: absolute;
     width: 300px;
-    height: 320px;
+    height: 400px;
     background-color: white;
     margin-top: 150px;
     margin-left: -180px;

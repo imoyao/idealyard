@@ -11,9 +11,14 @@
         <el-form-item prop="password">
           <el-input placeholder="密码" type="password" v-model="userForm.password" clearable></el-input>
         </el-form-item>
+        <div class="form-text">
+          <el-checkbox v-model="checked">记住密码</el-checkbox>
+          <span @click="toResetPw"
+                class="flr-link"><strong>找回密码</strong></span>
+        </div>
         <!--<span @click="clearCookie"-->
-              <!--style="cursor: pointer;color: #67c23a;font-size: 0.75rem;margin-left: 5px;float:right">重置</span>-->
-        <el-checkbox v-model="checked" class="remember">记住密码</el-checkbox>
+        <!--style="cursor: pointer;color: #67c23a;font-size: 0.75rem;margin-left: 5px;float:right">重置</span>-->
+
 
         <el-form-item size="small" class="me-login-button">
           <el-button type="primary" @click.native.prevent="login('userForm')">登录</el-button>
@@ -73,6 +78,9 @@
       }
     },
     methods: {
+      toResetPw() {
+        this.$router.push('/reset_password')
+      },
       setCookie(c_name, c_pwd, exdays) {
         let exdate = new Date(); //获取时间
         exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays) //保存的天数
@@ -97,8 +105,7 @@
       },
       clearCookie: function () {
         this.userForm.password = ''
-        this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
-        // this.checked = false
+        this.setCookie("", "", -1); //修改2值都为空，天数为负1天
       },
       login(formName) {
         let that = this
@@ -139,6 +146,18 @@
     min-height: 100%;
   }
 
+  .form-text {
+    color: #67c23a;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    margin-bottom: 15px;
+  }
+
+  .flr-link {
+    cursor: pointer;
+    float: right;
+  }
+
   .remember {
     margin-bottom: 20px;
   }
@@ -158,7 +177,7 @@
   .me-login-box {
     position: absolute;
     width: 300px;
-    height: 260px;
+    height: 300px;
     background-color: white;
     margin-top: 150px;
     margin-left: -180px;

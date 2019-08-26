@@ -55,11 +55,12 @@
                   <el-dropdown-menu slot="dropdown">
                     <!--<el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>-->
                     <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
-                    <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出
-                    </el-dropdown-item>
+                    <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
+                <span>{{ user.account }}</span>
               </el-menu-item>
+
             </el-col>
           </template>
         </el-menu>
@@ -89,8 +90,9 @@
         let login = this.$store.state.account.length !== 0
         // let login = getToken()
         let avatar = this.$store.state.avatar
+        let account = this.$store.state.account
         return {
-          login, avatar
+          login, avatar, account
         }
       }
     },
