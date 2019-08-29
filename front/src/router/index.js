@@ -13,7 +13,7 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
   // https://router.vuejs.org/zh/guide/essentials/history-mode.html#html5-history-%E6%A8%A1%E5%BC%8F
-  mode: 'history',
+  // mode: 'history',
   routes: [
     {
       path: '/write/:id?',
@@ -29,6 +29,10 @@ const router = new VueRouter({
     {
       path: '/register',
       component: r => require.ensure([], () => r(require('@/views/Register')), 'register')
+    },
+    {
+      path: '/reset_password',
+      component: r => require.ensure([], () => r(require('@/views/ResetPassword')), 'ResetPassword')
     },
     {
       path: '',
