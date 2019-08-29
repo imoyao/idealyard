@@ -13,14 +13,14 @@ from flask_restful import Resource
 
 from back.models import User
 from . import api_bp
-from .errors import unauthorized, forbidden
+from back.api_1_0.errors import unauthorized_error, forbidden
 from .utils import jsonify_with_args
 from back.controller.authctrl import basic_auth, multi_auth, generate_auth_token
 
 
 @basic_auth.error_handler
-def unauthorized():
-    return unauthorized('Unauthorized access')
+def unauthorized(*args, **kwargs):
+    return unauthorized_error('Unauthorized access')
 
 
 @api_bp.before_request

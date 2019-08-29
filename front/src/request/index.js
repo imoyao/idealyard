@@ -10,6 +10,7 @@ const service = axios.create({
 
 service.interceptors.request.use(function (config) {
   // Do something before request is sent
+  // console.log('----process.env.BASE_API---------', process.env.BASE_API)
   const token = getToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -54,7 +55,7 @@ service.interceptors.response.use(function (response) {
           showClose: true,
           message: '404: Not Found'
         })
-        //TODO 页面跳转
+        // 页面跳转
         window.location.href="/"
         break
 

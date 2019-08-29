@@ -7,7 +7,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 
-from back.models import User
+from back.models import User, db
 
 # 基础认证
 basic_auth = HTTPBasicAuth()
@@ -69,3 +69,30 @@ def verify_token(token):
         g.user = user
         return True
     return False
+
+
+class PostUserCtrl:
+
+    @staticmethod
+    def email_exists(email):
+        return User.query.filter_by(email=email).one_or_none()
+
+    @staticmethod
+    def username_exists(username):
+        return User.query.filter_by(username=username).one_or_none()
+
+    @staticmethod
+    def new_user(username, password, email):
+        """
+        创建新用户
+        :param username: str,用户名
+        :param password: str,密码
+        :param email: str,邮箱
+        :return:
+        """
+        user = User(email=email, username=username)
+        hash_pw = user.hash_password(password)
+        user.password = hash_pw
+        db.session.add(user)
+        db.session.commit()
+        return user

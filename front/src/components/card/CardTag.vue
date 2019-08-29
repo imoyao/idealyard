@@ -39,15 +39,21 @@
     computed: {
       // 只有标签下有文章时，才可点进去
       clickableTags: function () {
-        return this.tags.filter(function (tag) {
-          return tag.count > 0
-        })
+        if (this.tags){
+          return this.tags.filter(function (tag) {
+            return tag.count > 0
+          })
+        }
+        return false
       },
       // 否则，仅展示
       justShowTags: function () {
-        return this.tags.filter(function (tag) {
-          return tag.count === 0
-        })
+        if (this.tags){
+          return this.tags.filter(function (tag) {
+            return tag.count === 0
+          })
+        }
+        return false
       }
     }
   }

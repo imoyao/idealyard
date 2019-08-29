@@ -72,7 +72,6 @@ class PostApi(Resource):
     def get(self):
         # 请求数据
         args = request.args
-        print([_ for _ in args], args)
         if args:
             # **注意**:args这里获取参数最好用dict.get() 而不是dict['key'],否则可能导致出错而程序不报错！！！
             # ?new=true
@@ -142,10 +141,9 @@ class PostApi(Resource):
         # 用户最终提交的
         post_tags = json_data.get('dynamicTags', [])
         category_name = json_data.get('category')
-
-        print('------data = request.json--------', json_data)
-        # TODO: 默认抓取前200个字符
+        # TODO: 默认取前200个字符?
         post_summary = json_data.get('summary')
+        author_id = json_data.get('authorId')
         post_title = json_data.get('title')
         raw_slug = json_data.get('slug')
         post_weight = int(json_data.get('weight')) or 0
@@ -161,8 +159,8 @@ class PostApi(Resource):
             self.response_obj['msg'] = 'Not enough args.'
             return jsonify_with_args(self.response_obj, 400)
         else:
-            new_post = article_poster.new_post(category_name, post_summary, content_html, content, post_title, raw_slug,
-                                               weight=post_weight, post_tags=post_tags)
+            new_post = article_poster.new_post(author_id, category_name, post_summary, content_html, content,
+                                               post_title, raw_slug, weight=post_weight, post_tags=post_tags)
             post_id = new_post.post_id
             identifier = new_post.identifier
             slug = new_post.slug
@@ -260,7 +258,6 @@ class PostDetail(Resource):
         """
         abort_if_not_exist(post_id)
         json_data = request.json
-        print('---json_data', json_data)
         current_user_id = json_data.get('authorId')
         if g.user.id != current_user_id:  # or  g.current_user.can(Permission.ADMINISTER):
             return forbidden('Insufficient permissions')

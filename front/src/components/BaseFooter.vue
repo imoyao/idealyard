@@ -1,7 +1,7 @@
 <template>
   <el-footer class="me-area">
     <div class="me-footer">
-      <p>Designed by
+      <p>Powered by
         <strong>
           <router-link to="/" class="me-login-design-color">iMOYAO</router-link>
         </strong>

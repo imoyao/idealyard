@@ -9,7 +9,8 @@
       </el-col>
 
       <el-col v-if="!simple" :span="12" :offset="2">
-        <el-menu :router=true menu-trigger="click" active-text-color="#5FB878" :default-active="$route.path"
+        <el-menu class="navigation" :router=true menu-trigger="click" active-text-color="#5FB878"
+                 :default-active="$route.path"
                  mode="horizontal">
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/category">分类</el-menu-item>
@@ -31,7 +32,8 @@
       </template>
 
       <el-col :span="4">
-        <el-menu class="transparent-header-side" :router=true menu-trigger="click" mode="horizontal" active-text-color="#5FB878">
+        <el-menu class="transparent-header-side" :router=true menu-trigger="click" mode="horizontal"
+                 active-text-color="#5FB878">
 
           <template v-if="!user.login">
             <el-menu-item index="/signin">
@@ -44,17 +46,21 @@
 
           <template v-else>
             <el-col :span="4" class="userinfo">
-              <el-dropdown trigger="click">
-                <div style="padding-left: 20px;">
-                  <el-avatar :size="60" @error="errorHandler"></el-avatar>
-                  <img class="me-header-picture" :src="user.avatar" />
-                </div>
-                <el-dropdown-menu slot="dropdown">
-                  <!--<el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>-->
-                  <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
-                  <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <el-menu-item>
+                <el-dropdown trigger="click">
+                  <div style="padding-left: 20px;">
+                    <el-avatar :size="60" @error="errorHandler"></el-avatar>
+                    <img class="me-header-picture" :src="user.avatar"/>
+                  </div>
+                  <el-dropdown-menu slot="dropdown">
+                    <!--<el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>-->
+                    <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
+                    <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <span>{{ user.account }}</span>
+              </el-menu-item>
+
             </el-col>
           </template>
         </el-menu>
@@ -65,7 +71,8 @@
 </template>
 
 <script>
-  import {getToken,removeToken} from '@/request/token'
+  import {getToken, removeToken} from '@/request/token'
+
   export default {
     name: 'BaseHeader',
     props: {
@@ -83,8 +90,9 @@
         let login = this.$store.state.account.length !== 0
         // let login = getToken()
         let avatar = this.$store.state.avatar
+        let account = this.$store.state.account
         return {
-          login, avatar
+          login, avatar, account
         }
       }
     },
@@ -92,16 +100,6 @@
       errorHandler() {
         return true
       },
-      // logout() {
-      //   let that = this
-      //   this.$store.dispatch('logout').then(() => {
-      //     this.$router.push({path: '/'})
-      //   }).catch((error) => {
-      //     if (error !== 'error') {
-      //       that.$message({message: error, type: 'error', showClose: true});
-      //     }
-      //   })
-      // }
       logout: function () {
         let _this = this
         this.$confirm('<i>欲问后期何日是，寄书应见雁南征。</i>', '确认退出？', {
@@ -119,15 +117,22 @@
 </script>
 
 <style>
-  .transparent-header-side{
+  .transparent-header-side {
     background-color: rgba(0, 0, 0, 0);
+    border-bottom-width: 0px;
   }
+
+  .navigation {
+    height: 59px;
+  }
+
   .el-header {
     position: fixed;
     z-index: 1024;
     min-width: 100%;
     /*box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);*/
   }
+
   .userinfo {
     text-align: right;
     padding-right: 35px;

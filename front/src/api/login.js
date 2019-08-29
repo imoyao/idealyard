@@ -11,7 +11,7 @@ export function requestLogin(account, password) {
     method: 'post',
     auth:data,
     // 这里是重点，因为对配置不熟悉搞了好久。`auth` 表示应该使用 HTTP 基础验证，并提供凭据
-    // 这将设置一个 `Authorization` 头，覆写掉现有的任意使用 `headers` 设置的自定义 `Authorization`头
+    // 将设置一个 `Authorization` 头，覆写掉现有的任意使用 `headers` 设置的自定义 `Authorization`头
     // auth: {
     //   username: 'janedoe',
     //   password: 's00pers3cret'
@@ -42,11 +42,16 @@ export function reqUserInfo() {
   })
 }
 
-export function register(account, nickname, password) {
+export function register(userInfo) {
+  let account = userInfo.account
+  let email = userInfo.email
+  let password = userInfo.password
+  let rePassword = userInfo.rePassword
   const data = {
     account,
-    nickname,
-    password
+    email,
+    password,
+    rePassword
   }
   return request({
     url: '/register',

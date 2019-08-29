@@ -25,7 +25,7 @@ class GetCategoryCtrl:
         """
         category_data = QueryComponent.category_for_post(category_id)
         post_data = Article.query.filter_by(category_id=category_id).all()
-        # TODO: 如果需要返回文章详情，此处扩写
+        # 如果需要返回文章详情，此处扩写
         articles = [data.post_id for data in post_data]
         category_data['articles'] = articles
         category_data['article_counts'] = len(post_data)

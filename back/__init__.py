@@ -3,7 +3,6 @@
 
 from flask import Flask
 from flask_cors import CORS
-from werkzeug.utils import import_string
 from flask_migrate import Migrate
 from flask_uploads import configure_uploads, patch_request_class
 
@@ -11,14 +10,11 @@ from back.api_1_0 import api, auth, posts, users, tags, archives, categories, co
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
-from back import api_1_0, mains
+from back.api_1_0 import api_bp
+from back.main import main_bp
+from back.utils.flask_logger import register_logger
 
-BLUEPRINTS = [
-    'mains:bp',  # add bp here
-    'api_1_0:api_bp',
-]
-
-cors = CORS(resources=r'/*')
+cors = CORS(resources={r"/api/*": {"origins": "*"}})
 
 
 def add_api():
@@ -46,23 +42,33 @@ def add_api():
     # api.add_resource(Setpwd, '/api/password', )
 
 
+def add_blueprints(app):
+    """
+    添加蓝图
+    :param app:
+    :return:
+    """
+    app.register_blueprint(api_bp)
+    app.register_blueprint(main_bp)
+
+
 def create_app(config_name):
-    app = Flask(__name__, static_folder="../static", template_folder="..")
+    # app = Flask(__name__, static_folder="../static", template_folder="..")
+    app = Flask(__name__, static_folder="../dist/static", template_folder="../dist")
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     # Load extensions
+    register_logger(app)
     cors.init_app(app)
     db.init_app(app)
     migrate = Migrate(app, db)  # 在db对象创建之后调用！
     configure_uploads(app, uploads.image_upload)  # configure_uploads(app, [files, photos])
-    patch_request_class(app, size=None)     # 防止用户上传过大文件导致服务器空间不足，加此自动引发HTTP错误。
+    patch_request_class(app, size=None)  # 防止用户上传过大文件导致服务器空间不足，加此自动引发HTTP错误。
     add_api()
     # api.init_app需要写在add_api()之后
     api.init_app(app)
     # Load blueprints
-    for bp_name in BLUEPRINTS:
-        bp = import_string(bp_name)
-        app.register_blueprint(bp)
+    add_blueprints(app)
     return app
 
 

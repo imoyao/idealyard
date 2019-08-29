@@ -50,7 +50,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         reqUserInfo().then(data => {
           if (data.data) {
-            commit('SET_ACCOUNT', data.data.account)
+            // TODO:此处需要整理或者更好处理
+            let account = data.data.account || data.data.nickname
+            commit('SET_ACCOUNT', account)
             commit('SET_NAME', data.data.nickname)
             commit('SET_AVATAR', data.data.avatar)
             commit('SET_ID', data.data.id)
@@ -100,7 +102,8 @@ export default new Vuex.Store({
     },
     register({commit}, user) {
       return new Promise((resolve, reject) => {
-        register(user.account, user.nickname, user.password).then((data) => {
+        register(user).then((data) => {
+          // TODO:此处是否设置token?
           commit('SET_TOKEN', data.data['token'])
           setToken(data.data['token'])
           resolve()

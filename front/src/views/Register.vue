@@ -1,24 +1,44 @@
 <template>
   <div id="register" v-title data-title="注册  - 别院牧志">
-    <!--<video preload="auto" class="me-video-player" autoplay="autoplay" loop="loop">
-          <source src="../../static/vedio/sea.mp4" type="video/mp4">
-      </video>-->
 
     <div class="me-login-box me-login-box-radius">
-      <h1>别院牧志 注册</h1>
+      <h1>注册</h1>
 
       <el-form ref="userForm" :model="userForm" :rules="rules">
+        <el-form-item prop="email">
+          <el-input placeholder="邮箱地址" v-model="userForm.email"></el-input>
+        </el-form-item>
+
         <el-form-item prop="account">
           <el-input placeholder="用户名" v-model="userForm.account"></el-input>
         </el-form-item>
 
-        <el-form-item prop="nickname">
-          <el-input placeholder="昵称" v-model="userForm.nickname"></el-input>
-        </el-form-item>
+        <!--<el-form-item prop="nickname">-->
+        <!--<el-input placeholder="昵称" v-model="userForm.nickname"></el-input>-->
+        <!--</el-form-item>-->
 
         <el-form-item prop="password">
-          <el-input placeholder="密码" v-model="userForm.password"></el-input>
+          <el-input type="password" placeholder="密码" v-model="userForm.password"></el-input>
         </el-form-item>
+
+        <el-form-item prop="rePassword">
+          <el-input type="password" placeholder="重复密码" v-model="userForm.rePassword"></el-input>
+        </el-form-item>
+
+        <!--<div>-->
+        <!--<router-link to="/signin" @click.native="click" style="color: #67c23a;font-size: 0.75rem;margin-left: 5px;margin-bottom: 15px;float:right">-->
+        <!---->
+        <!--</router-link>-->
+        <!--</div>-->
+        <div class="form-text">
+          <p>&nbsp;
+            <!--<span @click="toResetPw"-->
+            <!--class="flr-link"><strong>找回密码   </strong></span>-->
+            <!--&nbsp;&nbsp;&nbsp;-->
+            <span @click="toSignin"
+                  class="flr-link">已有账号？<strong>立即登录</strong></span>
+          </p>
+        </div>
 
         <el-form-item size="small" class="me-login-button">
           <el-button type="primary" @click.native.prevent="register('userForm')">注册</el-button>
@@ -26,9 +46,9 @@
       </el-form>
 
       <div class="me-login-design">
-        <p>Designed by
+        <p>Powered by
           <strong>
-            <router-link to="/" class="me-login-design-color">别院牧志</router-link>
+            <router-link to="/" class="me-login-design-color">IMOYAO</router-link>
           </strong>
         </p>
       </div>
@@ -43,13 +63,46 @@
   export default {
     name: 'Register',
     data() {
+      let pwEqual = (rule, value, callback) => {
+        if (!(this.userForm.password === this.userForm.rePassword)) {
+          callback('两次填写的密码不一致')
+        } else {
+          callback() // 没有此处验证通过也不执行
+        }
+      }
+      let prettyPw = (rule, value, callback) => {
+        // - 6-16 characters
+        // - must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number
+        // - Can contain special characters
+        // let pattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
+        let pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,16}$/
+        if (!(pattern.test(value))) {
+          callback('必须包含数字、大小写字母')
+        } else {
+          callback()
+        }
+      }
       return {
         userForm: {
+          email: '',
           account: '',
           nickname: '',
-          password: ''
+          password: '',
+          rePassword: ''
         },
         rules: {
+          email: [
+            {
+              required: true, //是否必填
+              message: '请输入邮箱地址', //错误提示信息
+              trigger: 'blur' //检验方式（blur为鼠标点击其他地方，）
+            },
+            {
+              type: 'email',  //要检验的类型（number，email，date等）
+              message: '请输入正确的邮箱地址',
+              trigger: ['blur', 'change']   //change为检验的字符变化的时候
+            }
+          ],
           account: [
             {required: true, message: '请输入用户名', trigger: 'blur'},
             {max: 10, message: '不能大于10个字符', trigger: 'blur'}
@@ -60,18 +113,26 @@
           ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
-            {max: 10, message: '不能大于10个字符', trigger: 'blur'}
+            {max: 16, message: '不能大于 16 个字符', trigger: 'blur'},
+            {min: 6, message: '不能小于 6 个字符', trigger: 'blur'},
+            // {validator: prettyPw, trigger: 'blur'}
+          ],
+          rePassword: [
+            {required: true, message: '请输入确认密码', trigger: 'blur'},
+            {validator: pwEqual, trigger: 'blur'}
           ]
         }
 
       }
     },
     methods: {
+      toSignin() {
+        this.$router.push('/signin')
+      },
       register(formName) {
         let that = this
         this.$refs[formName].validate((valid) => {
           if (valid) {
-
             that.$store.dispatch('register', that.userForm).then(() => {
               that.$message({message: '注册成功 快写文章吧', type: 'success', showClose: true});
               that.$router.push({path: '/'})
@@ -93,6 +154,18 @@
 </script>
 
 <style scoped>
+  .form-text {
+    color: #67c23a;
+    font-size: 0.75rem;
+    margin-left: 5px;
+    margin-bottom: 15px;
+  }
+
+  .flr-link {
+    cursor: pointer;
+    float: right;
+  }
+
   #login {
     min-width: 100%;
     min-height: 100%;
@@ -113,7 +186,7 @@
   .me-login-box {
     position: absolute;
     width: 300px;
-    height: 320px;
+    height: 400px;
     background-color: white;
     margin-top: 150px;
     margin-left: -180px;
