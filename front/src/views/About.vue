@@ -17,26 +17,14 @@
               </div>
 
             </div>
-            <el-button
-              v-if="this.article.author.id == this.$store.state.id"
-              @click="editArticle()"
-              style="position: absolute;left: 60%;"
-              size="mini"
-              round
-              icon="el-icon-edit">编辑
-            </el-button>
+
           </div>
           <div class="me-view-content">
             <markdown-editor :editor=article.editor></markdown-editor>
           </div>
-          <!--TODO:此处使用分割线不成功-->
-          <div class="me-view-end">
-            <el-alert
-              title="文章End..."
-              type="success"
-              center
-              :closable="false">
-            </el-alert>
+
+          <div>
+            <el-divider><span>正文结束</span></el-divider>
           </div>
 
           <div class="me-view-tag">
@@ -55,6 +43,15 @@
               {{article.category.categoryname}}
             </el-button>
           </div>
+          <div class="me-view-tag">
+            更新于：
+            <el-tag type="warning">{{article.updateDate | format}}</el-tag>
+          </div>
+          <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
+            <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+            <!--<el-button @click="btnVisable()" size="mini" type="primary" icon="el-icon-share" plain></el-button>-->
+            <el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          </el-button-group>
 
           <div class="me-view-comment">
             <div class="me-view-comment-write">
@@ -109,7 +106,7 @@
 <script>
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import CommmentItem from '@/components/comment/CommentItem'
-  import {viewArticle,patchCount} from '@/api/article'
+  import {viewArticle, identiferArticle, patchCount, identiferCount, deleteArticle, reqPostid} from '@/api/article'
   import {reqCommentsByArticle, publishComment} from '@/api/comment'
 
   import default_avatar from '@/assets/img/default_avatar.png'
@@ -117,25 +114,31 @@
   export default {
     name: 'About',
     created() {
+      this.getPostId().then(
+        this.getArticle()
+      )
       this.addReadCount()
-      this.getArticle()
+      this.btnVisable()
     },
     watch: {
       '$route': 'getArticle'
     },
     data() {
       return {
+        visable: Boolean,
         viewCount: 0,
+        postId: 20,
         article: {
           id: String,
           identifier: String,
+          slug: String,
           title: '',
           commentCounts: 0,
           viewCounts: 0,
           summary: '',
           author: {},
           tags: [],
-          category:{},
+          category: {},
           createDate: '',
           editor: {
             value: '',
@@ -165,12 +168,31 @@
       }
     },
     methods: {
+      getPostId() {
+        return new Promise((resolve, reject) => {
+          let identifier = this.$route.params.identifier
+          reqPostid(identifier).then((data) => {
+            this.postId = data.data.postId
+            resolve()
+          }).catch((error) => {
+            reject(error)
+          })
+        })
+      },
       // 统计+1
       addReadCount(){
-        let postId = 20
-        patchCount(postId).then(data => {
-          this.viewCount = data.data.count
-        })
+        let that = this
+        if (that.postId){
+          patchCount(that.postId).then(data => {
+            this.viewCount = data.data.count
+          })
+        }else{
+          let postIdentifier = 19930126
+          identiferCount(postIdentifier).then(data => {
+            this.viewCount = data.data.count
+          })
+        }
+
       },
       tagOrCategory(type, id) {
         this.$router.push({path: `/${type}/${id}`})
@@ -178,9 +200,35 @@
       editArticle() {
         this.$router.push({path: `/write/${this.article.id}`})
       },
+      delArticle() {
+        this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let postId = this.article.id
+          let authorId = this.article.author.id
+          deleteArticle(postId, authorId).then(data => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.$router.push({path: '/'})
+          }).catch(error => {
+            if (error !== 'error') {
+              this.$message({type: 'error', message: '文章删除失败', showClose: true})
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       getArticle() {
         let that = this
-        viewArticle(20).then(data => {
+        viewArticle(that.postId).then(data => {
           Object.assign(that.article, data.data)
           that.article.editor.value = data.data.body.content
 
@@ -197,7 +245,6 @@
           return;
         }
         that.comment.article.id = that.article.id
-
         publishComment(that.comment).then(data => {
           that.$message({type: 'success', message: '评论成功', showClose: true})
           that.comments.unshift(data.data)
@@ -221,6 +268,9 @@
       },
       commentCountsIncrement() {
         this.article.commentCounts += 1
+      },
+      btnVisable() {
+        this.visable = this.article.author.id === this.$store.state.id
       }
     },
     components: {
@@ -239,9 +289,6 @@
   }
 </script>
 
-<!--<style scoped>-->
-
-<!--</style>-->
 <style>
   .me-view-body {
     margin: 100px auto 140px;
@@ -262,7 +309,6 @@
   }
 
   .me-view-author {
-    /*margin: 30px 0;*/
     margin-top: 30px;
     vertical-align: middle;
   }
@@ -340,7 +386,15 @@
     font-weight: bold;
     font-size: 14px;
     font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
+  }
 
+  .el-divider__text {
+    position: absolute;
+    background-color: #fff;
+    padding: 0 20px;
+    font-weight: 500;
+    color: #cc2a41;
+    font-size: 14px;
   }
 
 </style>
