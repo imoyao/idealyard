@@ -1,6 +1,6 @@
 <template>
   <el-card class="more-section">
-    <section>
+    <section style="margin-left:auto;margin-right:auto;">
       <div class="more-list">
         <router-link class="item" to="/about">关于</router-link>
         <el-divider direction="vertical"></el-divider>
@@ -27,7 +27,7 @@
       </ul>
       <el-divider></el-divider>
       <ul class="more-list">
-        <li class="item"><span><i class="iconfont icon-heart-fill icon-m-right declare"></i>你如今的气质里，藏着你走过的路、读过的书和爱过的人。</span></li>
+        <li class="item"><span><i class="iconfont icon-heartbeat icon-m-right declare"></i>就命运而言，休论公道。</span></li>
       </ul>
     </section>
   </el-card>
