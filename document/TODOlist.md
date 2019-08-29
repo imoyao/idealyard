@@ -1,25 +1,34 @@
 
 ## 前端
 
-借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。     
+借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。
+     
 [预览地址](http://shiminghui.top:8000/)
 
+### BUGs
 - [x] 新建文章报错
 - [x] 首页无限滚动时：Duplicate keys detected: 'xxxx'. This may cause an update error.
-- [ ] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
-- [x] 记住密码
 - [x] 用户注册页面
     - [x] 用户注册成功，但是跳转首页之后显示问题
 - [x] 用户写文章时，作者不是当前登录用户
+- [ ] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
+- [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
+
+
+### TODO
+- [x] 标签云
+~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~
+~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~
+~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
+- [x] 记住密码
 - [ ] 找回密码
 - [ ] 需要增加用户详情页，编辑用户信息
-- [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
 - [ ] 标签、分类页面，item数量为0时，点击事件 disable
 
 ## 后端
 
-### BUGs:
+### BUGs
 - [x] 首页摘要信息获取错误
 - [x] 概览页（index）显示
 - [x] 更新文章，对原有标签删除时，不成功，但新加正常
@@ -67,11 +76,9 @@
 - [x] 博客作者自己删除
 - [x] slug选项在更新文章时应该是不可见的（url确定之后不可修改！）
 - [x] 链接由id变成数字和slug的组合
-- [x] 标签云
-~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~
-~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~
-~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
-- [x] 本次/上次提交中header样式需要调整
+- [ ] 使用celery备份博客
+    1. 每创建一篇文章；自动生成`xxxx.md`用于静态博客；
+    2. 每个月备份数据库；将数据库通过邮件发送到本人邮箱；
 
 ---
 优先级中等

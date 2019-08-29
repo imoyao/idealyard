@@ -11,11 +11,30 @@ module.exports = {
   BASE_API: '"http://192.168.116.21:5000/api"'  // TODO:修改为真实API地址
 }
 ```
-3. build文件
+3. 设置`router`为`history`模式
+```javascript
+// path: front/src/router/index.js:16
+
+const router = new VueRouter({
+  // https://router.vuejs.org/zh/guide/essentials/history-mode.html#html5-history-%E6%A8%A1%E5%BC%8F
+  // mode: 'history',
+  routes: []
+})
+```
+4. build文件
 ```bash
 npm run build
 ```
+5. 上传服务器
+压缩`dist`目录生成tar包并解压到前端目录（此处由用户自定义，或者根据配置文件默认放到前端目录中）
+6. 解压并赋权
+```bash
+sudo unzip -d ./dist dist.zip       # 根据压缩包格式决定使用命令
+sudo chown -R root:root dist        # 根据nginx中的配置确定
+```
+
 ## 后端
+
 1. 安装依赖
 ```bash
 pipenv install
@@ -41,7 +60,7 @@ systemctl status nginx      # 查看状态
 ### 配置
 修改`confs/nginx/conf.d/app.conf`为你`build`之后`dist`目录所在路径。
 
-```bash
+```conf
 location / {
  root /home/imoyao/iyblog/front/dist;       # 修改此处，按需修改为dist目录
  try_files $uri $uri/ /index.html last;
@@ -85,7 +104,7 @@ stdout_logfile=/var/log/app/app_out.log
 **注意**：
 - 上面的配置在`ubuntu`中以`.conf`结尾，在`CentOS`中以`.ini`结尾。
 
-- 配置中的`command`应用路径最好使用绝对路径
+- 配置中的`command`应用路径最好使用绝对路径。
 
 - 相关命令
 
