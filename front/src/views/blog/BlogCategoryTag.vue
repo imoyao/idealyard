@@ -58,7 +58,7 @@
         if(this.$route.params.type === 'tag'){
           return `${this.ct.tagname} - 标签  - 别院牧志`
         }
-        return `${this.ct.categoryname} - 文章分类  - 别院牧志`
+        return `${this.ct.categoryname} - 分类  - 别院牧志`
       }
     },
     methods: {

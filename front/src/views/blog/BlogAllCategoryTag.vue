@@ -5,7 +5,7 @@
         <el-tabs v-model="activeName">
           <el-tab-pane label="分类" name="category">
             <ul class="me-allct-items">
-              <li v-for="c in categories" @click="view(c.id)" :key="c.id" class="me-allct-item">
+              <li v-for="c in categories" @click="view(c.id,c.article_counts)" :key="c.id" class="me-allct-item">
                 <div class="me-allct-content">
                   <a class="me-allct-info">
                     <img class="me-allct-img" :src="c.avatar?c.avatar:defaultAvatar"/>
@@ -22,7 +22,7 @@
           </el-tab-pane>
           <el-tab-pane label="标签" name="tag">
             <ul class="me-allct-items">
-              <li v-for="t in tags" @click="view(t.id)" :key="t.id" class="me-allct-item">
+              <li v-for="t in tags" @click="view(t.id,t.article_counts)" :key="t.id" class="me-allct-item">
                 <div class="me-allct-content">
                   <a class="me-allct-info">
                     <img class="me-allct-img" :src="t.avatar?t.avatar:defaultAvatar"/>
@@ -81,8 +81,17 @@
       }
     },
     methods: {
-      view(id) {
-        this.$router.push({path: `/${this.currentActiveName}/${id}`})
+      view(id,itemCount) {
+        if(itemCount > 0){
+          this.$router.push({path: `/${this.currentActiveName}/${id}`})
+        }else{
+          this.$message({
+            message: '该技能树暂未点亮，请探索其他领域哦~',
+            type: 'warning',
+            center: true,
+            offset: 55
+          });
+        }
       },
       getCategorys() {
         let that = this

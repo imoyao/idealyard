@@ -378,9 +378,11 @@
   }
 
   blockquote {
+    background-color: #fff6f7;
+    border-radius: 4px;
+    border-left: 5px solid #fe6c6f !important;
     margin: 1rem 10px !important;
     padding: .5em 10px !important;
-    background: inherit;
     color: #cc2a41 !important;
     quotes: "\201C" "\201D" "\2018" "\2019" !important;
     font-weight: bold;
