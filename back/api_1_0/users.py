@@ -7,7 +7,7 @@ from flask_restful import Resource
 
 from back.models import User
 from .utils import jsonify_with_args
-from back.controller.authctrl import token_auth, PostUserCtrl,generate_auth_token
+from back.controller.authctrl import token_auth, PostUserCtrl, generate_auth_token
 
 user_ctrl = PostUserCtrl()
 

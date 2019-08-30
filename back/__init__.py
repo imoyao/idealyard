@@ -23,8 +23,12 @@ def add_api():
     :return:
     """
     api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
+
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
+    api.add_resource(auth.EmailApi, '/api/emails')
+    api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
+
     api.add_resource(posts.PostApi, '/api/articles')
     api.add_resource(posts.PostDetail, '/api/articles/<int:post_id>')
     api.add_resource(posts.IdentifyPostDetail, '/api/identifiers/<int:identifier>')
@@ -35,11 +39,10 @@ def add_api():
     # api.add_resource(tags.TagDetail, '/api/tags/<int:post_id>')
     api.add_resource(archives.Archives, '/api/archives')
     api.add_resource(comments.Comments, '/api/comments', '/api/tags/<int:comment_id>')
+
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
-    api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
     api.add_resource(uploads.UploadImage, '/api/images')
 
-    # api.add_resource(Setpwd, '/api/password', )
 
 
 def add_blueprints(app):

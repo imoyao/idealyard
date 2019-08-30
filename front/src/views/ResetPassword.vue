@@ -1,8 +1,6 @@
 <!--此界面主要仿照豆瓣写的-->
 <template>
   <div id="account">
-
-
     <div id="db-nav-sns" class="nav">
       <div class="nav-wrap">
         <div class="nav-primary">
@@ -21,7 +19,7 @@
 
     <div class="account-wrap">
       <div class="account-main">
-        <h2 class="account-body-title login-label-email">
+        <h2 class="account-body-title">
           <span class="account-body-text">找回密码</span>
         </h2>
 
@@ -40,7 +38,7 @@
               <el-form-item
                 label="注册邮箱"
                 prop="email"
-                :rules="[{ required: true, message: '请输入注册邮箱地址'},{ type: 'email', message: '请输入正确的邮箱地址'}]">
+                :rules="emailRules">
                 <el-input class="account-form-field" type="email" v-model.number="emailValidateForm.email"
                           autocomplete="off"></el-input>
               </el-form-item>
@@ -48,7 +46,7 @@
               <el-form-item>
                 <el-button type="primary" @click="submitEmail('emailValidateForm')">下一步</el-button>
                 <p class="online-apply">邮箱不可用？<a target="_blank" data-action="getpwd_noemail"
-                                                 href="/passport/complaint?type=reset_password" style="color:#67c23a">联系博主</a>
+                                                 href="mailto:immoyao@gmail.com" style="color:#67c23a">联系博主</a>
                 </p>
               </el-form-item>
             </el-form>
@@ -118,34 +116,64 @@
 </template>
 
 <script>
+  import {fetchCheckEmail, reqCaptcha} from '@/api/login'
+
   export default {
     name: 'ResetPassword',
     data() {
+      let checkEmail = (rule, value, callback) => {
+        setTimeout(() => {
+          this.syncCheckEmail(value, callback)
+        }, 1000);
+      };
       return {
+        emailRules: [
+          {required: true, message: '请输入注册邮箱地址'},
+          {type: 'email', message: '请输入正确的邮箱地址'},
+          {validator: checkEmail, trigger: 'blur'}
+        ],
         active: 0,
-        emailValidateForm: {
-          email: ''
-        },
+        emailValidateForm:
+          {
+            email: ''
+          }
+        ,
         verificationCodeForm: {
           VerificationCode: ''
-        },
+        }
+        ,
         newPasswordForm: {
           newPassword: ''
         }
       };
     },
     methods: {
-      goBack() {
-        console.log('go back');
-      },
+      // 异步校验
+      syncCheckEmail(email, callback) {
+        fetchCheckEmail({email}).then((res) => {
+          if (res.code === 0 && res.status === '404') {
+            return callback(new Error('账户不存在'))
+          } else {
+            return callback()
+          }
+        })
+      }
+      ,
       submitEmail(emailValidateForm) {
         this.$refs[emailValidateForm].validate((valid) => {
           if (valid) {
-            // TODO: 验证用户邮箱 此处要使用异步校验
-            alert('submit!');
-            this.active = 1
+            let email = this.emailValidateForm.email
+            reqCaptcha(email).then((data) => {
+              // https://blog.csdn.net/fabulous1111/article/details/79377654
+              // TODO：发送验证码
+              this.active = 1
+            }).catch((error) => {
+              if (error !== 'error') {
+                // TODO
+              }
+            })
+
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -180,8 +208,6 @@
         });
       },
       // see also:https://blog.csdn.net/weixin_40098371/article/details/88027949
-
-
     }
   }
 </script>
@@ -194,13 +220,16 @@
   }
 
   #db-nav-sns .nav-primary {
-    width: 1040px;
+    width: 100%;
+    height: 60px;
     margin: 0 auto;
     overflow: hidden;
     padding: 22px 0 20px;
     zoom: 1;
   }
-
+  .account-body-text{
+    font-size: 0.8em;
+  }
   .site-name {
     display: inline-block;
     font-size: 1em;
@@ -215,10 +244,6 @@
   .me-title img {
     max-height: 2.4rem;
     max-width: 100%;
-  }
-
-  .el-step__icon {
-    background: #f5f5f5 !important;
   }
 
   .account-wrap {

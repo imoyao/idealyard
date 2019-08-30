@@ -59,3 +59,11 @@ export function register(userInfo) {
     data
   })
 }
+
+export function fetchCheckEmail(email) {
+  return request({
+    url: '/emails',
+    method: 'get',
+    params: email
+  })
+}

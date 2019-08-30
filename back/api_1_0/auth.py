@@ -15,7 +15,9 @@ from back.models import User
 from . import api_bp
 from back.api_1_0.errors import unauthorized_error, forbidden
 from .utils import jsonify_with_args
-from back.controller.authctrl import basic_auth, multi_auth, generate_auth_token
+from back.controller.authctrl import basic_auth, multi_auth, PostUserCtrl, generate_auth_token
+
+user_ctrl = PostUserCtrl()
 
 
 @basic_auth.error_handler
@@ -128,3 +130,26 @@ class ResetPassword(Resource):
         username = g.user.username
         return jsonify({'msg': f'Hello, {username}! You have the right to reset password.',
                         'data': username})
+
+
+class EmailApi(Resource):
+    """
+    验证邮箱
+    """
+
+    def __init__(self):
+        self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
+
+    def get(self):
+        args = request.args
+        if args:
+            email = args.get('email', '')
+            if user_ctrl.email_exists(email):
+                return jsonify_with_args(self.response_obj, 200)
+            self.response_obj = {'status': '404', 'success': False, 'code': 0, 'data': None,
+                                 'msg': 'The email address has not register for this site.'}
+            return jsonify_with_args(self.response_obj, 200)
+        else:
+            self.response_obj['code'] = 1
+            self.response_obj['success'] = False
+            return jsonify_with_args(self.response_obj, 400)
