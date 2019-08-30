@@ -141,7 +141,7 @@
       submitEmail(emailValidateForm) {
         this.$refs[emailValidateForm].validate((valid) => {
           if (valid) {
-            // TODO: 验证用户邮箱
+            // TODO: 验证用户邮箱 此处要使用异步校验
             alert('submit!');
             this.active = 1
           } else {
