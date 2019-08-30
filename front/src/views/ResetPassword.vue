@@ -34,7 +34,7 @@
 
         <el-row class="active0 account-form" v-show="active === 0">
           <div class="account-form-raw">
-            <el-form class="account-form-label" :model="emailValidateForm" ref="emailValidateForm">
+            <el-form class="account-form-label" status-icon :model="emailValidateForm" ref="emailValidateForm">
               <el-form-item
                 label="注册邮箱"
                 prop="email"
