@@ -20,7 +20,8 @@
     "vue": "^2.6.10",
     "vue-router": "^3.0.1",
     "vuewordcloud": "^18.7.11",
-    "vuex": "^3.1.1"
+    "vuex": "^3.1.1",
+    "webpack-dev-server": "^2.9.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -66,8 +67,7 @@
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-dev-server": "^3.1.11",
+    "webpack-bundle-analyzer": "^2.9.0",
     "webpack-merge": "^4.1.0"
   },
   "engines": {

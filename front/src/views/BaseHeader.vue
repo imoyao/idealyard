@@ -4,7 +4,8 @@
 
       <el-col :span="4" class="me-header-left">
         <router-link to="/" class="me-title">
-          <img src="../assets/img/logo.png"/>
+          <img src="../assets/img/logo.png" alt="site-logo">
+          <h1 class="site-name">别院牧志</h1>
         </router-link>
       </el-col>
 
@@ -55,7 +56,8 @@
                   <el-dropdown-menu slot="dropdown">
                     <!--<el-dropdown-item><i class="iconfont icon-bell icon-m-right"></i>我的消息</el-dropdown-item>-->
                     <el-dropdown-item><i class="iconfont icon-icon-test icon-m-right"></i>设置</el-dropdown-item>
-                    <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出</el-dropdown-item>
+                    <el-dropdown-item divided @click.native="logout"><i class="iconfont icon-logout icon-m-right"></i>退出
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <span>{{ user.account }}</span>
@@ -124,6 +126,12 @@
 
   .navigation {
     height: 59px;
+  }
+
+  .site-name {
+    display: inline-block;
+    font-size: 1em;
+    color: #5FB878
   }
 
   .el-header {
