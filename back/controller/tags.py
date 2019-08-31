@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Created by Administrator at 2019/6/29 15:23
+# Created by imoyao at 2019/6/29 15:23
 
 from back.controller import MakeupPost
 from back.models import Tag, db

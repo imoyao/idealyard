@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Created by Administrator at 2019/6/29 22:28
+# Created by imoyao at 2019/6/29 22:28
 from back.controller import QueryComponent
 from back.models import Article, Category
 from back.models import db
