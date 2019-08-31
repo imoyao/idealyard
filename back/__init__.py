@@ -13,6 +13,8 @@ from .models import db
 from back.api_1_0 import api_bp
 from back.main import main_bp
 from back.utils.flask_logger import register_logger
+from back.utils.mail import mail
+from back.utils.redis_util import redis_store
 
 cors = CORS(resources={r"/api/*": {"origins": "*"}})
 
@@ -27,6 +29,7 @@ def add_api():
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
     api.add_resource(auth.EmailApi, '/api/emails')
+    api.add_resource(auth.Verification, '/api/verifications')
     api.add_resource(users.UserApi, '/api/register', '/api/users', '/api/users/<int:user_id>')
 
     api.add_resource(posts.PostApi, '/api/articles')
@@ -42,7 +45,6 @@ def add_api():
 
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(uploads.UploadImage, '/api/images')
-
 
 
 def add_blueprints(app):
@@ -66,6 +68,8 @@ def create_app(config_name):
     db.init_app(app)
     migrate = Migrate(app, db)  # 在db对象创建之后调用！
     configure_uploads(app, uploads.image_upload)  # configure_uploads(app, [files, photos])
+    mail.init_app(app)
+    redis_store.init_app(app)
     patch_request_class(app, size=None)  # 防止用户上传过大文件导致服务器空间不足，加此自动引发HTTP错误。
     add_api()
     # api.init_app需要写在add_api()之后

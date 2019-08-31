@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Created by Administrator at 2019/8/31 0:50
+# Created by imoyao at 2019/8/31 0:50
 """用于生成随机验证码"""
 import string
 import random

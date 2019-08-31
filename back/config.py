@@ -28,6 +28,20 @@ class Config:
     # 上传图片
     UPLOADED_IMAGES_DEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/images')
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
+    # 邮件服务器设置
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    # 163不支持STARTTLS
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = ('imoyao', os.getenv('MAIL_USERNAME'))
+    # redis 配置
+    # REDIS_URL = "redis://:password@localhost:6379/0"
+    REDIS_URL = "redis://localhost:6379/0"
+    # REDIS_HOST = 'localhost'
+    # REDIS_PORT = 6379
+    # REDIS_DB = 0
 
     @staticmethod
     def init_app(app):
@@ -46,7 +60,7 @@ class DevelopmentConfig(Config):
     database = 'iyblog_dev'
     # 1366, "Incorrect string value: '\\xF0\\x9F\\x98\\x83</...' for column 'content_html' at row 1"
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{MySQLConfig.MYSQL_USERNAME}:{MySQLConfig.MYSQL_PASSWORD}' \
-                              f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
+        f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
 
 
 class TestingConfig(Config):

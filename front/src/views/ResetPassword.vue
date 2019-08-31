@@ -82,13 +82,10 @@
             <el-form :model="newPasswordForm" ref="newPasswordForm">
               <el-form-item
                 label="新密码"
-                prop="VerificationCode"
-                :rules="[
-            {required: true, message: '请输入密码', trigger: 'blur'},
+                prop="newPassword"
+                :rules="[{required: true, message: '请输入密码', trigger: 'blur'},
             {max: 16, message: '不能大于 16 个字符', trigger: 'blur'},
-            {min: 6, message: '不能小于 6 个字符', trigger: 'blur'},
-            // {validator: prettyPw, trigger: 'blur'}
-          ]">
+            {min: 6, message: '不能小于 6 个字符', trigger: 'blur'}]">
                 <el-input class="account-form-field" type="password" v-model.number="newPasswordForm.newPassword"
                           autocomplete="off"></el-input>
               </el-form-item>
@@ -116,7 +113,7 @@
 </template>
 
 <script>
-  import {fetchCheckEmail, reqCaptcha} from '@/api/login'
+  import {fetchCheckEmail, sendCaptcha, verificateCaptcha, resetPassword} from '@/api/login'
 
   export default {
     name: 'ResetPassword',
@@ -163,7 +160,8 @@
         this.$refs[emailValidateForm].validate((valid) => {
           if (valid) {
             let email = this.emailValidateForm.email
-            reqCaptcha(email).then((data) => {
+            sendCaptcha(email).then((data) => {
+              console.log(data, '---------sendCaptcha----------')
               // https://blog.csdn.net/fabulous1111/article/details/79377654
               // TODO：发送验证码
               this.active = 1
@@ -181,9 +179,18 @@
       submitVerificationCode(verificationCodeForm) {
         this.$refs[verificationCodeForm].validate((valid) => {
           if (valid) {
-            // TODO: 验证邮箱验证码
-            alert('submit!');
-            this.active = 2
+            let email = this.emailValidateForm.email
+            let captcha = this.verificationCodeForm.VerificationCode
+            verificateCaptcha(email, captcha).then((data) => {
+              console.log(data, '---------sendCaptcha----------')
+              // https://blog.csdn.net/fabulous1111/article/details/79377654
+              // TODO: 验证邮箱验证码
+              this.active = 2
+            }).catch((error) => {
+              if (error !== 'error') {
+                // TODO see resendVerificationCode: repeat function
+              }
+            })
           } else {
             console.log('error submit!!');
             return false;
@@ -191,16 +198,32 @@
         });
       },
       resendVerificationCode() {
-        // TODO:倒计时
-        alert('resend ok')
+        let email = this.emailValidateForm.email
+        sendCaptcha(email).then((data) => {
+          console.log(data, '---------sendCaptcha----------')
+          // https://blog.csdn.net/fabulous1111/article/details/79377654
+          // TODO：发送验证码
+        }).catch((error) => {
+          if (error !== 'error') {
+            // TODO
+          }
+        })
       },
       submitNewPassword(newPasswordForm) {
         this.$refs[newPasswordForm].validate((valid) => {
           if (valid) {
-            // TODO: 更新用户密码
-            alert('submit!');
-            // TODO: 跳转到登录页
-            // this.active = 3
+            let email = this.emailValidateForm.email
+            let newPassword = this.newPasswordForm.newPassword
+            resetPassword(email, newPassword).then((data) => {
+              console.log(data, '---------sendCaptcha----------')
+              // https://blog.csdn.net/fabulous1111/article/details/79377654
+              // TODO: 验证邮箱验证码
+              this.active = 2
+            }).catch((error) => {
+              if (error !== 'error') {
+                // TODO
+              }
+            })
           } else {
             console.log('error submit!!');
             return false;
@@ -227,9 +250,11 @@
     padding: 22px 0 20px;
     zoom: 1;
   }
-  .account-body-text{
+
+  .account-body-text {
     font-size: 0.8em;
   }
+
   .site-name {
     display: inline-block;
     font-size: 1em;

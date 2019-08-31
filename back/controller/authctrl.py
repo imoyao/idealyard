@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/7/18 10:00
+import hashlib
 from flask import current_app, g
 from sqlalchemy import or_
 from itsdangerous import (TimedJSONWebSignatureSerializer
@@ -8,6 +9,13 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 
 from back.models import User, db
+from back.utils.mail import MailSender
+from back.utils.captcha import CaptchaCreator
+from back.utils.redis_util import redis_store
+from back import setting
+
+sender = MailSender()
+captcha_obj = CaptchaCreator()
 
 # 基础认证
 basic_auth = HTTPBasicAuth()
@@ -71,6 +79,55 @@ def verify_token(token):
     return False
 
 
+#
+# class TemporaryPassword:
+#     """
+#     see also:https://www.cnblogs.com/flashBoxer/p/9686059.html
+#     https://www.cnblogs.com/coder2012/p/4309999.html
+#     https://blog.csdn.net/qq_34564957/article/details/81017889
+#     """
+#
+#     def __setattr__(self, verify_email, hash_pw):
+#         """
+#         设置临时密码
+#         :param verify_email:str,
+#         :param hash_pw:str,
+#         :return:bool
+#         """
+#         set_success = redis_store.set(verify_email, hash_pw, ex=setting.TEMPORARY_PW_EXPIRE_SECONDS)
+#         return set_success
+#
+#     def __getattr__(self, verify_email):
+#         """
+#         设置临时密码
+#         :param verify_email:str,
+#         :param hash_pw:str,
+#         :return:bool
+#         """
+#         return redis_store.get(verify_email)
+#
+#     def __delattr__(self, verify_email):
+#         """
+#         设置过期
+#         :param verify_email:
+#         :return:
+#         """
+#         return redis_store.expire(verify_email, -1)
+
+# @property
+# def password(self):
+#     return redis_store.get(verify_email)
+#     # print('获取(get)属性时执行===')
+#
+# @password.setter
+# def password(self, value):
+#     print('设置(set)属性时执行===')
+#
+# @password.deleter
+# def password(self):
+#     print('删除(del)属性时执行===')
+
+
 class PostUserCtrl:
 
     @staticmethod
@@ -96,3 +153,113 @@ class PostUserCtrl:
         db.session.add(user)
         db.session.commit()
         return user
+
+    @staticmethod
+    def new_password(email,password):
+        """
+        创建新用户
+        :param password: str,密码
+        :param email: str,邮箱
+        :return:
+        """
+        user = User.query.filter_by(email=email).one_or_none()
+        if user:
+            new_pw = user.hash_password(password)
+            user.password = new_pw
+            db.session.add(user)
+            db.session.commit()
+        return user
+
+    @staticmethod
+    def gen_captcha():
+        return captcha_obj.shuffle()
+
+    @staticmethod
+    def send_reset_pw_mail(req_ip, captcha, receiver):
+        _subject = '重设别院牧志帐号密码'
+        _body = f'''
+已收到你的密码重设要求，请输入验证码：{captcha}，该验证码 {setting.TEMPORARY_PW_EXPIRE_MINUTES} 分钟内有效。
+本次请求者IP为：{req_ip} ，若非您本人操作，请及时修改登录密码，以保证账户安全。 
+
+感谢对 别院牧志 的支持，再次希望你在 别院牧志 的体验有益和愉快。
+
+-- 别院牧志
+
+(这是一封自动产生的 email ，请勿回复。)
+'''
+        sender.send_mail(_subject, receiver, _body)
+        return 0
+
+    @staticmethod
+    def set_temporary_pw(verify_email, hash_pw):
+        """
+        设置临时密码
+        :param verify_email:str,
+        :param hash_pw:str,
+        :return:bool
+        """
+        set_success = redis_store.set(verify_email, hash_pw, ex=setting.TEMPORARY_PW_EXPIRE_SECONDS)
+        return set_success
+
+    # TODO: see TemporaryPassword
+    @staticmethod
+    def get_temporary_pw(verify_email):
+        """
+        获取临时密码
+        :param verify_email:str,
+        :return:bool
+        """
+        return redis_store.get(verify_email)
+
+    @staticmethod
+    def expire_temporary_pw(verify_email):
+        """
+        密码过期
+        :param verify_email:
+        :return:
+        """
+        return redis_store.expire(verify_email, -1)
+
+    def verificate_temporary_pw(self, verify_email, temporary_pw):
+        # user = User.query.filter_by(email=verify_email).one_or_none()       # TODO: 此处多处使用，可以一处定义
+        hash_pw = self.hash_temporary_pw(temporary_pw)
+        rdb_get = self.get_temporary_pw(verify_email)
+        self.expire_temporary_pw(verify_email)
+        print(rdb_get, hash_pw, '------------------')
+        if rdb_get:
+            str_rdb_get = rdb_get.decode('utf-8')   # byte >>> str
+            print(str_rdb_get, hash_pw, '------------------')
+            return str_rdb_get == hash_pw
+        else:
+            return None  # 密码过期
+
+    @staticmethod
+    def hash_temporary_pw(temporary_pw):
+
+        # TODO：back/utils/text.py:62
+
+        # 创建md5对象
+        hl = hashlib.md5()
+        temporary_pw = str(temporary_pw) if isinstance(temporary_pw, int) else temporary_pw
+        assert isinstance(temporary_pw, str)
+
+        # 此处必须声明encode,若写法为hl.update(str)  报错为： Unicode-objects must be encoded before hashing
+        hl.update(temporary_pw.encode(encoding='utf-8'))
+
+        return hl.hexdigest()
+
+    def reset_pw_action(self, req_ip, verify_email):
+        """
+        更新用户临时密码到 redis 数据库（可设置过期时间），发送认证码邮件
+        :param req_ip:str, 本次操作ip
+        :param verify_email:str, 用户验证邮箱
+        :return:
+        """
+        user = User.query.filter_by(email=verify_email).one_or_none()
+        captcha = self.gen_captcha()
+        hash_pw = self.hash_temporary_pw(captcha)
+        set_success = self.set_temporary_pw(verify_email, hash_pw)
+        if set_success:
+            return self.send_reset_pw_mail(req_ip, captcha, verify_email)
+        else:
+            return 1
