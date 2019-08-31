@@ -28,6 +28,9 @@ Werkzeug = "==0.15.4"
 flask-migrate = "*"
 gevent = "*"
 gunicorn = "*"
+flask-mail = "*"
+redis = "*"
+flask-redis = "*"
 
 [requires]
 python_version = "3.7"

@@ -114,3 +114,14 @@ supervisorctl start all/APP_NAME
 supervisorctl stop all/APP_NAME
 supervisorctl restart all/APP_NAME
 ```
+## 安装 redis
+此处可以参考本人之前的一篇文章：[Linux 下如何安装 Redis？](https://imoyao.github.io/blog/2019-04-11/how-to-install-Redis-on-Linux/)  
+`redisd` 所在目录
+```bash
+/etc/init.d/redisd
+```
+`6379.conf` 所在目录：
+```bash
+/etc/redis/6379.conf
+```
+
