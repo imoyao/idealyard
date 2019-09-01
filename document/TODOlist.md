@@ -1,10 +1,6 @@
 
 ## 前端
 
-借助[此处](https://github.com/shimh-develop/blog-vue-springboot)写好的`Vue`页面。
-     
-[预览地址](http://shiminghui.top:8000/)
-
 ### BUGs
 - [x] 新建文章报错
 - [x] 首页无限滚动时：Duplicate keys detected: 'xxxx'. This may cause an update error.
@@ -17,15 +13,17 @@
 
 ### TODO
 - [x] 标签云
-~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~
-~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~
-~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~
+~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~     
+~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~     
+~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~     
 - [x] 记住密码
 - [x] 标签、分类页面，item数量为0时，点击事件 disable
-- [ ] 找回密码
-    - [ ] 前端异常处理
-    - [ ] tidy code
+- [x] 找回密码
+    - [x] 前端异常处理
+    - [x] tidy code
 - [ ] 用户邮箱验证，如果没有验证，则在首页提示用户去验证，完成验证之后才可以写文章；否则登录也无法进行有效操作。
+   - [x] 消息提示已完成
+   - [ ] 需要完成激活邮箱
     
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
@@ -85,7 +83,7 @@
     - [x] 用户输入一次之后过期；（Redis？~~Celery清除？~~）
     - [x] 通过则设置密码，否则重新发送并重新设置密码；
     - [ ] 发送邮件改为Celery异步
-    - [ ] tidy code
+    - [x] tidy code
     
 - [ ] 使用celery备份博客
     1. 每创建一篇文章；自动生成`xxxx.md`用于静态博客；
