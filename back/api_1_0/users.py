@@ -44,6 +44,7 @@ class UserApi(Resource):
             # TODO:just for test
             data['avatar'] = '/static/user/admin.png'
             data['id'] = user.id
+            data['confirmed'] = user.confirmed
             self.response_obj['data'] = data
             return jsonify(self.response_obj)
         else:

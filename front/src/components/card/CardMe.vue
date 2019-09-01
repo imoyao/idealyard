@@ -55,7 +55,7 @@
         },
         email: {
           title: 'Email',
-          message: 'mailto:immoyao@gmail.com'
+          message: 'mailto:imsantu@126.com'
         }
       }
     },

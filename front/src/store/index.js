@@ -28,6 +28,9 @@ export default new Vuex.Store({
     },
     SET_ID: (state, id) => {
       state.id = id
+    },
+    SET_CONFIRM: (state, confirmed) => {
+      state.confirmed = confirmed
     }
   },
   // 异步操作
@@ -56,11 +59,13 @@ export default new Vuex.Store({
             commit('SET_NAME', data.data.nickname)
             commit('SET_AVATAR', data.data.avatar)
             commit('SET_ID', data.data.id)
+            commit('SET_CONFIRM', data.data.confirmed)
           } else {
             commit('SET_ACCOUNT', '')
             commit('SET_NAME', '')
             commit('SET_AVATAR', '')
             commit('SET_ID', '')
+            commit('SET_CONFIRM', '')
             removeToken()
           }
           resolve(data)

@@ -1,9 +1,16 @@
 <template>
   <div v-title data-title="别院牧志">
     <el-container>
-
       <el-main class="me-articles">
-
+        <el-alert v-show=confirmTip.notConfirmed class="profile-alert"
+          title="未完成账号验证"
+          type="warning">
+          <p class="el-alert__description">
+            暂时无法编写文章，您必须先完成电子邮箱验证
+            <br>
+            您可以使用注册电子邮箱来验证身份，请前往此处进行验证。👉 &nbsp; <a @click="profile" class="profile">个人主页</a>
+          </p>
+        </el-alert>
         <article-scroll-page></article-scroll-page>
 
       </el-main>
@@ -42,7 +49,7 @@
   export default {
     name: 'Index',
     created() {
-      this.getHotArtices()
+      this.getHotArticles()
       this.getNewArtices()
       this.getHotTags()
       this.listArchives()
@@ -55,8 +62,21 @@
         archives: []
       }
     },
+    computed: {
+      confirmTip() {
+        let login = this.$store.state.account.length !== 0
+        let confirmed = this.$store.state.confirmed
+        let notConfirmed = !confirmed && login
+        return {
+          notConfirmed
+        }
+      }
+    },
     methods: {
-      getHotArtices() {
+      profile(){
+        this.$router.push('/profile')
+      },
+      getHotArticles() {
         let that = this
         reqHotArtices().then(data => {
           that.hotArticles = data.data
@@ -133,5 +153,17 @@
 
   .el-card:not(:first-child) {
     margin-top: 20px;
+  }
+
+  .profile-alert{
+    margin-bottom: 15px;
+    border-color: #E6A23C;
+    box-shadow: 0 1px 3px rgba(26,26,26,.1);
+  }
+  .profile{
+    color:#409EFF;
+  }
+  .profile:hover{
+    color:#67c23a;
   }
 </style>

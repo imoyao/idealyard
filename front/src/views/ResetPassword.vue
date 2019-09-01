@@ -46,7 +46,7 @@
               <el-form-item>
                 <el-button type="primary" @click="submitEmail('emailValidateForm')">下一步</el-button>
                 <p class="online-apply">邮箱不可用？<a target="_blank" data-action="getpwd_noemail"
-                                                 href="mailto:immoyao@gmail.com" style="color:#67c23a">联系博主</a>
+                                                 href="mailto:imsantu@126.com" style="color:#67c23a">联系博主</a>
                 </p>
               </el-form-item>
             </el-form>

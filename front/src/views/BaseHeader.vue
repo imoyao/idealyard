@@ -22,7 +22,7 @@
           <!--<el-menu-item index="/messageBoard">反馈</el-menu-item>-->
 
           <el-col :span="2" :offset="6">
-            <el-menu-item index="/write"><i class="el-icon-edit"></i>写文章</el-menu-item>
+            <el-menu-item @click="userWrite"><i class="el-icon-edit"></i>写文章</el-menu-item>
           </el-col>
 
         </el-menu>
@@ -90,17 +90,26 @@
     computed: {
       user() {
         let login = this.$store.state.account.length !== 0
-        // let login = getToken()
         let avatar = this.$store.state.avatar
         let account = this.$store.state.account
+        let confirmed = this.$store.state.confirmed
+        let notConfirmed = !confirmed && login
         return {
-          login, avatar, account
+          login, avatar, account, notConfirmed
         }
       }
     },
     methods: {
       errorHandler() {
         return true
+      },
+      userWrite() {
+        if (!this.user.notConfirmed) {
+          this.$router.push('/write')
+        }else{
+          this.$message({message: '只有确认注册邮箱的用户才能写文章哦~', type: 'warning', showClose: true});
+          return false
+        }
       },
       logout: function () {
         let _this = this
