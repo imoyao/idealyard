@@ -35,7 +35,7 @@ class Config:
     MAIL_USE_SSL = True
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = ('imoyao', os.getenv('MAIL_USERNAME'))
+    MAIL_DEFAULT_SENDER = ('别院牧志', os.getenv('MAIL_USERNAME'))
     # redis 配置
     # REDIS_URL = "redis://:password@localhost:6379/0"
     REDIS_URL = "redis://localhost:6379/0"

@@ -81,7 +81,6 @@ class ResetPassword(Resource):
     重置密码
     """
 
-    # TODO:需要测试可用性
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
@@ -91,7 +90,6 @@ class ResetPassword(Resource):
         :return:
         """
         data = request.json
-        print(data, '---------------------')
         verify_email = data.get('email')
         reset_password = data.get('password')
         user = auth_ctrl.new_password(verify_email, reset_password)
@@ -109,7 +107,6 @@ class ResetPassword(Resource):
         """
         data = request.json
         verify_email = data.get('mail')
-        # data = json.loads(str(request.data, encoding="utf-8"))
         user = User.query.filter_by(email=verify_email).one_or_none()
         if user and user.verify_user_password(data['oldpass']) and data['confirpass'] == data['newpass']:
             user.hash_password(data['newpass'])
@@ -163,12 +160,10 @@ class EmailApi(Resource):
             req_ip = request.headers['X-Forwarded-For'].split(',')[0]  # 反向代理之后
         except KeyError:
             req_ip = request.remote_addr
-        print(req_ip, '--------------------')
         email = json_data.get('email')
         if email:
             # TODO:此处使用celery发送重置邮件
             ret_code = auth_ctrl.reset_pw_action(req_ip, email)
-            print(ret_code, '11111111111')
             if not ret_code:
                 self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
                 return jsonify_with_args(self.response_obj, 200)
@@ -188,37 +183,23 @@ class Verification(Resource):
     def __init__(self):
         self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
 
-    # def get(self):
-    #     args = request.args
-    #     if args:
-    #         email = args.get('email', '')
-    #         if auth_ctrl.email_exists(email):
-    #             return jsonify_with_args(self.response_obj, 200)
-    #         self.response_obj = {'status': '404', 'success': False, 'code': 0, 'data': None,
-    #                              'msg': 'The email address has not register for this site.'}
-    #         return jsonify_with_args(self.response_obj, 200)
-    #     else:
-    #         self.response_obj['code'] = 1
-    #         self.response_obj['success'] = False
-    #         return jsonify_with_args(self.response_obj, 400)
-
     def post(self):
         json_data = request.json
         email = json_data.get('email')
         captcha = json_data.get('captcha')
         if all([email, captcha]):
-            # TODO:此处使用celery发送重置邮件
-            ret_code = auth_ctrl.verificate_temporary_pw(email, captcha)
-            print(ret_code, '11111111111')
+            ret_code = auth_ctrl.verify_temporary_pw(email, captcha)
             if ret_code:
                 self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
                 return jsonify_with_args(self.response_obj, 200)
             elif ret_code is None:
-                self.response_obj = {'success': False, 'code': 1, 'data': None, 'msg': 'Verification expire.'}
-                return jsonify_with_args(self.response_obj, 410)
+                self.response_obj = {'status': '410', 'success': False, 'code': 0, 'data': None,
+                                     'msg': 'Verification expire.'}
+                return jsonify_with_args(self.response_obj, 200)
             else:
-                self.response_obj = {'success': False, 'code': 1, 'data': None, 'msg': 'Verification error.'}
-                return jsonify_with_args(self.response_obj, 410)
+                self.response_obj = {'status': '409', 'success': False, 'code': 0, 'data': None,
+                                     'msg': 'Verification error.'}
+                return jsonify_with_args(self.response_obj, 200)
         else:
             self.response_obj = {'success': False, 'code': 1, 'data': None, 'msg': 'Need more args.'}
             return jsonify_with_args(self.response_obj, 400)

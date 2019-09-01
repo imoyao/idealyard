@@ -8,9 +8,9 @@
 import os
 import re
 import random
-import hashlib
 import http.client
 from urllib import request
+from back.utils import md5_encrypt
 
 
 class BaiduTrans:
@@ -54,13 +54,13 @@ class BaiduTrans:
         2、对字符串1做md5，得到32位小写的sign。
         :return:
         """
+        join_sign = None
         try:
             join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
         except TypeError:
             print('Check you env for baidu translate API.')
-        _m1 = hashlib.md5()
-        _m1.update(join_sign.encode())
-        _sign = _m1.hexdigest()
+        assert join_sign
+        _sign = md5_encrypt(join_sign)
         return _sign
 
     def trans_url(self, from_lang='auto', to_lang='en'):

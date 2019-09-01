@@ -9,7 +9,16 @@ import random
 class CaptchaCreator:
 
     @staticmethod
-    def random_seq(choice_seq, count=6):
+    def random_seq(choice_seq, count=6, repeatable=True):
+        """
+        生成随机数列表
+        :param choice_seq:list,
+        :param count: int,随机数长度
+        :param repeatable: bool,是否可重复
+        :return: list
+        """
+        if repeatable:
+            return [random.choice(choice_seq) for _ in range(count)]
         return random.sample(choice_seq, count)
 
     def shuffle(self):

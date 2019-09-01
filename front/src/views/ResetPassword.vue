@@ -32,15 +32,15 @@
           <el-step title="重设密码" description="重新设置安全认证密码"></el-step>
         </el-steps>
 
-        <el-row class="active0 account-form" v-show="active === 0">
+        <el-row class="email-field account-form" v-show="active === 0">
           <div class="account-form-raw">
             <el-form class="account-form-label" status-icon :model="emailValidateForm" ref="emailValidateForm">
               <el-form-item
                 label="注册邮箱"
                 prop="email"
                 :rules="emailRules">
-                <el-input class="account-form-field" type="email" v-model.number="emailValidateForm.email"
-                          autocomplete="off"></el-input>
+                <el-input class="account-form-field" type="email" v-model="emailValidateForm.email"
+                          autocomplete="on"></el-input>
               </el-form-item>
               <el-divider></el-divider>
               <el-form-item>
@@ -53,48 +53,48 @@
           </div>
         </el-row>
 
-        <el-row class="active1" v-show="active === 1">
+        <el-row class="captcha-field" v-show="active === 1">
           <div class="account-form-raw">
             <el-form class="account-form-label" :model="verificationCodeForm" ref="verificationCodeForm">
+              <span class="captcha-ipt-tip">别院牧志向你的邮箱 {{ emailValidateForm.email }} 发送了验证码，请注意查收并及时填入。</span>
               <el-form-item
+                class="captcha-ipt"
                 label="验证码"
                 prop="VerificationCode"
+                placeholder="请输入收到的验证码"
                 :rules="[{ required: true, message: '请输入验证码'}]">
-                <el-input class="account-form-field" v-model.number="verificationCodeForm.VerificationCode"
-                          autocomplete="off">
+                <el-input class="account-form-field" v-model="verificationCodeForm.VerificationCode" maxlength="6">
                 </el-input>
 
-                <el-button @click="resendVerificationCode()">重新发送</el-button>
+                <el-button :disabled="disabled" @click="resendVerificationCode()">{{btnText}}</el-button>
               </el-form-item>
 
               <el-divider></el-divider>
 
               <el-form-item>
-                <el-button type="primary" @click="submitVerificationCode('verificationCodeForm')">下一步</el-button>
-                <!--<el-button @click="resendVerificationCode()">重新发送</el-button>-->
+                <el-button type="primary" @click="submitVerificationCode('verificationCodeForm')">完成验证</el-button>
               </el-form-item>
             </el-form>
           </div>
         </el-row>
 
-        <el-row class="active2" v-show="active === 2">
+        <el-row class="password-field" v-show="active === 2">
           <div class="account-form-raw">
             <el-form :model="newPasswordForm" ref="newPasswordForm">
               <el-form-item
                 label="新密码"
                 prop="newPassword"
                 :rules="[{required: true, message: '请输入密码', trigger: 'blur'},
-            {max: 16, message: '不能大于 16 个字符', trigger: 'blur'},
-            {min: 6, message: '不能小于 6 个字符', trigger: 'blur'}]">
-                <el-input class="account-form-field" type="password" v-model.number="newPasswordForm.newPassword"
-                          autocomplete="off"></el-input>
+                {max: 16, message: '不能大于 16 个字符', trigger: 'blur'},
+                {min: 6, message: '不能小于 6 个字符', trigger: 'blur'}]">
+                <el-input class="account-form-field" type="password" v-model="newPasswordForm.newPassword"
+                          :show-password="true"></el-input>
               </el-form-item>
 
               <el-divider></el-divider>
 
               <el-form-item>
                 <el-button type="primary" @click="submitNewPassword('newPasswordForm')">确认修改</el-button>
-                <!--<el-button @click="resetForm('numberValidateForm')">重置</el-button>-->
               </el-form-item>
             </el-form>
           </div>
@@ -130,6 +130,8 @@
           {validator: checkEmail, trigger: 'blur'}
         ],
         active: 0,
+        disabled: false,
+        btnText: '重新发送',
         emailValidateForm:
           {
             email: ''
@@ -154,14 +156,13 @@
             return callback()
           }
         })
-      }
-      ,
+      },
+      // see also:https://blog.csdn.net/weixin_40098371/article/details/88027949
       submitEmail(emailValidateForm) {
         this.$refs[emailValidateForm].validate((valid) => {
           if (valid) {
             let email = this.emailValidateForm.email
             sendCaptcha(email).then((data) => {
-              console.log(data, '---------sendCaptcha----------')
               // https://blog.csdn.net/fabulous1111/article/details/79377654
               // TODO：发送验证码
               this.active = 1
@@ -182,30 +183,46 @@
             let email = this.emailValidateForm.email
             let captcha = this.verificationCodeForm.VerificationCode
             verificateCaptcha(email, captcha).then((data) => {
-              console.log(data, '---------sendCaptcha----------')
+              if (data.code === 0 && data.status) {
+                this.$refs.verificationCodeForm.fields[0].validateState = "error"
+                this.$refs.verificationCodeForm.fields[0].validateMessage = "验证码输入错误或已过期"
+              } else {
+                this.active = 2
+              }
               // https://blog.csdn.net/fabulous1111/article/details/79377654
-              // TODO: 验证邮箱验证码
-              this.active = 2
             }).catch((error) => {
               if (error !== 'error') {
-                // TODO see resendVerificationCode: repeat function
+                console.log(error)
+                // TODO
               }
             })
           } else {
-            console.log('error submit!!');
             return false;
           }
-        });
+        })
       },
       resendVerificationCode() {
         let email = this.emailValidateForm.email
+        this.verificationCodeForm.VerificationCode = ''
         sendCaptcha(email).then((data) => {
-          console.log(data, '---------sendCaptcha----------')
           // https://blog.csdn.net/fabulous1111/article/details/79377654
-          // TODO：发送验证码
+          this.disabled = true
+          // 60秒倒计时
+          let time = 60
+          let timer = setInterval(() => {
+            if (time <= 0) {
+              this.disabled = false
+              this.btnText = '重新发送'
+              clearInterval(timer)
+            } else {
+              this.btnText = time + 's 后重新发送'
+              time--
+            }
+          }, 1000)
         }).catch((error) => {
+          this.disabled = false
           if (error !== 'error') {
-            // TODO
+            console.log(error)
           }
         })
       },
@@ -215,22 +232,17 @@
             let email = this.emailValidateForm.email
             let newPassword = this.newPasswordForm.newPassword
             resetPassword(email, newPassword).then((data) => {
-              console.log(data, '---------sendCaptcha----------')
-              // https://blog.csdn.net/fabulous1111/article/details/79377654
-              // TODO: 验证邮箱验证码
-              this.active = 2
+              this.$router.go(-1)
             }).catch((error) => {
               if (error !== 'error') {
                 // TODO
               }
             })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
       },
-      // see also:https://blog.csdn.net/weixin_40098371/article/details/88027949
     }
   }
 </script>
@@ -249,6 +261,15 @@
     overflow: hidden;
     padding: 22px 0 20px;
     zoom: 1;
+  }
+
+  .captcha-ipt-tip {
+    font-size: 12px;
+    color: #c0c4cc;
+  }
+
+  .captcha-ipt {
+    margin-top: 20px;
   }
 
   .account-body-text {

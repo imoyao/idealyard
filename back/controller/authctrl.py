@@ -9,6 +9,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 
 from back.models import User, db
+from back.utils import md5_encrypt
 from back.utils.mail import MailSender
 from back.utils.captcha import CaptchaCreator
 from back.utils.redis_util import redis_store
@@ -220,33 +221,33 @@ class PostUserCtrl:
         """
         return redis_store.expire(verify_email, -1)
 
-    def verificate_temporary_pw(self, verify_email, temporary_pw):
-        # user = User.query.filter_by(email=verify_email).one_or_none()       # TODO: 此处多处使用，可以一处定义
+    def verify_temporary_pw(self, verify_email, temporary_pw):
+        """
+        通过email查询临时密码并校验，同时一次校验之后，将临时密码直接设置过期
+        :param verify_email:
+        :param temporary_pw:
+        :return:
+        """
         hash_pw = self.hash_temporary_pw(temporary_pw)
         rdb_get = self.get_temporary_pw(verify_email)
         self.expire_temporary_pw(verify_email)
-        print(rdb_get, hash_pw, '------------------')
         if rdb_get:
             str_rdb_get = rdb_get.decode('utf-8')   # byte >>> str
-            print(str_rdb_get, hash_pw, '------------------')
             return str_rdb_get == hash_pw
         else:
             return None  # 密码过期
 
     @staticmethod
     def hash_temporary_pw(temporary_pw):
-
-        # TODO：back/utils/text.py:62
-
-        # 创建md5对象
-        hl = hashlib.md5()
+        """
+        加密临时密码
+        :param temporary_pw:
+        :return:
+        """
         temporary_pw = str(temporary_pw) if isinstance(temporary_pw, int) else temporary_pw
         assert isinstance(temporary_pw, str)
-
-        # 此处必须声明encode,若写法为hl.update(str)  报错为： Unicode-objects must be encoded before hashing
-        hl.update(temporary_pw.encode(encoding='utf-8'))
-
-        return hl.hexdigest()
+        hash_pw = md5_encrypt(temporary_pw)
+        return hash_pw
 
     def reset_pw_action(self, req_ip, verify_email):
         """
@@ -255,7 +256,6 @@ class PostUserCtrl:
         :param verify_email:str, 用户验证邮箱
         :return:
         """
-        user = User.query.filter_by(email=verify_email).one_or_none()
         captcha = self.gen_captcha()
         hash_pw = self.hash_temporary_pw(captcha)
         set_success = self.set_temporary_pw(verify_email, hash_pw)

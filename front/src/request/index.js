@@ -27,7 +27,6 @@ service.interceptors.response.use(function (response) {
   // Do something with response data
   return response.data
 }, function (error) {
-  console.log(error,'error')
   // Do something with response error
   if (error.response) {
       console.log(error.response,'error.response')
