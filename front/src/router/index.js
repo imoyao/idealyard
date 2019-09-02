@@ -35,6 +35,10 @@ const router = new VueRouter({
       component: r => require.ensure([], () => r(require('@/views/ResetPassword')), 'ResetPassword')
     },
     {
+      path: '/profile',
+      component: r => require.ensure([], () => r(require('@/views/Profile')), 'Profile')
+    },
+    {
       path: '',
       // name: 'Home',
       component: Home,
