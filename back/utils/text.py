@@ -10,7 +10,7 @@ import re
 import random
 import http.client
 from urllib import request
-from back.utils import md5_encrypt
+from back.utils import md5_encrypt, flask_logger
 
 
 class BaiduTrans:
@@ -56,9 +56,13 @@ class BaiduTrans:
         """
         join_sign = None
         try:
+            logger = flask_logger.register_logger(__name__)
+            logger.info(f'{[self.appid, self.q, str(self.salt), self.secretKey]}')
             join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
         except TypeError:
             print('Check you env for baidu translate API.')
+        logger = flask_logger.register_logger(__name__)
+        logger.info(f'{join_sign}')
         assert join_sign
         _sign = md5_encrypt(join_sign)
         return _sign

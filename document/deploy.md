@@ -1,4 +1,5 @@
 ## 前端
+
 1. 切换目录
 ```bash
 cd front
@@ -68,6 +69,12 @@ location / {
  expires:30s;   # 缓存过期时间
 }
 ```
+### 相关命令
+
+```bash
+nginx -s reload
+systemctl start/stop/restart/status nginx
+```
 
 3. 安装supervisor
 ### Ubuntu
@@ -109,7 +116,7 @@ stdout_logfile=/var/log/app/app_out.log
 - 相关命令
 
 ```bash
-supervisord -c /etc/supervisord.conf
+supervisord -c /etc/supervisord.conf  # Ubuntu:/etc/supervisor/supervisord.conf
 supervisorctl start all/APP_NAME
 supervisorctl stop all/APP_NAME
 supervisorctl restart all/APP_NAME

@@ -63,7 +63,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     # Load extensions
-    register_logger(app)
+    register_logger(__name__)
     cors.init_app(app)
     db.init_app(app)
     migrate = Migrate(app, db)  # 在db对象创建之后调用！
