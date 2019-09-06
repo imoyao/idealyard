@@ -188,13 +188,14 @@ class PostArticleCtrl:
         :return: int
         """
         # (19930126,)[0]
+        post_identifier = setting.INITIAL_POST_IDENTIFIER
         max_identifier = db.session.query(func.max(Article.identifier)).one_or_none()
-        if max_identifier:
+        if max_identifier is not (None,):
             max_num = max_identifier[0]
-            increase_int = random.randrange(1, 5)
-            post_identifier = max_num + increase_int
-        else:
-            post_identifier = setting.INITIAL_POST_IDENTIFIER
+            if max_num is not None:
+                increase_int = random.randrange(1, 5)
+                post_identifier = max_num + increase_int
+
         return post_identifier
 
     @staticmethod
@@ -272,7 +273,6 @@ class PostArticleCtrl:
             assert not self.has_duplicate_slug(processed_slug)
         except AssertionError:
             processed_slug = self.resolve_conflict_slug(processed_slug)
-        print(processed_slug, '------------------------')
         post = Article(title=title, slug=processed_slug, identifier=new_identifier, author_id=author_id,
                        body_id=body_id,
                        view_counts=setting.INITIAL_VIEW_COUNTS,
