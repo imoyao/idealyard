@@ -89,7 +89,10 @@
     },
     computed: {
       user() {
-        let login = this.$store.state.account.length !== 0
+        let login = false
+        if (this.$store.state.account){
+          login = this.$store.state.account.length !== 0
+        }
         let avatar = this.$store.state.avatar
         let account = this.$store.state.account
         let confirmed = this.$store.state.confirmed
