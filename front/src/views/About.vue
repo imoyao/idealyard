@@ -50,7 +50,7 @@
           <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
             <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
             <!--<el-button @click="btnVisable()" size="mini" type="primary" icon="el-icon-share" plain></el-button>-->
-            <el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+            <!--<el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>-->
           </el-button-group>
 
           <div class="me-view-comment">
@@ -127,7 +127,8 @@
       return {
         visable: Boolean,
         viewCount: 0,
-        postId: 20,
+        postId: 1,
+        identifier: 19930126,
         article: {
           id: String,
           identifier: String,
@@ -170,7 +171,7 @@
     methods: {
       getPostId() {
         return new Promise((resolve, reject) => {
-          let identifier = this.$route.params.identifier
+          let identifier = this.identifier
           reqPostid(identifier).then((data) => {
             this.postId = data.data.postId
             resolve()
@@ -187,7 +188,7 @@
             this.viewCount = data.data.count
           })
         }else{
-          let postIdentifier = 19930126
+          let postIdentifier = this.identifier
           identiferCount(postIdentifier).then(data => {
             this.viewCount = data.data.count
           })

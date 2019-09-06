@@ -13,6 +13,7 @@ class MailSender:
     """
     @staticmethod
     def send_mail(subject, to, body):
-        message = Message(subject, recipients=[to], body=body)
-        mail.send(message)
+        with mail.connect() as conn:
+            message = Message(subject, recipients=[to], body=body)
+            conn.send(message)
         return 0
