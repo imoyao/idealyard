@@ -39,9 +39,12 @@ class Config:
     # redis 配置
     # REDIS_URL = "redis://:password@localhost:6379/0"
     REDIS_URL = "redis://localhost:6379/0"
+
     # REDIS_HOST = 'localhost'
     # REDIS_PORT = 6379
     # REDIS_DB = 0
+    def __init__(self):
+        pass
 
     @staticmethod
     def init_app(app):
@@ -60,7 +63,7 @@ class DevelopmentConfig(Config):
     database = 'iyblog_dev'
     # 1366, "Incorrect string value: '\\xF0\\x9F\\x98\\x83</...' for column 'content_html' at row 1"
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{MySQLConfig.MYSQL_USERNAME}:{MySQLConfig.MYSQL_PASSWORD}' \
-        f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
+                              f'@{MySQLConfig.MYSQL_HOST}/{database}?charset={MySQLConfig.MYSQL_CHARSET}'
 
 
 class TestingConfig(Config):
