@@ -13,9 +13,12 @@ from flask_restful import Resource
 
 from back.models import User
 from . import api_bp
+from . import api
 from back.api_1_0.errors import unauthorized_error, forbidden
 from .utils import jsonify_with_args
 from back.controller.authctrl import basic_auth, multi_auth, PostUserCtrl, generate_auth_token
+from back.celery_components import tasks as celery_tasks
+from back.api_1_0 import api_tasks
 
 auth_ctrl = PostUserCtrl()
 
@@ -156,13 +159,31 @@ class EmailApi(Resource):
 
     def post(self):
         json_data = request.json
+        print(json_data, '-----------------json_data')
         try:
             req_ip = request.headers['X-Forwarded-For'].split(',')[0]  # 反向代理之后
         except KeyError:
             req_ip = request.remote_addr
         email = json_data.get('email')
         if email:
-            # TODO:此处使用celery发送重置邮件
+            # print('--------------------df----cccccccc')
+            # # TODO:此处使用celery发送重置邮件,但是不成功
+            # # task = celery_tasks.send_reset_password_mail_long_task.apply_async(args=(req_ip, email,), queue='mail',
+            # #                                                                    routing_key='mail')
+            # # task = celery_tasks.long_task.apply_async()
+            # task = celery_tasks.send_reset_password_mail_long_task.apply_async(args=(req_ip, email))
+            # print(task, '------------------EmailApi---------!!!!--------')
+            # '''
+            # 执行用户命令并解析，存储结果，结果存储完成，代表成功
+            # '''
+            # self.response_obj['msg'] = 'Send mail success,please check your mail box.'
+            # resp = jsonify_with_args(self.response_obj, 201, {
+            #     'Location': api.url_for(api_tasks.TaskStatus, task_id=task.id, name='mail', _external=True)})
+            # # 跨域设置
+            # # see also: https://segmentfault.com/a/1190000009125333
+            # # https://www.jianshu.com/p/e2cdc73f85bc
+            # resp.headers['Access-Control-Expose-Headers'] = 'location'
+            # return resp
             ret_code = auth_ctrl.reset_pw_action(req_ip, email)
             if not ret_code:
                 self.response_obj = {'success': True, 'code': 0, 'data': None, 'msg': ''}
@@ -171,7 +192,8 @@ class EmailApi(Resource):
                 self.response_obj = {'success': False, 'code': 1, 'data': None, 'msg': 'Send reset password mail fail.'}
                 return jsonify_with_args(self.response_obj, 408)
         else:
-            self.response_obj = {'success': False, 'code': 1, 'data': None, 'msg': 'Send reset password mail fail.'}
+            self.response_obj = {'success': False, 'code': 1, 'data': None,
+                                 'msg': 'Need email address for sending reset password mail.'}
             return jsonify_with_args(self.response_obj, 400)
 
 
