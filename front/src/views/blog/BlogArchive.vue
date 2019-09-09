@@ -2,7 +2,6 @@
   <div v-title :data-title="title">
     <el-container >
         <el-aside class="me-area" v-if="archives">
-          <!--TODO:此处获取数据失败时表现怪异-->
           <p></p>
           <ul class="me-month-list">
             <li v-for="( a, index ) in archives" :key="index" class="me-month-item">
@@ -17,7 +16,6 @@
 
       <el-main class="me-articles">
         <div class="me-month-title" v-if="currentArchive">{{currentArchive}}</div>
-        <!--TODO:如果去掉注释me-area，此处表现怪异-->
         <!--没有的时候，应该在此处显示内容-->
         <article-scroll-page v-bind="article"></article-scroll-page>
 
@@ -65,7 +63,6 @@
       currentArchive () {
         // 获取为空
         if (this.archives.length === 0) {
-          // TODO: 打开太快，它出来了
           return 'Oh no 😢'
         } else if (this.article) {
           if (this.article.query.year && this.article.query.month) {

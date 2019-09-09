@@ -14,7 +14,6 @@ from back.utils import md5_encrypt, flask_logger
 
 
 class BaiduTrans:
-    # TODO:配置到环境变量
     appid = os.getenv('BD_APP_ID')  # 你的appid
     secretKey = os.getenv('BD_SECRET_KEY')  # 你的密钥
 
