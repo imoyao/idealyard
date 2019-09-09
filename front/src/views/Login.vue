@@ -40,27 +40,24 @@
 <script>
   import {requestLogin} from '@/api/login'
   import {setToken} from '@/request/token'
-  import axios from 'axios'
+  import {encryptFunc, decryptFunc} from '@/utils/crypto'
 
   export default {
     name: 'Login',
     data() {
       return {
         logining: false,
+        secretKey: '8M0jMkkyqkNrZGCZ3bL',
         userForm: {
           account: '',
-          // account: 'imoyao',
-          // password: '111111'
           password: ''
         },
         rules: {
           account: [
             {required: true, message: '请输入用户名/注册邮箱', trigger: 'blur'},
-            // {max: 25, message: '不能大于25个字符', trigger: 'blur'}
           ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
-            // {max: 10, message: '不能大于10个字符', trigger: 'blur'}
           ]
         },
         checked: false
@@ -81,12 +78,14 @@
       toResetPw() {
         this.$router.push('/reset_password')
       },
-      setCookie(c_name, c_pwd, exdays) {
+      setCookie(cName, cPassword, exdays) {
         let exdate = new Date(); //获取时间
-        exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays) //保存的天数
+        exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays)   //保存的天数
         //字符串拼接cookie
-        window.document.cookie = "userName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString()
-        window.document.cookie = "password" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString()
+        let cryptoName = encryptFunc(cName);
+        let cryptoPw = encryptFunc(cPassword);
+        window.document.cookie = "_un" + "=" + cryptoName + ";path=/;expires=" + exdate.toGMTString()
+        window.document.cookie = "pw_" + "=" + cryptoPw + ";path=/;expires=" + exdate.toGMTString()
       },
       getCookie: function () {
         if (document.cookie.length > 0) {
@@ -94,11 +93,12 @@
           for (let i = 0; i < arr.length; i++) {
             let arr2 = arr[i].split('='); //再次切割
             // 判断查找相对应的值
-            if (arr2[0] === 'userName') {
+            let decryptKey = arr2[0]
+            if (decryptKey === '_un') {
               this.checked = true;
-              this.userForm.account = arr2[1]; //保存到保存数据的地方
-            } else if (arr2[0] === 'password') {
-              this.userForm.password = arr2[1];
+              this.userForm.account = decryptFunc(arr2[1])
+            } else if (decryptKey === 'pw_') {
+              this.userForm.password = decryptFunc(arr2[1])
             }
           }
         }
@@ -125,8 +125,8 @@
               if (error !== 'error') {
                 // see also:https://blog.csdn.net/lsw789/article/details/88735001
                 that.$refs.userForm.fields[1].validateMessage = "请确认登录信息是否正确"
-                that.$refs.userForm.fields[1].validateState  = "error"
-                that.$refs.userForm.fields[0].validateState  = "error"
+                that.$refs.userForm.fields[1].validateState = "error"
+                that.$refs.userForm.fields[0].validateState = "error"
                 // that.$message({message: error, type: 'error', showClose: true});
                 this.logining = false
               }

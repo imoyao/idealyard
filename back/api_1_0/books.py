@@ -58,7 +58,6 @@ class Books(Resource):
 
     def post(self):
         post_data = request.get_json()
-        print(post_data)
         self.BOOKS.append({  # TODO: 此处为自写逻辑
             'title': post_data.get('title'),
             'author': post_data.get('author'),
@@ -98,7 +97,6 @@ class Test(Resource):
     def post(self):
         args = request.json
         token = g.user.generate_auth_token()
-        print(token)
         if token:
             username = g.user.username
             return jsonify({'code': 0, 'msg': "success", 'token': token.decode('ascii'), 'username': username})

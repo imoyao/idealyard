@@ -24,7 +24,6 @@ class Comments(Resource):
             pass
         else:
             args = request.args
-            print([_ for _ in args])
             if args:
                 post_id = args.get('post_id')
                 if post_id:

@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_uploads import configure_uploads, patch_request_class
 
-from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads, api_tasks
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
@@ -45,6 +45,7 @@ def add_api():
 
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(uploads.UploadImage, '/api/images')
+    api.add_resource(api_tasks.TaskStatus, '/api/tasks/<string:task_id>/<string:name>')
 
 
 def add_blueprints(app):
