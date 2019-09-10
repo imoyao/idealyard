@@ -7,7 +7,7 @@ import store from '@/store'
 
 import {getToken} from '@/request/token'
 
-import {requestLogin, reqUserInfo, logout, register} from '@/api/login'
+// import {requestLogin, reqUserInfo, register} from '@/api/login'
 
 Vue.use(VueRouter)
 
@@ -33,6 +33,10 @@ const router = new VueRouter({
     {
       path: '/reset_password',
       component: r => require.ensure([], () => r(require('@/views/ResetPassword')), 'ResetPassword')
+    },
+    {
+      path: '/profile',
+      component: r => require.ensure([], () => r(require('@/views/Profile')), 'Profile')
     },
     {
       path: '',

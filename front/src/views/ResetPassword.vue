@@ -113,7 +113,7 @@
 </template>
 
 <script>
-  import {fetchCheckEmail, sendCaptcha, verificateCaptcha, resetPassword} from '@/api/login'
+  import {fetchCheckEmail, sendCaptcha, verificateCaptcha, resetPassword, reqTaskStatus} from '@/api/login'
 
   export default {
     name: 'ResetPassword',
@@ -143,8 +143,13 @@
         ,
         newPasswordForm: {
           newPassword: ''
-        }
+        },
+        mtimer: undefined,
+        mailDisable: true
       };
+    },
+    beforeDestroy () {
+      clearInterval(this.mtimer)
     },
     methods: {
       // 异步校验
@@ -157,15 +162,50 @@
           }
         })
       },
+      getTaskStatus(taskName, location) {
+        reqTaskStatus({taskName,location}).then(res => {
+          console.log('-=-=-=-=',location)
+          let state = res.data.info.state
+          this.mailDisable = state !== 'SUCCESS'
+          // 成功之后清除定时器
+          if (state === 'SUCCESS') {
+            this.active = 1
+            // this.$notify({
+            //   title: i18n.t('memtest.success'),
+            //   message: i18n.t('memtest.mem_test_success_tips'),
+            //   position: 'bottom-right',
+            //   // duration: 0,
+            //   type: 'success'
+            // })
+            clearInterval(this.mtimer)
+          }
+        })
+      },
+
       // see also:https://blog.csdn.net/weixin_40098371/article/details/88027949
       submitEmail(emailValidateForm) {
         this.$refs[emailValidateForm].validate((valid) => {
           if (valid) {
             let email = this.emailValidateForm.email
             sendCaptcha(email).then((data) => {
+              let code = data.code
+              // TODO:get not ok
+              // this.mLocation = data.headers.Location
+              // if (this.mLocation) {
+              //   let that = this
+              //   this.mtimer = setInterval(function () {
+              //     this.getTaskStatus('mail', that.mLocation)
+              //   }, 1000)
+              // }
+              if (code !== 0) {
+                this.$message({
+                  message: '验证邮件发送失败！',
+                  type: 'warning'
+                })
+              } else {
+                this.active = 1
+              }
               // https://blog.csdn.net/fabulous1111/article/details/79377654
-              // TODO：发送验证码
-              this.active = 1
             }).catch((error) => {
               if (error !== 'error') {
                 // TODO

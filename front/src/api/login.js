@@ -102,3 +102,15 @@ export function resetPassword(email, password) {
     data
   })
 }
+
+export function reqTaskStatus(name, location) {
+  console.log(location)
+  const data = {
+    name
+  }
+  return request({
+    url: location,
+    method: 'get',
+    data
+  })
+}

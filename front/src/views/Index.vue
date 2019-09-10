@@ -64,7 +64,10 @@
     },
     computed: {
       confirmTip() {
-        let login = this.$store.state.account.length !== 0
+        let login = false
+        if (this.$store.state.account){
+          login = this.$store.state.account.length !== 0
+        }
         let confirmed = this.$store.state.confirmed
         let notConfirmed = !confirmed && login
         return {

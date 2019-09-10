@@ -10,16 +10,17 @@ import re
 import random
 import http.client
 from urllib import request
-from back.utils import md5_encrypt
+
+from back import setting
+from back.utils import md5_encrypt, flask_logger
 
 
 class BaiduTrans:
-    # TODO:配置到环境变量
     appid = os.getenv('BD_APP_ID')  # 你的appid
     secretKey = os.getenv('BD_SECRET_KEY')  # 你的密钥
 
     http_client = None
-    api_url = '/api/trans/vip/translate'
+    api_url = setting.BD_TRANS_API_URL
     salt = random.randint(32768, 65536)
 
     def __init__(self, q_key, from_lang='auto', to_lang='en'):
@@ -56,9 +57,13 @@ class BaiduTrans:
         """
         join_sign = None
         try:
+            logger = flask_logger.register_logger(__name__)
+            logger.info(f'{[self.appid, self.q, str(self.salt), self.secretKey]}')
             join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
         except TypeError:
             print('Check you env for baidu translate API.')
+        logger = flask_logger.register_logger(__name__)
+        logger.info(f'{join_sign}')
         assert join_sign
         _sign = md5_encrypt(join_sign)
         return _sign

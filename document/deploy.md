@@ -1,4 +1,5 @@
 ## 前端
+
 1. 切换目录
 ```bash
 cd front
@@ -35,7 +36,7 @@ sudo chown -R root:root dist        # 根据nginx中的配置确定
 
 ## 后端
 
-1. 安装依赖
+## 安装依赖
 ```bash
 pipenv install
 ```
@@ -44,7 +45,7 @@ or
 cd back
 pip install -r requirements.txt
 ```
-2. 安装`nginx`
+## 安装`nginx`
 ### Ubuntu 安装  
 参考[此处](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04)       
 ```bash
@@ -68,8 +69,18 @@ location / {
  expires:30s;   # 缓存过期时间
 }
 ```
+### 相关命令
 
-3. 安装supervisor
+```bash
+nginx -s reload
+systemctl start/stop/restart/status nginx
+```
+
+## 安装supervisor
+### pip
+```bash
+pip install supervisor
+```
 ### Ubuntu
 
 ```bash
@@ -78,7 +89,7 @@ sudo apt-get install supervisor
 ### CentOS
 
 ```bash
-yum install supervisor
+yum install -y epel-release && yum install -y supervisor
 ```
 ### 配置
 编辑配置文件  
@@ -109,10 +120,26 @@ stdout_logfile=/var/log/app/app_out.log
 - 相关命令
 
 ```bash
-supervisord -c /etc/supervisord.conf
+supervisord -c /etc/supervisord.conf  # Ubuntu:/etc/supervisor/supervisord.conf
 supervisorctl start all/APP_NAME
 supervisorctl stop all/APP_NAME
 supervisorctl restart all/APP_NAME
+```
+## 使用celery
+执行`celery`必须有管理员权限
+```bash
+# run celery worker
+celery -A celery_worker:celery worker --loglevel=DEBUG
+# run celery beat for periodic tasks
+celery -A celery_worker:celery beat --loglevel=INFO
+```
+前置条件：保证消息队列（rabbitMQ/Redis）已经后台启动。
+以redis作为backend为例：
+```bash
+-bash-4.2# redis-cli
+
+127.0.0.1:6379> ping
+PONG
 ```
 ## 安装 redis
 此处可以参考本人之前的一篇文章：[Linux 下如何安装 Redis？](https://imoyao.github.io/blog/2019-04-11/how-to-install-Redis-on-Linux/)  

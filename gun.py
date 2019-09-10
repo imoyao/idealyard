@@ -9,12 +9,17 @@ gevent.monkey.patch_all()
 
 import multiprocessing
 
-if not os.path.exists('log'):
-    os.mkdir('log')
+from back import setting
+
+if not os.path.exists('logs'):
+    os.mkdir('logs')
 debug = True
 loglevel = 'debug'
 # 绑定的ip及端口号
-bind = '0.0.0.0:5000'
+app_host = setting.FLASK_HOST
+app_port = setting.FLASK_PORT
+bind = ':'.join([app_host, app_port])
+
 pidfile = 'gunicorn.pid'
 logfile = '/var/log/app/debug.log'
 

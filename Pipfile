@@ -31,6 +31,9 @@ gunicorn = "*"
 flask-mail = "*"
 redis = "*"
 flask-redis = "*"
+flask-uploads = "*"
+python-dotenv = "*"
+celery = "*"
 
 [requires]
 python_version = "3.7"

@@ -54,7 +54,6 @@ class TagApi(Resource):
         if not args:
             # 没有请求参数，则返回全部
             limit_count = None
-        print(query_key, query_by, order_by, hot,order_by_desc, limit_count)
         data = tag_getter.get_tag_detail_by_args(query_key, query_by=query_by, order_by=order_by, hot=hot,
                                                  order_by_desc=order_by_desc,
                                                  limit_count=limit_count)

@@ -8,6 +8,8 @@
     - [x] 用户注册成功，但是跳转首页之后显示问题
 - [x] 用户写文章时，作者不是当前登录用户
 - [x] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
+- [x] cookie中密码没有加密
+    - [参考这里](https://www.cnblogs.com/xiaolucky/p/11165179.html)
 - [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
 
 
@@ -24,6 +26,10 @@
 - [ ] 用户邮箱验证，如果没有验证，则在首页提示用户去验证，完成验证之后才可以写文章；否则登录也无法进行有效操作。
    - [x] 消息提示已完成
    - [ ] 需要完成激活邮箱
+   
+- `vendor`文件过大
+    参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
+    参考[这里](https://segmentfault.com/q/1010000008832754) 
     
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
@@ -43,7 +49,7 @@
     [ ] 目前可以跳转，但是由于abort函数，导致会有报错闪现。
 
 - [x] 数据库迁移报错
-    ```bash
+    ```
     werkzeug.utils.ImportStringError: import_string() failed for 'mains.bp'. Possible reasons are:
     
     - missing __init__.py in a package;
@@ -60,7 +66,7 @@
     ModuleNotFoundError: No module named 'mains'
     ```
 - [x] 未注册用户登录（假用户）无提示，后台报错:
-    ```bash
+    ```
     TypeError: unauthorized() takes 0 positional arguments but 1 was given
     ```
 - [x] 首页热门标签应该显示最热，而不是全部
@@ -78,11 +84,11 @@
 - [x] 博客作者自己删除
 - [x] slug选项在更新文章时应该是不可见的（url确定之后不可修改！）
 - [x] 链接由id变成数字和slug的组合
-- [ ] 找回密码
+- [x] 找回密码
     - [x] 生成随机密码，给用户发送明文，并把数据库中数据加密更新保存；
     - [x] 用户输入一次之后过期；（Redis？~~Celery清除？~~）
     - [x] 通过则设置密码，否则重新发送并重新设置密码；
-    - [ ] 发送邮件改为Celery异步
+    - [x] 发送邮件改为Celery异步
     - [x] tidy code
     
 - [ ] 使用celery备份博客
