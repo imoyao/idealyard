@@ -106,5 +106,4 @@ venv.bak/
 node_modules/
 
 .idea/
-front/config/
 front/dist.zip
