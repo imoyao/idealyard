@@ -105,6 +105,7 @@ export default new Vuex.Store({
         reject(error)
       })
     },
+
     register({commit}, user) {
       return new Promise((resolve, reject) => {
         register(user).then((data) => {

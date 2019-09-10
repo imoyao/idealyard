@@ -7,7 +7,7 @@ import store from '@/store'
 
 import {getToken} from '@/request/token'
 
-import {requestLogin, reqUserInfo, logout, register} from '@/api/login'
+// import {requestLogin, reqUserInfo, register} from '@/api/login'
 
 Vue.use(VueRouter)
 
