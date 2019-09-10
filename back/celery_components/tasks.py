@@ -3,31 +3,25 @@
 # Created by imoyao at 2019/6/18 16:24
 """
 存放需要异步执行的耗时任务
+https://segmentfault.com/a/1190000008022050
 """
 
 import random
 import time
 
-from celery import Celery
 # from celery.signals import task_postrun
 from celery.utils.log import get_task_logger
-# from flask_mail import Message
 
-# from back.models import db
 from back.controller.authctrl import PostUserCtrl
 
-# from back.utils.mail import mail as mail_app
-# from . import flask_app
+from back.celery_components import celery_app
 
 auth_ctrl = PostUserCtrl()
-
 # https://blog.csdn.net/qq_27437781/article/details/83507110
 logger = get_task_logger(__name__)
 
-celery = Celery('tasks')
 
-
-@celery.task(bind=True)
+@celery_app.task(bind=True)
 def long_task(self):
     """Background task that runs a long function with progress reports."""
     verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
@@ -48,28 +42,8 @@ def long_task(self):
             'result': 42}
 
 
-# @celery.task
-# def send_async_reset_pw_email(req_ip, verify_email):
-#     """
-#     Background task to send an email with Flask-Mail.
-#     :param req_ip: str，
-#     :param verify_email: str,接受者
-#     :return:
-#     """
-#     captcha = auth_ctrl.gen_captcha()
-#     hash_pw = auth_ctrl.hash_temporary_pw(captcha)
-#     set_success = auth_ctrl.set_temporary_pw(verify_email, hash_pw)
-#     if set_success:
-#         email_data = auth_ctrl.makeup_send_reset_pw_mail(req_ip, captcha)
-#         msg = Message(email_data['subject'],
-#                       sender=flask_app.config['MAIL_DEFAULT_SENDER'],
-#                       recipients=[verify_email])
-#         msg.body = email_data['body']
-#         with flask_app.app_context():
-#             mail_app.send(msg)
-
-
-@celery.task(bind=True)  # 添加了 bind=True 参数。这个参数告诉 Celery 发送一个 self 参数到我的函数，我能够使用它(self)来记录状态更新。
+# 添加了 bind=True 参数。这个参数告诉 Celery 发送一个 self 参数到我的函数，我能够使用它(self)来记录状态更新。
+@celery_app.task(bind=True)
 def send_reset_password_mail_long_task(self, req_ip, email):
     """
     发送验证邮件
@@ -78,17 +52,11 @@ def send_reset_password_mail_long_task(self, req_ip, email):
     :param email:
     :return:
     """
-    try:
-        print((req_ip, email), '----------------1111111111')
-        ret = auth_ctrl.reset_pw_action(req_ip, email)
-        print(ret, '------------------1111')
-    except Exception as exc:
-        print(exc, '-----------------------')
-        raise self.retry(countdown=60 * 5, exc=exc)
+    ret = auth_ctrl.reset_pw_action(req_ip, email)
     return ret
 
 
-@celery.task
+@celery_app.task
 def log(message):
     """Print some log messages"""
     logger.debug(message)
@@ -107,7 +75,7 @@ def log(message):
 #     db.session.remove()
 
 
-@celery.task()
+@celery_app.task()
 def log_it(num1, num2):
     msg = num1 + num2
     print(msg)

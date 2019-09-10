@@ -24,7 +24,7 @@ def add_api():
     添加 api 接口
     :return:
     """
-    api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
+    # api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
 
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
@@ -85,5 +85,4 @@ def init_db(app):
     初始化db
     :return:
     """
-    # db.drop_all()
     db.create_all(app=app)

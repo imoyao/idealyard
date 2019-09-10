@@ -31,7 +31,6 @@ def setup_periodic_tasks(sender, **kwargs):
     :param kwargs:
     :return:
     """
-    # TODO: 更新频率在生产环境中应该适当降低
     # sender.add_periodic_task(10.0, tasks.write_bmc_power_state_to_db,
     #                          name='write_bmc_power_state_to_db every 10s')
 
@@ -39,8 +38,8 @@ def setup_periodic_tasks(sender, **kwargs):
 
     # Calls log('Logging Stuff') every 30 seconds
     sender.add_periodic_task(300.0, tasks.log.s('Logging Stuff'), name='Log every 300s')
-    sender.add_periodic_task(30.0, tasks.send_reset_password_mail_long_task('0.0.0.0', 'emailme8@163.com'),
-                             name='my_add every 5min')
+    # sender.add_periodic_task(30.0, tasks.send_reset_password_mail_long_task('0.0.0.0', 'emailme8@163.com'),
+    #                          name='my_add every 5min')
 
     # Executes every Monday morning at 7:30 a.m.
     sender.add_periodic_task(

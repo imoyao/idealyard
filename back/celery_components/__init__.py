@@ -4,14 +4,11 @@
 """
 分离出来的原因：https://www.v2ex.com/t/471458
 """
-import os
-
 from celery import Celery
 from back.celery_components import celery_config
 
-# from back import create_app
-#
-# flask_app = create_app(os.getenv('FLASK_CONFIG', 'default'))
+
+celery_app = Celery(__name__, broker=celery_config.broker_url, backend=celery_config.result_backend)
 
 
 def init_celery(app=None):
@@ -20,9 +17,9 @@ def init_celery(app=None):
     参见：http://docs.jinkan.org/docs/flask/patterns/celery.html
     :return:
     """
-    celery = Celery(__name__, broker=celery_config.broker_url, backend=celery_config.result_backend)
-    celery.config_from_object('back.celery_components.celery_config')
-    TaskBase = celery.Task
+
+    celery_app.config_from_object('back.celery_components.celery_config')
+    TaskBase = celery_app.Task
 
     class ContextTask(TaskBase):
         abstract = True
@@ -31,5 +28,5 @@ def init_celery(app=None):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
 
-    celery.Task = ContextTask
-    return celery
+    celery_app.Task = ContextTask
+    return celery_app

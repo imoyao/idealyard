@@ -20,7 +20,7 @@ class TaskStatus(Resource):
         task = None
         if name == 'mail':
             task = celery_tasks.send_reset_password_mail_long_task.AsyncResult(task_id)
-        elif name == 'membench':
+        else:
             pass
         if task.state == 'PENDING':
             # job did not start yet
