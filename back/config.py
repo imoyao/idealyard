@@ -9,7 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'MPk2WlUArcLeeU_iohzT'  # TODO:set while production
+    SECRET_KEY = os.getenv('SECRET_KEY') or 'MPk2WlUArcLeeU_iohzT'
 
     '''
     # 旧版本

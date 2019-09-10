@@ -17,8 +17,11 @@ mysql  Ver 14.14 Distrib 5.7.26, for linux-glibc2.12 (x86_64) using  EditLine wr
 开发模式数据库：`iyblog_dev`，此处可以在[此处](back/config.py)修改配置
 
 ```sql
+CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';
+CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
+grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
 -- 如果需要支持emoji，则设置utf8mb4编码。否则使用utf-8编码即可
-CREATE DATABASE iyblog_dev CHARSET=utf8mb4;
+CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
 ```
 ### 环境配置
 
@@ -34,11 +37,11 @@ CREATE DATABASE iyblog_dev CHARSET=utf8mb4;
     ```bash
     vi .flaskenv
     ```
-4. 编辑[dot.env](./dot.env)文件,配置环境变量并重命名为`.env`
+4. 编辑[dot.env](https://github.com/imoyao/idealyard/blob/master/dot.env)文件,配置环境变量并重命名为`.env`
 
     ```bash
     vi dot.env
-    mv dot.env .env
+    mv dot.env .env        # 参考 master 分支
     ```
 ## docker 支持
 
@@ -60,7 +63,8 @@ pass
 
 ![不试怎么知道做不到呢？](./document/src/img_20190910153859.jpg)
 
-同时感谢[LeiWong](https://github.com/LeiWong)在开发中遇到问题帮助寻找`bug`并解决问题时付出的时间。   
+同时感谢[@LeiWong](https://github.com/LeiWong)在开发中遇到问题帮助寻找`bug`并解决问题时付出的时间。 
+  
 ---
 > A human being should be able to change a diaper, plan an invasion, butcher a hog, conn a ship, design a building, write a sonnet, balance accounts, build a wall, set a bone, comfort the dying, take orders, give orders, cooperate, act alone, solve equations, analyze a new problem, pitch manure, program a computer, cook a tasty meal, fight efficiently, die gallantly. Specialization is for insects.
 >

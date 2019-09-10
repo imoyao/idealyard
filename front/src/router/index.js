@@ -13,7 +13,7 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
   // https://router.vuejs.org/zh/guide/essentials/history-mode.html#html5-history-%E6%A8%A1%E5%BC%8F
-  // mode: 'history',
+  mode: 'history',
   routes: [
     {
       path: '/write/:id?',
