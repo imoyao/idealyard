@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_uploads import configure_uploads, patch_request_class
 
-from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads
+from back.api_1_0 import api, auth, posts, users, tags, archives, categories, comments, users, uploads, api_tasks
 from back.config import config
 from .api_1_0.books import Books, Test
 from .models import db
@@ -24,7 +24,7 @@ def add_api():
     添加 api 接口
     :return:
     """
-    api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
+    # api.add_resource(Test, '/api/tests', '/api/books/<string:book_id>')
 
     api.add_resource(auth.Auth, '/api/signin', '/api/token')
     api.add_resource(auth.ResetPassword, '/api/password')
@@ -45,6 +45,7 @@ def add_api():
 
     # api.add_resource(archives.ArchivesDetail, '/api/archives/<int:post_id>')
     api.add_resource(uploads.UploadImage, '/api/images')
+    api.add_resource(api_tasks.TaskStatus, '/api/tasks/<string:task_id>/<string:name>')
 
 
 def add_blueprints(app):
@@ -84,5 +85,4 @@ def init_db(app):
     初始化db
     :return:
     """
-    # db.drop_all()
     db.create_all(app=app)

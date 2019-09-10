@@ -232,7 +232,7 @@ systemctl start/stop/restart/status nginx
     ```
     ```bash
     [program:celery_work]
-    command=/usr/bin/celery -A celery_worker:celery worker -Q default,hw_task -c 10 -l info      # 按需配置 -Q后面跟消息队列
+    command=/usr/bin/celery -A celery_worker:celery worker -Q default,mail -c 10 -l info      # 按需配置 -Q后面跟消息队列
     directory=/usr/local/PMMT      
     startsecs=0
     stopwaitsecs=0

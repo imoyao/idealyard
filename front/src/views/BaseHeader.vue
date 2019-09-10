@@ -89,7 +89,10 @@
     },
     computed: {
       user() {
-        let login = this.$store.state.account.length !== 0
+        let login = false
+        if (this.$store.state.account){
+          login = this.$store.state.account.length !== 0
+        }
         let avatar = this.$store.state.avatar
         let account = this.$store.state.account
         let confirmed = this.$store.state.confirmed
@@ -112,13 +115,16 @@
         }
       },
       logout: function () {
-        let _this = this
         this.$confirm('<i>欲问后期何日是，寄书应见雁南征。</i>', '确认退出？', {
           dangerouslyUseHTMLString: true
         }).then(() => {
-          // TODO: 清除工作
-          removeToken()
-          _this.$router.push('/signin')
+          this.$store.dispatch('fedLogOut', {}).then(() => {
+              this.$router.push('/signin')
+            }).catch((error) => {
+              if (error !== 'error') {
+                this.$message({message: error, type: 'error', showClose: true});
+              }
+            })
         }).catch(() => {
 
         })

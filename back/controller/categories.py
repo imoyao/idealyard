@@ -18,7 +18,6 @@ class GetCategoryCtrl:
     @staticmethod
     def posts_for_category(category_id):
         """
-        # TODO: 这个函数过滤有问题
         根据分类 id 查找文章
         :param category_id:
         :return:

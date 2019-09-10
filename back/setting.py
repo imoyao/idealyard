@@ -18,7 +18,8 @@ APP_LOG_FP = 'logs/app.log'
 FLASK_HOST = '0.0.0.0'
 FLASK_PORT = '5000'
 HOST_IP = os.getenv('FLASK_HOST', FLASK_HOST)
-
+# baidu_trans
+BD_TRANS_API_URL = '/api/trans/vip/translate'
 # regex
 RE_SYMBOL = r'[\,\，\.\。\?\？\:\：\'\‘\’\"\“\”\、\/\*\&\$\#\@\!\(\（\)\）\[\【\]\】\{\}\|\-"]'
 RE_EXCLUDE_CHINESE = r'[A-Za-z0-9\!\%\[\]\,\。]'

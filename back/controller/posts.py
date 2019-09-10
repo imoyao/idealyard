@@ -10,7 +10,7 @@ from flask import abort
 from sqlalchemy import func
 
 from back import setting
-from back.utils.text import BaiduTrans
+from back.utils.bd_trans import BaiduTrans
 from back.controller import QueryComponent, MakeupPost, MakeQuery, assert_new_tag_in_tags
 from back.controller import categories, tags
 from back.models import ArticleBody, Article, Tag, db

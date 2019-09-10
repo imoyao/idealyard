@@ -156,7 +156,7 @@ class PostUserCtrl:
         return user
 
     @staticmethod
-    def new_password(email,password):
+    def new_password(email, password):
         """
         创建新用户
         :param password: str,密码
@@ -176,7 +176,14 @@ class PostUserCtrl:
         return captcha_obj.shuffle()
 
     @staticmethod
-    def send_reset_pw_mail(req_ip, captcha, receiver):
+    def makeup_send_reset_pw_mail(req_ip, captcha):
+        """
+
+        :param req_ip:
+        :param captcha:
+        :return:
+        """
+        email_data = dict()
         _subject = '重设别院牧志帐号密码'
         _body = f'''
 已收到你的密码重设要求，请输入验证码：{captcha}，该验证码 {setting.TEMPORARY_PW_EXPIRE_MINUTES} 分钟内有效。
@@ -188,8 +195,20 @@ class PostUserCtrl:
 
 (这是一封自动产生的 email ，请勿回复。)
 '''
-        sender.send_mail(_subject, receiver, _body)
-        return 0
+        email_data['subject'] = _subject
+        email_data['body'] = _body
+        return email_data
+
+    def send_reset_pw_mail(self, req_ip, captcha, receiver):
+        """
+        同步发送邮件
+        :param req_ip:
+        :param captcha:
+        :param receiver:
+        :return:
+        """
+        _email_data = self.makeup_send_reset_pw_mail(req_ip, captcha)
+        sender.send_mail(_email_data['subject'], receiver, _email_data['body'])
 
     @staticmethod
     def set_temporary_pw(verify_email, hash_pw):
@@ -232,7 +251,7 @@ class PostUserCtrl:
         rdb_get = self.get_temporary_pw(verify_email)
         self.expire_temporary_pw(verify_email)
         if rdb_get:
-            str_rdb_get = rdb_get.decode('utf-8')   # byte >>> str
+            str_rdb_get = rdb_get.decode('utf-8')  # byte >>> str
             return str_rdb_get == hash_pw
         else:
             return None  # 密码过期

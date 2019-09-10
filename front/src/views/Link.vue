@@ -6,7 +6,7 @@
         <el-col :span="6" class="item">
 
           <el-card shadow="hover" class="card">
-            <el-link :underline="false" href="https://www.baidu.com" class="link" target="_blank" style="width:100%;">
+            <el-link :underline="false" href="https://www.cnblogs.com/f-ck-need-u/" class="link" target="_blank" style="width:100%;">
               <!--style="background-image:url(https://subsite-cdn.xitu.io/2018/8/13/16533039b9a9fc09?imageslim) ">-->
               <div class="logo"
                   style="background-image:url('../assets/img/link_bg.png') ">
