@@ -10,6 +10,8 @@ import re
 import random
 import http.client
 from urllib import request
+
+from back import setting
 from back.utils import md5_encrypt, flask_logger
 
 
@@ -18,7 +20,7 @@ class BaiduTrans:
     secretKey = os.getenv('BD_SECRET_KEY')  # 你的密钥
 
     http_client = None
-    api_url = '/api/trans/vip/translate'
+    api_url = setting.BD_TRANS_API_URL
     salt = random.randint(32768, 65536)
 
     def __init__(self, q_key, from_lang='auto', to_lang='en'):
