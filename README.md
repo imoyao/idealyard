@@ -57,6 +57,10 @@ pass
 
 开发模式配置及说明参见[更多文档](./document/deploy.md)
 
+### 代码概览
+
+目录结构和代码量统计参考[此处](./document/README.MD)  
+
 ## 致谢
 与其在别处仰望 不如在这里并肩。    
 感谢 G 小姐[@Sabiner](https://github.com/Sabiner)的鼓励才会产生动手写个人博客的想法。一切缘起，都要从丘处机路过牛家村的那个下午说起……
