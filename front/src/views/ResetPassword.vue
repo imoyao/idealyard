@@ -198,9 +198,8 @@
               //   }, 1000)
               // }
               if (code !== 0) {
-                this.$message({
+                this.$message.warning({
                   message: '验证邮件发送失败！',
-                  type: 'warning'
                 })
               } else {
                 this.active = 1

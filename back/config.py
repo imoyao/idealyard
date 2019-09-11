@@ -9,7 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'MPk2WlUArcLeeU_iohzT'  # TODO:set while production
+    SECRET_KEY = os.getenv('SECRET_KEY') or 'MPk2WlUArcLeeU_iohzT'
 
     '''
     # 旧版本
@@ -40,9 +40,6 @@ class Config:
     # REDIS_URL = "redis://:password@localhost:6379/0"
     REDIS_URL = "redis://localhost:6379/0"
 
-    # REDIS_HOST = 'localhost'
-    # REDIS_PORT = 6379
-    # REDIS_DB = 0
     def __init__(self):
         pass
 

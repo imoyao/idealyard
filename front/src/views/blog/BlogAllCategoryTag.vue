@@ -85,9 +85,8 @@
         if(itemCount > 0){
           this.$router.push({path: `/${this.currentActiveName}/${id}`})
         }else{
-          this.$message({
+          this.$message.warning({
             message: '该技能树暂未点亮，请探索其他领域哦~',
-            type: 'warning',
             center: true,
             offset: 55
           });

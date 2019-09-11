@@ -50,7 +50,7 @@
           }
         }).catch(error => {
           if (error !== 'error') {
-            this.$message({type: 'error', message: '标签加载失败', showClose: true})
+            this.$message.error({message: '标签加载失败', showClose: true})
           }
         })
       },

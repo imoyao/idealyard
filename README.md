@@ -41,7 +41,7 @@ CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
 
     ```bash
     vi dot.env
-    mv dot.env .env
+    mv dot.env .env        # 参考 master 分支
     ```
 ## docker 支持
 

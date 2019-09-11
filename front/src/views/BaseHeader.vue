@@ -110,7 +110,7 @@
         if (!this.user.notConfirmed) {
           this.$router.push('/write')
         }else{
-          this.$message({message: '只有确认注册邮箱的用户才能写文章哦~', type: 'warning', showClose: true});
+          this.$message.warning({message: '只有确认注册邮箱的用户才能写文章哦~', showClose: true});
           return false
         }
       },
@@ -122,7 +122,7 @@
               this.$router.push('/signin')
             }).catch((error) => {
               if (error !== 'error') {
-                this.$message({message: error, type: 'error', showClose: true});
+                this.$message.error({message: error, type: 'error', showClose: true});
               }
             })
         }).catch(() => {
