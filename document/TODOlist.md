@@ -30,6 +30,7 @@
 - `vendor`文件过大
     参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
     参考[这里](https://segmentfault.com/q/1010000008832754) 
+    参考[这里](https://www.jianshu.com/p/e78c2210c410) 
     
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失

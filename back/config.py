@@ -40,9 +40,6 @@ class Config:
     # REDIS_URL = "redis://:password@localhost:6379/0"
     REDIS_URL = "redis://localhost:6379/0"
 
-    # REDIS_HOST = 'localhost'
-    # REDIS_PORT = 6379
-    # REDIS_DB = 0
     def __init__(self):
         pass
 

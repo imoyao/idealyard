@@ -167,7 +167,7 @@ class EmailApi(Resource):
         if email:
             # 此处使用celery发送重置邮件
             # TODO: 此处应该有失败和成功状态记录
-            task = celery_tasks.send_reset_password_mail_long_task.apply_async(args=(req_ip, email,), queue='mail',
+            task = celery_tasks.send_reset_password_mail_long_task.apply_async(args=(req_ip, email), queue='mail',
                                                                                routing_key='mail')
             self.response_obj['msg'] = 'Send mail success,please check your mail box.'
             resp = jsonify_with_args(self.response_obj, 201, {
