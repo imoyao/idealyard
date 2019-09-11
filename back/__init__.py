@@ -78,11 +78,3 @@ def create_app(config_name):
     # Load blueprints
     add_blueprints(app)
     return app
-
-
-def init_db(app):
-    """
-    初始化db
-    :return:
-    """
-    db.create_all(app=app)

@@ -92,26 +92,36 @@ sudo apt-get install supervisor
 yum install -y epel-release && yum install -y supervisor
 ```
 ### 配置
-编辑配置文件  
-```bash
-vi /etc/supervisor/conf.d/app.conf
-```
-写入  
-```bash
-[program:app]
-command=/usr/bin/gunicorn -c gun.py runserver:app
-# 项目根目录路径
-directory=/home/imoyao/iyblog
-startsecs=0
-stopwaitsecs=0
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-stderr_logfile=/var/log/app/app_err.log
-stdout_logfile=/var/log/app/app_out.log
-
-```
+- 编辑配置
+    ```bash
+    [supervisord]
+    logfile=/var/log/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log)
+    pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
+    childlogdir=/var/log/supervisor            ; ('AUTO' child log dir, default $TEMP)
+    environment=BD_APP_ID='',foo='bar'                                          # TODO:此处根据实际配置
+    ; the below section must remain in the config file for RPC
+    ……
+    ```
+- 编辑子应用配置文件  
+    ```bash
+    vi /etc/supervisor/conf.d/app.conf
+    ```
+    写入  
+    ```bash
+    [program:app]
+    command=/usr/bin/gunicorn -c gun.py runserver:app
+    # 项目根目录路径
+    directory=/home/imoyao/iyblog
+    startsecs=0
+    stopwaitsecs=0
+    autostart=true
+    autorestart=true
+    stopasgroup=true
+    killasgroup=true
+    stderr_logfile=/var/log/app/app_err.log
+    stdout_logfile=/var/log/app/app_out.log
+    
+    ```
 **注意**：
 - 上面的配置在`ubuntu`中以`.conf`结尾，在`CentOS`中以`.ini`结尾。
 
@@ -119,12 +129,12 @@ stdout_logfile=/var/log/app/app_out.log
 
 - 相关命令
 
-```bash
-supervisord -c /etc/supervisord.conf  # Ubuntu:/etc/supervisor/supervisord.conf
-supervisorctl start all/APP_NAME
-supervisorctl stop all/APP_NAME
-supervisorctl restart all/APP_NAME
-```
+    ```bash
+    supervisord -c /etc/supervisord.conf  # Ubuntu:/etc/supervisor/supervisord.conf
+    supervisorctl start all/APP_NAME
+    supervisorctl stop all/APP_NAME
+    supervisorctl restart all/APP_NAME
+    ```
 ## 使用celery
 执行`celery`必须有管理员权限
 ```bash

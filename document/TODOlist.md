@@ -34,6 +34,12 @@
     参考[这里](https://www.jianshu.com/p/e78c2210c410) 
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
+- [ ] 参考博客后端管理系统
+    - [基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)
+    - [vue-admin](https://github.com/taylorchen709/vue-admin)
+    - [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
+- [ ] footer只有半个
+- [ ] 时间线无法正常显示
 
 ## 后端
 
