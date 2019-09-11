@@ -203,7 +203,7 @@
                 "sha256:9ff1b1c5a354142de080b8a4e9803e5d0d59283c93aed808617c787d16768375",
                 "sha256:b7143592e374e50584564794fcb8aaf00a23025f9db866627f89a21491847a8d"
             ],
-            "version": "==0.20"
+            "version": "==0.21"
         },
         "itsdangerous": {
             "hashes": [
@@ -267,6 +267,13 @@
             ],
             "index": "pypi",
             "version": "==1.1.1"
+        },
+        "meld3": {
+            "hashes": [
+                "sha256:1efda676264490db2e30bfb81b27a918cc6d9c2de6d609491aa43410b9537eb9",
+                "sha256:a78cdcb6c0342b7ac82d900b584bd918ef72f86b60cdbf04754f840c070eb20c"
+            ],
+            "version": "==2.0.0"
         },
         "more-itertools": {
             "hashes": [
@@ -344,6 +351,14 @@
             ],
             "index": "pypi",
             "version": "==1.3.4"
+        },
+        "supervisor": {
+            "hashes": [
+                "sha256:43e87c7b572a94acdb586aaebb06844dae1aa02856b984c5a738032abd753fb7",
+                "sha256:9644990d21a1ba03b1a7ac5e9a0c0c62e12822e258f9e98f4a0b128461b3f10a"
+            ],
+            "index": "pypi",
+            "version": "==4.0.4"
         },
         "vine": {
             "hashes": [
