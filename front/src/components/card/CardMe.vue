@@ -67,7 +67,7 @@
           window.open(testStr)
         } else {
           const _title = testData.title
-          this.$message({
+          this.$message.info({
             title: _title,
             position: 'top-right',
             dangerouslyUseHTMLString: true,

@@ -218,19 +218,18 @@
           let postId = this.article.id
           let authorId = this.article.author.id
           deleteArticle(postId, authorId).then(data => {
-            this.$message({
+            this.$message.success({
               type: 'success',
               message: '删除成功!'
             });
             this.$router.push({path: '/'})
           }).catch(error => {
             if (error !== 'error') {
-              this.$message({type: 'error', message: '文章删除失败', showClose: true})
+              this.$message.error({message: '文章删除失败', showClose: true})
             }
           })
         }).catch(() => {
-          this.$message({
-            type: 'info',
+          this.$message.info({
             message: '已取消删除'
           });
         });

@@ -306,17 +306,17 @@
         // 更新文章时，添加英文标题的一行不可见
         this.newPost = !this.articleForm.id
         if (!this.articleForm.title) {
-          this.$message({message: '标题不能为空哦 👀', type: 'warning', showClose: true})
+          this.$message.warning({message: '标题不能为空哦 👀', showClose: true})
           return
         }
 
         if (this.articleForm.title.length > 30) {
-          this.$message({message: '标题不能大于30个字符', type: 'warning', showClose: true})
+          this.$message.warning({message: '标题不能大于30个字符', showClose: true})
           return
         }
 
         if (!this.articleForm.editor.ref.d_render) {
-          this.$message({message: '内容要满满的诚意哦 😜', type: 'warning', showClose: true})
+          this.$message.warning({message: '内容要满满的诚意哦 😜', showClose: true})
           return
         }
 

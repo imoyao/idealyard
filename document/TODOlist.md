@@ -10,7 +10,8 @@
 - [x] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
 - [x] cookie中密码没有加密
     - [参考这里](https://www.cnblogs.com/xiaolucky/p/11165179.html)
-- [ ] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
+- [x] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
+    [如何让Element UI的Message消息提示每次只弹出一个](https://segmentfault.com/a/1190000020173021) 
 
 
 ### TODO
@@ -31,7 +32,6 @@
     参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
     参考[这里](https://segmentfault.com/q/1010000008832754) 
     参考[这里](https://www.jianshu.com/p/e78c2210c410) 
-    
 - [ ] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
 
