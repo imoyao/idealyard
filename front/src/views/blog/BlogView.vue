@@ -252,7 +252,7 @@
             that.getCommentsByArticle()
           }).catch(error => {
             if (error !== 'error') {
-              that.$message({type: 'error', message: '文章加载失败', showClose: true})
+              that.$message.error({message: '文章加载失败', showClose: true})
             }
           })
         } else {
@@ -267,7 +267,7 @@
             that.getCommentsByArticle()
           }).catch(error => {
             if (error !== 'error') {
-              that.$message({type: 'error', message: '文章加载失败', showClose: true})
+              that.$message.error({message: '文章加载失败', showClose: true})
             }
           })
         }
@@ -279,13 +279,13 @@
         }
         that.comment.article.id = that.article.id
         publishComment(that.comment).then(data => {
-          that.$message({type: 'success', message: '评论成功', showClose: true})
+          that.$message.success({message: '评论成功', showClose: true})
           that.comments.unshift(data.data)
           that.commentCountsIncrement()
           that.comment.content = ''
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '评论失败', showClose: true})
+            that.$message.error({message: '评论失败', showClose: true})
           }
         })
       },
@@ -295,7 +295,7 @@
           that.comments = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '评论加载失败', showClose: true})
+            that.$message.error({message: '评论加载失败', showClose: true})
           }
         })
       },

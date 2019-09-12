@@ -164,7 +164,6 @@
       },
       getTaskStatus(taskName, location) {
         reqTaskStatus({taskName,location}).then(res => {
-          console.log('-=-=-=-=',location)
           let state = res.data.info.state
           this.mailDisable = state !== 'SUCCESS'
           // 成功之后清除定时器

@@ -297,7 +297,7 @@
 
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
+            that.$message.error({message: '文章加载失败', showClose: true})
           }
         })
       },
@@ -350,7 +350,6 @@
             // 关闭发布框
             this.publishVisible = false
             this.postSaved = true
-            console.log('this.articleForm.id', this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
@@ -360,7 +359,7 @@
             if (postId) {
               updateArticle(article).then((data) => {
                 loading.close();
-                that.$message({message: '文章更新成功', type: 'success', showClose: true})
+                that.$message.success({message: '文章更新成功',showClose: true})
                 let identifier = data.data.identifier
                 let slug = data.data.slug
                 that.$router.push({path: `/posts/${identifier}/${slug}`})
@@ -368,20 +367,20 @@
                 loading.close();
                 if (error !== 'error') {
                   console.log(error)
-                  // that.$message({message: error, type: 'error', showClose: true});
+                  // that.$message.error({message: error, showClose: true});
                 }
               })
             } else {    // 发表文章
               publishArticle(article).then((data) => {
                 loading.close()
-                that.$message({message: '发布成功啦', type: 'success', showClose: true})
+                that.$message.success({message: '发布成功啦', showClose: true})
                 let identifier = data.data.identifier
                 let slug = data.data.slug
                 that.$router.push({path: `/posts/${identifier}/${slug}`})
               }).catch((error) => {
                 loading.close()
                 if (error !== 'error') {
-                  that.$message({message: error, type: 'error', showClose: true})
+                  that.$message.error({message: error, showClose: true})
                 }
               })
             }
@@ -406,7 +405,7 @@
           that.categories = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+            that.$message.error({message: '文章分类加载失败', showClose: true})
           }
         })
         // console.log('edit-or-new', this.$route.params.id)
@@ -425,7 +424,7 @@
             })
           }).catch(error => {
             if (error !== 'error') {
-              that.$message({type: 'error', message: '标签加载失败', showClose: true})
+              that.$message.error({message: '标签加载失败', showClose: true})
             }
           })
         }

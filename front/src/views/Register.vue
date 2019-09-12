@@ -134,11 +134,11 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             that.$store.dispatch('register', that.userForm).then(() => {
-              that.$message({message: '注册成功 快写文章吧', type: 'success', showClose: true});
+              that.$message.success({message: '注册成功 快写文章吧', showClose: true});
               that.$router.push({path: '/'})
             }).catch((error) => {
               if (error !== 'error') {
-                that.$message({message: error, type: 'error', showClose: true});
+                that.$message.error({message: error, showClose: true});
               }
             })
 

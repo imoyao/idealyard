@@ -108,7 +108,7 @@
         }
 
         publishComment(that.reply).then(data => {
-          that.$message({type: 'success', message: '评论成功', showClose: true})
+          that.$message.success({message: '评论成功', showClose: true})
           if(!that.comment.childrens){
             that.comment.childrens = []
           }
@@ -117,7 +117,7 @@
           that.showComment(that.commentShowIndex)
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '评论失败', showClose: true})
+            that.$message.error({message: '评论失败', showClose: true})
           }
         })
 
