@@ -98,7 +98,7 @@
           that.categories = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+            that.$message.error({message: '文章分类加载失败', showClose: true})
           }
         })
       },
@@ -108,7 +108,7 @@
           that.tags = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '标签加载失败', showClose: true})
+            that.$message.error({message: '标签加载失败', showClose: true})
           }
         })
       }
