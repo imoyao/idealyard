@@ -10,12 +10,12 @@
 - [x] 点击页内锚点，跳转到文章分类页面，应该在本页面内跳转
 - [x] cookie中密码没有加密
     - [参考这里](https://www.cnblogs.com/xiaolucky/p/11165179.html)
-- [x] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可
+- [x] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可     
     [如何让Element UI的Message消息提示每次只弹出一个](https://segmentfault.com/a/1190000020173021) 
 
 
 ### TODO
-- [x] 标签云
+- [x] 标签云   
 ~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~     
 ~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~     
 ~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~     
@@ -28,7 +28,7 @@
    - [x] 消息提示已完成
    - [ ] 需要完成激活邮箱
    
-- `vendor`文件过大
+- `vendor`文件过大  
     参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
     参考[这里](https://segmentfault.com/q/1010000008832754) 
     参考[这里](https://www.jianshu.com/p/e78c2210c410) 
@@ -105,7 +105,8 @@
     - [x] 发送邮件改为Celery异步
     - [x] tidy code
 - [ ] 盘古之白
-    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。
+    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。     
+    
     [中文文案排版指北](https://github.com/sparanoid/chinese-copywriting-guidelines)
     1. [python版本](https://github.com/hustcc/hint)
     2. [python版本](https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk)
