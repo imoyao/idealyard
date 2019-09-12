@@ -107,3 +107,4 @@ node_modules/
 
 .idea/
 front/dist.zip
+front/config/dev.env.js
