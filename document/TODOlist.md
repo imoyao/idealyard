@@ -15,10 +15,12 @@
 
 
 ### TODO
-- [x] 标签云
-~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~     
-~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~     
-~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~     
+- [x] 标签云   
+~~参考[这里](https://github.com/MikeCoder/hexo-tag-cloud)~~      
+~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~         
+~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~      
+参考[VueWordCloud](https://github.com/SeregPie/VueWordCloud)  
+   
 - [x] 记住密码
 - [x] 标签、分类页面，item数量为0时，点击事件 disable
 - [x] 找回密码
@@ -28,10 +30,10 @@
    - [x] 消息提示已完成
    - [ ] 需要完成激活邮箱
    
-- `vendor`文件过大
+- `vendor`文件过大  
     参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
-    参考[这里](https://segmentfault.com/q/1010000008832754) 
-    参考[这里](https://www.jianshu.com/p/e78c2210c410) 
+    参考[这里](https://segmentfault.com/q/1010000008832754)     
+    参考[这里](https://www.jianshu.com/p/e78c2210c410)  
 - [x] 盘古之白
     > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。
     
