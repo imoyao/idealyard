@@ -127,7 +127,8 @@
 </template>
 
 <script>
-  import pangu from 'pangu';
+  import { fix as fixSpace } from 'lint-md';
+
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, reqArticleById, updateArticle, reqArticleSlug} from '@/api/article'
@@ -330,9 +331,9 @@
             this.articleForm.tags.map(function (item) {
               return item.tagname;
             });
-            const panTitle = pangu.spacing(this.articleForm.title);
-            const panSummary = pangu.spacing(this.articleForm.summary);
-            const panContent = pangu.spacing(this.articleForm.editor.value);
+            const panTitle = fixSpace(this.articleForm.title);
+            const panSummary = fixSpace(this.articleForm.summary);
+            const panContent = fixSpace(this.articleForm.editor.value);
             let article = {
               // 带上用户信息
               authorId: this.$store.state.id,
