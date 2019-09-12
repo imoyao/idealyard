@@ -18,6 +18,8 @@
   pymysql.err.InternalError: (1366, "Incorrect string value: '\\xF0\\x9F\\x98\\x98</...' for column 'content_html' at row 1")
 
   ``` 
+- [x] token超时时弹出很多message,应该使用更友好的方式！！！或者精准提示，一次只提示一条即可     
+    [如何让Element UI的Message消息提示每次只弹出一个](https://segmentfault.com/a/1190000020173021) 
 
 
 ### TODO
@@ -26,7 +28,6 @@
 ~~参考[这里](https://juejin.im/post/5c99a0f7e51d454e9b3c3343)~~         
 ~~参考[这里](https://github.com/nobalmohan/vue-tag-cloud)~~      
 参考[VueWordCloud](https://github.com/SeregPie/VueWordCloud)  
-   
 - [x] 记住密码
 - [x] 标签、分类页面，item数量为0时，点击事件 disable
 - [x] 找回密码
@@ -114,7 +115,8 @@
     - [x] 发送邮件改为Celery异步
     - [x] tidy code
 - [ ] 盘古之白
-    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。
+    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。     
+    
     [中文文案排版指北](https://github.com/sparanoid/chinese-copywriting-guidelines)
     1. [python版本](https://github.com/hustcc/hint)
     2. [python版本](https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk)
