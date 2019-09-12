@@ -19,6 +19,7 @@
     "crypto-js": "^3.1.9-1",
     "element-ui": "^2.10.1",
     "mavon-editor": "^2.7.5",
+    "pangu": "^4.0.7",
     "vue": "^2.6.10",
     "vue-router": "^3.0.1",
     "vuewordcloud": "^18.7.11",

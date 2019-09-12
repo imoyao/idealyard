@@ -32,7 +32,14 @@
     参考[这里](https://forum.vuejs.org/t/vue-cli-vendor-js/37246)   
     参考[这里](https://segmentfault.com/q/1010000008832754) 
     参考[这里](https://www.jianshu.com/p/e78c2210c410) 
-- [ ] 需要增加用户详情页，编辑用户信息
+- [x] 盘古之白
+    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。
+    
+    [中文文案排版指北](https://github.com/sparanoid/chinese-copywriting-guidelines)
+    1. [python版本](https://github.com/hustcc/hint)
+    2. [python版本](https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk)
+    
+- [x] 需要增加用户详情页，编辑用户信息
 - [ ] 使aside侧边栏固定，不会随鼠标滚动消失
 - [ ] 参考博客后端管理系统
     - [基于vue全家桶 + element-ui 构建的一个后台管理集成解决方案](https://github.com/uncleLian/vue-blog)
@@ -97,6 +104,11 @@
     - [x] 通过则设置密码，否则重新发送并重新设置密码；
     - [x] 发送邮件改为Celery异步
     - [x] tidy code
+- [ ] 盘古之白
+    > 有研究显示，打字的时候不喜欢在中文和英文之间加空格的人，感情路都走得很辛苦，有七成的比例会在 34 岁的时候跟自己不爱的人结婚，而其餘三成的人最后只能把遗產留给自己的猫。毕竟爱情跟书写都需要适时地留白。
+    [中文文案排版指北](https://github.com/sparanoid/chinese-copywriting-guidelines)
+    1. [python版本](https://github.com/hustcc/hint)
+    2. [python版本](https://github.com/hjiang/scripts/blob/master/add-space-between-latin-and-cjk)
     
 - [ ] 使用celery备份博客
     1. 每创建一篇文章；自动生成`xxxx.md`用于静态博客；

@@ -38,11 +38,11 @@
           if (data.code == 0) {
             that.$refs.md.$img2Url(pos, data.data.url);
           } else {
-            that.$message({message: data.msg, type: 'error', showClose: true})
+            that.$message.error({message: data.msg, showClose: true})
           }
 
         }).catch(err => {
-          that.$message({message: err, type: 'error', showClose: true});
+          that.$message.error({message: err, showClose: true});
         })
       }
     },

@@ -86,7 +86,7 @@
         }).catch(error => {
           if (error !== 'error') {
             console.log(error)
-            // that.$message({type: 'error', message: '最热文章加载失败!', showClose: true})
+            // that.$message.error({message: '最热文章加载失败!', showClose: true})
           }
         })
       },
@@ -97,7 +97,7 @@
         }).catch(error => {
           if (error !== 'error') {
             console.log(error)
-            // that.$message({type: 'error', message: '最新文章加载失败!', showClose: true})
+            // that.$message.error({message: '最新文章加载失败!', showClose: true})
           }
         })
       },
@@ -108,7 +108,7 @@
         }).catch(error => {
           if (error !== 'error') {
             console.log(error)
-            // that.$message({type: 'error', message: '最热标签加载失败!', showClose: true})
+            // that.$message.error({message: '最热标签加载失败!', showClose: true})
           }
         })
       },

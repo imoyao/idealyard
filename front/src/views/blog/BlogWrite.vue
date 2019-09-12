@@ -127,6 +127,7 @@
 </template>
 
 <script>
+  import pangu from 'pangu';
   import BaseHeader from '@/views/BaseHeader'
   import MarkdownEditor from '@/components/markdown/MarkdownEditor'
   import {publishArticle, reqArticleById, updateArticle, reqArticleSlug} from '@/api/article'
@@ -219,7 +220,7 @@
         rules: {
           summary: [
             {required: true, message: '请输入摘要', trigger: 'blur'},
-            {max: 80, message: '不能大于80个字符', trigger: 'blur'}
+            {max: 200, message: '不能大于 200 个字符', trigger: 'blur'}
           ],
           category: [
             {required: true, message: '请选择文章分类', trigger: 'change'}
@@ -247,7 +248,6 @@
         })
       },
       handleSelect(item) {
-        console.log(item)
       },
       handleClose(tag) {
         this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -297,7 +297,7 @@
 
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章加载失败', showClose: true})
+            that.$message.error({message: '文章加载失败', showClose: true})
           }
         })
       },
@@ -330,19 +330,22 @@
             this.articleForm.tags.map(function (item) {
               return item.tagname;
             });
+            const panTitle = pangu.spacing(this.articleForm.title);
+            const panSummary = pangu.spacing(this.articleForm.summary);
+            const panContent = pangu.spacing(this.articleForm.editor.value);
             let article = {
               // 带上用户信息
               authorId: this.$store.state.id,
               id: this.articleForm.id,
-              title: this.articleForm.title,
-              summary: this.articleForm.summary,
+              title: panTitle,
+              summary: panSummary,
               category: this.articleForm.category,
               slug: this.articleForm.slug,
               dynamicTags: this.dynamicTags,
               tags: this.articleForm.tags,
               weight: this.topPost,
               body: {
-                content: this.articleForm.editor.value,
+                content: panContent,
                 contentHtml: this.articleForm.editor.ref.d_render
               }
 
@@ -350,7 +353,6 @@
             // 关闭发布框
             this.publishVisible = false
             this.postSaved = true
-            console.log('this.articleForm.id', this.articleForm.id)
             let loading = this.$loading({
               lock: true,
               text: '发布中，请稍后...'
@@ -360,7 +362,7 @@
             if (postId) {
               updateArticle(article).then((data) => {
                 loading.close();
-                that.$message({message: '文章更新成功', type: 'success', showClose: true})
+                that.$message.success({message: '文章更新成功', showClose: true})
                 let identifier = data.data.identifier
                 let slug = data.data.slug
                 that.$router.push({path: `/posts/${identifier}/${slug}`})
@@ -368,20 +370,20 @@
                 loading.close();
                 if (error !== 'error') {
                   console.log(error)
-                  // that.$message({message: error, type: 'error', showClose: true});
+                  // that.$message.error({message: error, showClose: true});
                 }
               })
             } else {    // 发表文章
               publishArticle(article).then((data) => {
                 loading.close()
-                that.$message({message: '发布成功啦', type: 'success', showClose: true})
+                that.$message.success({message: '发布成功啦', showClose: true})
                 let identifier = data.data.identifier
                 let slug = data.data.slug
                 that.$router.push({path: `/posts/${identifier}/${slug}`})
               }).catch((error) => {
                 loading.close()
                 if (error !== 'error') {
-                  that.$message({message: error, type: 'error', showClose: true})
+                  that.$message.error({message: error, showClose: true})
                 }
               })
             }
@@ -406,7 +408,7 @@
           that.categories = data.data
         }).catch(error => {
           if (error !== 'error') {
-            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+            that.$message.error({message: '文章分类加载失败', showClose: true})
           }
         })
         // console.log('edit-or-new', this.$route.params.id)
@@ -425,7 +427,7 @@
             })
           }).catch(error => {
             if (error !== 'error') {
-              that.$message({type: 'error', message: '标签加载失败', showClose: true})
+              that.$message.error({message: '标签加载失败', showClose: true})
             }
           })
         }
