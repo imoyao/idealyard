@@ -127,7 +127,7 @@
                 that.$refs.userForm.fields[1].validateMessage = "请确认登录信息是否正确"
                 that.$refs.userForm.fields[1].validateState = "error"
                 that.$refs.userForm.fields[0].validateState = "error"
-                // that.$message({message: error, type: 'error', showClose: true});
+                // that.$message.error({message: error, showClose: true});
                 this.logining = false
               }
             })
