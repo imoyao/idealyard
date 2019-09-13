@@ -29,8 +29,6 @@
 
           <div class="me-view-tag">
             标签：
-            <!--<el-tag v-for="t in article.tags" :key="t.id" class="me-view-tag-item" size="mini" type="success">{{t.tagname}}</el-tag>-->
-
             <el-button @click="tagOrCategory('tag', t.id)" size="mini" type="primary" v-for="t in article.tags"
                        :key="t.id" round plain>{{t.tagname}}
             </el-button>
@@ -38,7 +36,6 @@
 
           <div class="me-view-tag">
             分类：
-            <!--<span style="font-weight: 600">{{article.category.categoryname}}</span>-->
             <el-button @click="tagOrCategory('category', article.category.id)" size="mini" type="primary" round plain>
               {{article.category.categoryname}}
             </el-button>
@@ -189,13 +186,13 @@
           })
         })
       },
-      addReadCount: function() {
+      addReadCount: function () {
         let that = this
-        if (this.postId){
+        if (this.postId) {
           patchCount(this.postId).then(data => {
             this.viewCount = data.data.count
           })
-        }else{
+        } else {
           let postIdentifier = that.$route.params.identifier
           identiferCount(postIdentifier).then(data => {
             this.viewCount = data.data.count
@@ -234,7 +231,7 @@
           });
         });
       },
-      getArticle () {
+      getArticle() {
         let that = this
         this.postId = that.$route.params.id
         let postIdentifier = that.$route.params.identifier
@@ -324,92 +321,6 @@
 </script>
 
 <style>
-  .me-view-body {
-    margin: 100px auto 140px;
-  }
-
-  .me-view-container {
-    width: 700px;
-  }
-
-  .el-main {
-    overflow: hidden;
-  }
-
-  .me-view-title {
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .me-view-author {
-    margin-top: 30px;
-    vertical-align: middle;
-  }
-
-  .me-view-picture {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    vertical-align: middle;
-    background-color: #5fb878;
-  }
-
-  .me-view-info {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 8px;
-  }
-
-  .me-view-meta {
-    font-size: 12px;
-    color: #969696;
-  }
-
-  .me-view-end {
-    margin-top: 20px;
-  }
-
-  .me-view-tag {
-    margin-top: 20px;
-    padding-left: 6px;
-    border-left: 4px solid #c5cac3;
-  }
-
-  .me-view-tag-item {
-    margin: 0 4px;
-  }
-
-  .me-view-comment {
-    margin-top: 60px;
-  }
-
-  .me-view-comment-title {
-    font-weight: 600;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 20px;
-  }
-
-  .me-view-comment-write {
-    margin-top: 20px;
-  }
-
-  .me-view-comment-text {
-    font-size: 16px;
-  }
-
-  .v-show-content {
-    padding: 8px 25px 15px 0px !important;
-  }
-
-  .v-note-wrapper .v-note-panel {
-    box-shadow: none !important;
-  }
-
-  .v-note-wrapper .v-note-panel .v-note-show .v-show-content, .v-note-wrapper .v-note-panel .v-note-show .v-show-content-html {
-    background: #fff !important;
-  }
 
   blockquote {
     background-color: #fff6f7;
@@ -419,15 +330,6 @@
     padding: .5em 10px !important;
     quotes: "\201C" "\201D" "\2018" "\2019" !important;
     font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
-  }
-
-  .el-divider__text {
-    position: absolute;
-    background-color: #fff;
-    padding: 0 20px;
-    font-weight: 500;
-    color: #cc2a41;
-    font-size: 14px;
   }
 
 </style>

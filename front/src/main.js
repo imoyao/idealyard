@@ -9,6 +9,7 @@ import lodash from 'lodash'
 import ElementUI, {Message} from 'element-ui'
 import '@/assets/theme/index.css'
 import '@/assets/iyicon/iconfont.css'
+import '@/assets/css/style.css'
 
 import {formatTime} from "./utils/time";
 
