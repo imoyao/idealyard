@@ -50,7 +50,7 @@
           <el-button-group style="position: absolute;left: 60%;" v-if="this.article.author.id === this.$store.state.id">
             <el-button @click="editArticle()" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
             <!--<el-button @click="btnVisable()" size="mini" type="primary" icon="el-icon-share" plain></el-button>-->
-            <!--<el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>-->
+            <el-button @click="delArticle()" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           </el-button-group>
 
           <div class="me-view-comment">
@@ -181,13 +181,13 @@
         })
       },
       // 统计+1
-      addReadCount(){
+      addReadCount() {
         let that = this
-        if (that.postId){
+        if (that.postId) {
           patchCount(that.postId).then(data => {
             this.viewCount = data.data.count
           })
-        }else{
+        } else {
           let postIdentifier = this.identifier
           identiferCount(postIdentifier).then(data => {
             this.viewCount = data.data.count
@@ -289,92 +289,6 @@
 </script>
 
 <style>
-  .me-view-body {
-    margin: 100px auto 140px;
-  }
-
-  .me-view-container {
-    width: 700px;
-  }
-
-  .el-main {
-    overflow: hidden;
-  }
-
-  .me-view-title {
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .me-view-author {
-    margin-top: 30px;
-    vertical-align: middle;
-  }
-
-  .me-view-picture {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    vertical-align: middle;
-    background-color: #5fb878;
-  }
-
-  .me-view-info {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 8px;
-  }
-
-  .me-view-meta {
-    font-size: 12px;
-    color: #969696;
-  }
-
-  .me-view-end {
-    margin-top: 20px;
-  }
-
-  .me-view-tag {
-    margin-top: 20px;
-    padding-left: 6px;
-    border-left: 4px solid #c5cac3;
-  }
-
-  .me-view-tag-item {
-    margin: 0 4px;
-  }
-
-  .me-view-comment {
-    margin-top: 60px;
-  }
-
-  .me-view-comment-title {
-    font-weight: 600;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 20px;
-  }
-
-  .me-view-comment-write {
-    margin-top: 20px;
-  }
-
-  .me-view-comment-text {
-    font-size: 16px;
-  }
-
-  .v-show-content {
-    padding: 8px 25px 15px 0px !important;
-  }
-
-  .v-note-wrapper .v-note-panel {
-    box-shadow: none !important;
-  }
-
-  .v-note-wrapper .v-note-panel .v-note-show .v-show-content, .v-note-wrapper .v-note-panel .v-note-show .v-show-content-html {
-    background: #fff !important;
-  }
 
   blockquote {
     background-color: #fff6f7;
@@ -387,15 +301,6 @@
     font-weight: bold;
     font-size: 14px;
     font-family: 'Open Sans', "Helvetica Neue", "Helvetica", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif
-  }
-
-  .el-divider__text {
-    position: absolute;
-    background-color: #fff;
-    padding: 0 20px;
-    font-weight: 500;
-    color: #cc2a41;
-    font-size: 14px;
   }
 
 </style>
