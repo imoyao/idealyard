@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by imoyao at 2019/7/18 10:00
-import hashlib
 from flask import current_app, g
 from sqlalchemy import or_
 from itsdangerous import (TimedJSONWebSignatureSerializer
@@ -176,30 +175,7 @@ class PostUserCtrl:
         return captcha_obj.shuffle()
 
     @staticmethod
-    def makeup_send_reset_pw_mail(req_ip, captcha):
-        """
-
-        :param req_ip:
-        :param captcha:
-        :return:
-        """
-        email_data = dict()
-        _subject = '重设别院牧志帐号密码'
-        _body = f'''
-已收到你的密码重设要求，请输入验证码：{captcha}，该验证码 {setting.TEMPORARY_PW_EXPIRE_MINUTES} 分钟内有效。
-本次请求者IP为：{req_ip} ，若非您本人操作，请及时修改登录密码，以保证账户安全。 
-
-感谢对 别院牧志 的支持，再次希望你在 别院牧志 的体验有益和愉快。
-
--- 别院牧志
-
-(这是一封自动产生的 email ，请勿回复。)
-'''
-        email_data['subject'] = _subject
-        email_data['body'] = _body
-        return email_data
-
-    def send_reset_pw_mail(self, req_ip, captcha, receiver):
+    def send_reset_pw_mail(req_ip, captcha, receiver):
         """
         同步发送邮件
         :param req_ip:
@@ -207,7 +183,7 @@ class PostUserCtrl:
         :param receiver:
         :return:
         """
-        _email_data = self.makeup_send_reset_pw_mail(req_ip, captcha)
+        _email_data = sender.makeup_send_reset_pw_mail(req_ip, captcha)
         sender.send_mail(_email_data['subject'], receiver, _email_data['body'])
 
     @staticmethod

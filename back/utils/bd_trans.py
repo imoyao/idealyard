@@ -56,13 +56,12 @@ class BaiduTrans:
         :return:
         """
         join_sign = None
+        logger = flask_logger.register_logger(__name__)
         try:
-            logger = flask_logger.register_logger(__name__)
             logger.info(f'{[self.appid, self.q, str(self.salt), self.secretKey]}')
             join_sign = ''.join([self.appid, self.q, str(self.salt), self.secretKey])
         except TypeError:
             print('Check you env for baidu translate API.')
-        logger = flask_logger.register_logger(__name__)
         logger.info(f'{join_sign}')
         assert join_sign
         _sign = md5_encrypt(join_sign)

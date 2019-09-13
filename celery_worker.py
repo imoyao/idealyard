@@ -14,12 +14,11 @@ import os
 
 from celery.schedules import crontab
 
-from back import create_app
+from back import setting
 from back.celery_components import tasks
-from back.celery_components import init_celery
+from back.celery_components import celery_app
 
-flask_app = create_app(os.getenv('FLASK_CONFIG', 'default'))
-celery = init_celery(flask_app)
+celery = celery_app
 
 
 @celery.on_after_configure.connect
@@ -34,15 +33,15 @@ def setup_periodic_tasks(sender, **kwargs):
     # sender.add_periodic_task(10.0, tasks.write_bmc_power_state_to_db,
     #                          name='write_bmc_power_state_to_db every 10s')
 
-    # sender.add_periodic_task(3000.0, tasks.my_add(2, 3), name='my_add every 5min')
+    sender.add_periodic_task(300.0, tasks.send_backup_data_mail(setting.SEND_BACKUP_TO_MAIL),
+                             name='send_backup_data_mail every 1 min.')
 
     # Calls log('Logging Stuff') every 30 seconds
-    sender.add_periodic_task(300.0, tasks.log.s('Logging Stuff'), name='Log every 300s')
-    # sender.add_periodic_task(30.0, tasks.send_reset_password_mail_long_task('0.0.0.0', 'emailme8@163.com'),
-    #                          name='my_add every 5min')
+    sender.add_periodic_task(60 * 60, tasks.log.s('Logging Stuff'), name='Log every an hour.')
 
-    # Executes every Monday morning at 7:30 a.m.
+    # Executes every Monday morning at 10:00 a.m.
     sender.add_periodic_task(
-        crontab(hour=7, minute=30, day_of_week=1),
-        tasks.log.s('Monday morning log!'),
+        crontab(hour=10, minute=0, day_of_week=1),
+        tasks.send_backup_data_mail(setting.SEND_BACKUP_TO_MAIL),
+        name='Send mail Monday of every week.'
     )

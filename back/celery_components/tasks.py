@@ -13,12 +13,14 @@ import time
 from celery.utils.log import get_task_logger
 
 from back.controller.authctrl import PostUserCtrl
+from back.controller.backup import BackupCtrl
 
 from back.celery_components import celery_app
 
-auth_ctrl = PostUserCtrl()
 # https://blog.csdn.net/qq_27437781/article/details/83507110
 logger = get_task_logger(__name__)
+auth_ctrl = PostUserCtrl()
+backer = BackupCtrl()
 
 
 @celery_app.task(bind=True)
@@ -53,6 +55,22 @@ def send_reset_password_mail_long_task(self, req_ip, email):
     :return:
     """
     ret = auth_ctrl.reset_pw_action(req_ip, email)
+    return ret
+
+
+@celery_app.task(bind=True)
+def send_backup_data_mail(self, email):
+    """
+    发送备份文件，同时完成备份文件整理工作
+    :param self:
+    :param email:
+    :return:
+    """
+    logger.info(f'send mail to {email}.')
+    back_packages = backer.mail_back_up_action(email)
+    logger.info(f'send mail to f---back_packages----------00000000000--- {back_packages}.')
+    ret = backer.rename_and_remove_back_up(back_packages)
+    logger.info(f'send mail to------ret------12335436-- f{ret}.')
     return ret
 
 
