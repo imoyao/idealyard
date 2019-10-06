@@ -18,10 +18,10 @@ mysql  Ver 14.14 Distrib 5.7.26, for linux-glibc2.12 (x86_64) using  EditLine wr
 
 ```sql
 CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';
-CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
-grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
 -- 如果需要支持emoji，则设置utf8mb4编码。否则使用utf-8编码即可
 CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
+grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
+flush privileges;
 ```
 ### 环境配置
 
