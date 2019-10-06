@@ -18,10 +18,10 @@ mysql  Ver 14.14 Distrib 5.7.26, for linux-glibc2.12 (x86_64) using  EditLine wr
 
 ```sql
 CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';
-CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
-grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
 -- 如果需要支持emoji，则设置utf8mb4编码。否则使用utf-8编码即可
 CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
+grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
+flush privileges;
 ```
 ### 环境配置
 
@@ -54,11 +54,14 @@ pass
 如果有同学需要`PR`，可以参考此处已知未解决问题和`bug`单。
 
 ## 更多
-
+与其在别处仰望,不如在这里并肩。 
 开发模式配置及说明参见[更多文档](./document/deploy.md)
 
-## 致谢
-与其在别处仰望 不如在这里并肩。    
+### 代码概览
+
+目录结构和代码量统计参考[此处](./document/README.MD)  
+
+## 致谢   
 感谢 G 小姐[@Sabiner](https://github.com/Sabiner)的鼓励才会产生动手写个人博客的想法。一切缘起，都要从丘处机路过牛家村的那个下午说起……
 
 ![不试怎么知道做不到呢？](./document/src/img_20190910153859.jpg)

@@ -98,7 +98,7 @@ yum install -y epel-release && yum install -y supervisor
     logfile=/var/log/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log)
     pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
     childlogdir=/var/log/supervisor            ; ('AUTO' child log dir, default $TEMP)
-    environment=BD_APP_ID='',foo='bar'                                          # TODO:此处根据实际配置
+    environment=BD_APP_ID='',foo='bar'                                          # TODO:此处根据实际配置环境变量
     ; the below section must remain in the config file for RPC
     ……
     ```
@@ -160,5 +160,16 @@ PONG
 `6379.conf` 所在目录：
 ```bash
 /etc/redis/6379.conf
+```
+
+## 数据库
+
+### 导出数据库数据
+```sql
+mysqldump -h主机名 -P端口 -u用户名 -p密码 --databases 数据库名 | gzip > 文件名.sql.gz
+```
+### 导入数据库
+```sql
+
 ```
 
