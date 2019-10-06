@@ -25,10 +25,10 @@ mysql  Ver 15.1 Distrib 5.5.64-MariaDB, for Linux (x86_64) using readline 5.1
 
 ```sql
 CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';
-CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
-grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
 -- 如果需要支持emoji，则设置utf8mb4编码。否则使用utf-8编码即可
 CREATE DATABASE DATABASENAME CHARSET=utf8mb4;
+grant all privileges on DATABASENAME.* to USERNAME@localhost identified by 'PASSWORD';
+flush privileges;
 ```
 ### 环境配置
 
@@ -66,6 +66,7 @@ pass
 ### 代码概览
 
 目录结构和代码量统计参考[此处](./document/README.MD)  
+
 
 ### 前端概览    
 ![网站概览](document/src/overview.gif)  
@@ -108,6 +109,6 @@ pass
 做出可口的饭，
 善打架，
 勇敢地死去。
-只有昆虫才专业化。
+只有昆虫才囿于一门。
 
 -- 罗伯特·安森·海因莱因  《时间足够你爱》
