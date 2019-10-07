@@ -21,7 +21,7 @@ mysql  Ver 15.1 Distrib 5.5.64-MariaDB, for Linux (x86_64) using readline 5.1
 ```
 ### 创建数据库
 
-开发模式数据库：`iyblog_dev`，此处可以在[此处](back/config.py)修改配置
+开发模式数据库：`iyblog_dev`，可以在[此处](back/config.py)修改配置
 
 ```sql
 CREATE USER 'USERNAME'@'localhost' IDENTIFIED BY 'PASSWORD';
