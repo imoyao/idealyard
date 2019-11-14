@@ -21,15 +21,24 @@ mkdir -p /usr/local/python3
 
 make && make install
 ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+```
+```sh
 which python3
 /usr/bin/python3
+```
+```sh
 python3 --version
 Python 3.6.9
-
--bash-4.2# ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
--bash-4.2# pip3 -V
+```
+```shell
+# pip3
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+pip3 -V
 pip 19.0.3 from /usr/local/python3/lib/python3.6/site-packages/pip (python 3.6)
 
+# pipenv
+pip3 install pipenv
+ln -s /usr/local/python3/bin/pipenv /usr/bin/pipenv
 ```
 ### 安装 Celery
 
@@ -61,7 +70,7 @@ error: command 'gcc' failed with exit status 1
 yum install python-devel
 
 ```
-## 配置YUM 源
+## 配置 YUM 源
 
 ```bash
 -bash-4.2# vi /etc/yum.repos.d/c7.repo 
