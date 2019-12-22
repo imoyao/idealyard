@@ -1,4 +1,5 @@
 # IdealYard
+[![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
 使用 `Vue` 和 `Flask` 搭建前后端分离的 RESTful 个人博客。
 ## 前置条件  
