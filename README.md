@@ -3,7 +3,7 @@
 
 使用 `Vue` 和 `Flask` 搭建前后端分离的 RESTful 个人博客。
 
-关于该项目的部分说明可在此处找到👉[About IdealYard](http://localhost:4000/categories/Projects/IdealYard/)，如果没有，有需要的请邮件或者Issues交流；
+关于该项目的部分说明可在此处找到👉[About IdealYard](https://masantu.com/categories/Projects/IdealYard/)，如果没有，有需要的请邮件或者 Issues 交流；
 
 ## ⚠ 注意
 该博客仅用于学习原理，前端页面并**未实现**响应式布局，暂时也没有精力去实现，博客内容也没有时间去打理。关于日常的记录博客主要在[别院牧志](https://imoyao.github.io/)之中更新。 
