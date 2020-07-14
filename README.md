@@ -6,7 +6,7 @@
 关于该项目的部分说明可在此处找到👉[About IdealYard](https://masantu.com/categories/Projects/IdealYard/)，如果没有，有需要的请邮件或者 Issues 交流；
 
 ## ⚠ 注意
-该博客仅用于学习原理，前端页面并**未实现**响应式布局，暂时也没有精力去实现，博客内容也没有时间去打理。关于日常的记录博客主要在[别院牧志](https://imoyao.github.io/)之中更新。 
+该博客仅用于学习原理，前端页面并**未实现**响应式布局，暂时也没有精力去实现，博客内容也没有时间去打理。关于日常的记录博客主要在[别院牧志](https://imoyao.github.io/)之中更新。   
 如果是初学者，推荐一本国人书籍给大家《Flask Web开发实战：入门、进阶与原理解析》，我也是本书阅读者与受益者。同时建议多去这个网站看看：[HelloFlask - Flask资源集合地](http://helloflask.com/)
 
 ## 前置条件  
