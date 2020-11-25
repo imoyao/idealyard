@@ -10,6 +10,18 @@
 
 如果你是 Flask 初学者，推荐一本国人书籍给大家《Flask Web开发实战：入门、进阶与原理解析》，本人也是该书的阅读者与受益者。同时建议多去这个网站看看：[HelloFlask - Flask资源集合地](http://helloflask.com/)
 
+由于服务器到期，本博客暂无演示功能，如果有同学部署上线可以提供演示链接则非常感谢。暂时请点击下方链接观看简单的功能演示。
+
+[使用 Vue 和 Flask 搭建前后端分离的 RESTful 个人博客功能展示_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili](https://www.bilibili.com/video/BV11v411v76q?zw)
+
+## 交流
+1. 技术问题请尽量使用[Issues · imoyao/idealyard](https://github.com/imoyao/idealyard/issues)提问回馈社区，参阅：[Issue #15 · imoyao/idealyard](https://github.com/imoyao/idealyard/issues/15)
+2. 在网友的提议下建立了 QQ 群，群号：613922612。但是请注意：该项目为单纯开源，本人并不靠此盈利（有自己的砖要搬），在可预见的未来也**没有可能**投入到为大家答疑解惑中去。所以该群的目的更多是建立一个小白之间互相交流的途径。如果可能，请在公开场合讨论你的问题而不是简单地抛出截图等待答案。
+
+![QQ 群扫码关注](document/src/idealyard-qq-group.png)
+
+3. 友善、友善、友善。网络一线牵，珍惜这段缘。请务必和善、诚恳地对待其他同学。
+
 ## 前置条件  
 
 ### Python
