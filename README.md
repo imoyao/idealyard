@@ -6,13 +6,14 @@
 关于该项目的部分说明可在此处找到👉[About IdealYard](https://masantu.com/categories/Projects/IdealYard/)，如果没有找到需要的内容，请邮件或者 Issues 交流；
 
 ## ⚠ 注意
-该博客仅用于学习原理，前端页面并**未实现**响应式布局，暂时也没有精力去实现，博客内容也没有时间去打理。关于日常的记录博客主要在[别院牧志](https://imoyao.github.io/)之中更新。   
+1. 该博客仅用于学习原理，前端页面并**未实现**响应式布局，暂时也没有精力去实现，博客内容也没有时间去打理。关于日常的记录博客主要在[别院牧志](https://imoyao.github.io/)之中更新。   
 
-如果你是 Flask 初学者，推荐一本国人书籍给大家《Flask Web开发实战：入门、进阶与原理解析》，本人也是该书的阅读者与受益者。同时建议多去这个网站看看：[HelloFlask - Flask资源集合地](http://helloflask.com/)
+2. 如果你是 Flask 初学者，推荐一本国人书籍给大家《Flask Web开发实战：入门、进阶与原理解析》，本人也是该书的阅读者与受益者。同时建议多去这个网站看看：[HelloFlask - Flask资源集合地](http://helloflask.com/)
 
-由于服务器到期，本博客暂无演示功能，如果有同学部署上线可以提供演示链接则非常感谢。暂时请点击下方链接观看简单的功能演示。
-
+3. 由于服务器到期，本博客暂无演示功能，如果有同学部署上线可以提供演示链接则非常感谢。暂时请点击下方链接观看简单的功能演示。
 [使用 Vue 和 Flask 搭建前后端分离的 RESTful 个人博客功能展示_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili](https://www.bilibili.com/video/BV11v411v76q?zw)
+
+4. 由于[此处](https://github.com/flask-restful/flask-restful/issues/883) 提到的原因，Flask-RESTful 已经不是一个很好的选择，可能[flask-restx](https://github.com/python-restx/flask-restx) 和[Apiflask](https://github.com/greyli/apiflask) （国人开发）是一个更好的替代品。如果需要学习，也推荐迁移到维护更加积极的模块包上面去。
 
 ## 交流
 1. 技术问题请尽量使用[Issues · imoyao/idealyard](https://github.com/imoyao/idealyard/issues)提问回馈社区，参阅：[Issue #15 · imoyao/idealyard](https://github.com/imoyao/idealyard/issues/15)
