@@ -10,10 +10,10 @@
 
 2. 如果你是 Flask 初学者，推荐一本国人书籍给大家《Flask Web开发实战：入门、进阶与原理解析》，本人也是该书的阅读者与受益者。同时建议多去这个网站看看：[HelloFlask - Flask资源集合地](http://helloflask.com/)
 
-3. 由于服务器到期，本博客暂无演示功能，如果有同学部署上线可以提供演示链接则非常感谢。暂时请点击下方链接观看简单的功能演示。
+3. 由于服务器到期，本博客暂无演示功能，如果有同学部署上线并可以提供演示链接，则非常感谢。暂时请点击下方链接观看简单的功能演示。
 [使用 Vue 和 Flask 搭建前后端分离的 RESTful 个人博客功能展示_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili](https://www.bilibili.com/video/BV11v411v76q?zw)
 
-4. 由于[此处](https://github.com/flask-restful/flask-restful/issues/883) 提到的原因，Flask-RESTful 已经不是一个很好的选择，可能[flask-restx](https://github.com/python-restx/flask-restx) 和 ~~[Apiflask](https://github.com/greyli/apiflask)~~ （国人开发）  是一个更好的替代品。如果需要学习，也推荐迁移到维护更加积极的扩展上面去。
+4. 由于[此处](https://github.com/flask-restful/flask-restful/issues/883) 提到的原因，Flask-RESTful 已经不是一个很好的选择，可能[flask-restx](https://github.com/python-restx/flask-restx) 和 [Apiflask](https://github.com/greyli/apiflask) <国人开发>（注意：由于本框架正在活跃开发期内，使用时请慎重评估）  是一个更好的替代品。如果需要学习，也推荐迁移到维护更加积极的扩展上面去。
 
  注意区分扩展和框架的区别，参阅：[请不要把 Flask 和 FastAPI 放到一起比较 | 李辉](https://greyli.com/flask-fastapi/)
  > 既然「FastAPI 应该和基于 Flask 的 Web API 框架比较」，那么合适的比较对象有哪些？[Flask-RESTX](https://github.com/python-restx/flask-restx)、[Flask-Rebar](https://github.com/plangrid/flask-rebar)、[flask-apispec](https://github.com/jmcarp/flask-apispec)、[flask-smorest](https://github.com/marshmallow-code/flask-smorest)、[Flask-RESTful](https://github.com/flask-restful/flask-restful)、[APIFairy](https://github.com/miguelgrinberg/APIFairy) 这些虽然试图做成框架，但在具体实现上仍然是 Flask 扩展。
