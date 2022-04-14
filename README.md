@@ -78,6 +78,55 @@ flush privileges;
     vi dot.env
     mv dot.env .env        # 参考 master 分支
     ```
+### 前端
+
+node和npm/yarn的安装和换源请网络搜索教程自行完成。
+
+前端部署部分是以`npm`作为包管理工具进行演示的，如果使用`yarn`进行包管理，请自行修改（你都使用yarn了，肯定不会找不到`package.json`的。😉）
+
+前端指令配置请参考`front/package.json`中的`scripts`章节。
+
+#### 安装依赖
+```shell
+npm install
+```
+#### 开发模式
+
+1. 修改前端文件`front/config/dev.env.js`中后端请求的地址和端口为实际api地址 
+2. 启动前端
+```shell
+npm run dev
+```
+#### 生产模式
+
+1. 切换目录
+```bash
+cd front
+```
+2. 设置`prod`环境`BASE_API`地址
+```javascript
+// /idealyard/front/config/prod.env.js
+module.exports = {
+  NODE_ENV: '"production"',
+  BASE_API: '"http://192.168.116.21:5000/api"'  // TODO:修改为真实API地址
+}
+```
+3. 设置`router`为`history`模式
+```javascript
+// path: front/src/router/index.js:16
+
+const router = new VueRouter({
+  // https://router.vuejs.org/zh/guide/essentials/history-mode.html#html5-history-%E6%A8%A1%E5%BC%8F
+  // mode: 'history',
+  routes: []
+})
+```
+4. build文件
+```bash
+npm run build
+```
+请参阅`document/deploy.md` 文件了解更多。
+
 ## Docker 支持
 
 pass

@@ -152,7 +152,7 @@ celery -A celery_worker:celery beat --loglevel=INFO
 PONG
 ```
 ## 安装 redis
-此处可以参考本人之前的一篇文章：[Linux 下如何安装 Redis？](https://imoyao.github.io/blog/2019-04-11/how-to-install-Redis-on-Linux/)  
+此处可以参考本人之前的一篇文章：[Linux 下如何安装 Redis？ | 别院牧志知识库](https://wiki.masantu.com/redis/install/)  
 `redisd` 所在目录
 ```bash
 /etc/init.d/redisd
