@@ -21,7 +21,7 @@ ipython-genutils==0.2.0
 itsdangerous==1.1.0
 jedi==0.14.1
 Jinja2==2.10.1
-Mako==1.1.0
+Mako==1.2.2
 MarkupSafe==1.1.1
 parso==0.5.1
 passlib==1.7.1
