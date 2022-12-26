@@ -1,7 +1,7 @@
 # IdealYard
 [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
 
-使用 `Vue` 和 `Flask` 搭建前后端分离的 RESTful 个人博客。
+使用 `Vue2` 和 `Flask` 搭建前后端分离的 RESTful 个人博客。
 
 关于该项目的部分说明可在此处找到👉[About IdealYard](https://masantu.com/categories/Projects/IdealYard/)，如果没有找到需要的内容，请邮件或者 Issues 交流；
 
