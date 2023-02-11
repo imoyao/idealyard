@@ -16,7 +16,7 @@ Flask-Uploads==0.2.1
 gevent==1.4.0
 greenlet==0.4.15
 gunicorn==19.9.0
-ipython==7.6.1
+ipython==8.10.0
 ipython-genutils==0.2.0
 itsdangerous==1.1.0
 jedi==0.14.1
