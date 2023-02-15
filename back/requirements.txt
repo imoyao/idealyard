@@ -40,4 +40,4 @@ six==1.12.0
 SQLAlchemy==1.3.4
 traitlets==4.3.2
 wcwidth==0.1.7
-Werkzeug==0.15.4
+Werkzeug==2.2.3
